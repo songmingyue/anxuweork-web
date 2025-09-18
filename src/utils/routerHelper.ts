@@ -44,7 +44,6 @@ export const generateRoutesByFrontEnd = (
   basePath = '/'
 ): AppRouteRecordRaw[] => {
   const res: AppRouteRecordRaw[] = []
-
   for (const route of routes) {
     const meta = route.meta ?? {}
     // skip some route

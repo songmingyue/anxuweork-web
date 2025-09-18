@@ -1,8 +1,7 @@
 <script setup lang="tsx">
 import { reactive, ref, watch, onMounted, unref } from 'vue'
 import { Form, FormSchema } from '@/components/Form'
-import { useI18n } from '@/hooks/web/useI18n'
-import { ElCheckbox, ElLink } from 'element-plus'
+import { ElCheckbox } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { loginApi, getTestRoleApi, getAdminRoleApi } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
@@ -11,7 +10,6 @@ import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { UserType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
-import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
 
@@ -27,8 +25,6 @@ const permissionStore = usePermissionStore()
 
 const { currentRoute, addRoute, push } = useRouter()
 
-const { t } = useI18n()
-
 const rules = {
   username: [required()],
   password: [required()]
@@ -37,46 +33,33 @@ const rules = {
 const schema = reactive<FormSchema[]>([
   {
     field: 'title',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => {
-          return <h2 class="text-2xl font-bold text-center w-[100%]">{t('login.login')}</h2>
-        }
+        default: () => <h2 class="text-2xl font-bold text-center w-[100%]">登录</h2>
       }
     }
   },
   {
     field: 'username',
-    label: t('login.username'),
-    // value: 'admin',
+    label: '用户名',
     component: 'Input',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     componentProps: {
-      placeholder: 'admin or test'
+      placeholder: '请输入用户名'
     }
   },
   {
     field: 'password',
-    label: t('login.password'),
-    // value: 'admin',
+    label: '密码',
     component: 'InputPassword',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     componentProps: {
-      style: {
-        width: '100%'
-      },
-      placeholder: 'admin or test',
-      // 按下enter键触发登录
+      style: { width: '100%' },
+      placeholder: '请输入密码',
       onKeydown: (_e: any) => {
         if (_e.key === 'Enter') {
-          _e.stopPropagation() // 阻止事件冒泡
+          _e.stopPropagation()
           signIn()
         }
       }
@@ -84,114 +67,40 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'tool',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => {
-          return (
-            <>
-              <div class="flex justify-between items-center w-[100%]">
-                <ElCheckbox v-model={remember.value} label={t('login.remember')} size="small" />
-                <ElLink type="primary" underline={false}>
-                  {t('login.forgetPassword')}
-                </ElLink>
-              </div>
-            </>
-          )
-        }
+        default: () => (
+          <div class="flex justify-between items-center w-[100%]">
+            <ElCheckbox v-model={remember.value} label="记住我" size="small" />
+          </div>
+        )
       }
     }
   },
   {
     field: 'login',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => {
-          return (
-            <>
-              <div class="w-[100%]">
-                <BaseButton
-                  loading={loading.value}
-                  type="primary"
-                  class="w-[100%]"
-                  onClick={signIn}
-                >
-                  {t('login.login')}
-                </BaseButton>
-              </div>
-              <div class="w-[100%] mt-15px">
-                <BaseButton class="w-[100%]" onClick={toRegister}>
-                  {t('login.register')}
-                </BaseButton>
-              </div>
-            </>
-          )
-        }
-      }
-    }
-  },
-  {
-    field: 'other',
-    component: 'Divider',
-    label: t('login.otherLogin'),
-    componentProps: {
-      contentPosition: 'center'
-    }
-  },
-  {
-    field: 'otherIcon',
-    colProps: {
-      span: 24
-    },
-    formItemProps: {
-      slots: {
-        default: () => {
-          return (
-            <>
-              <div class="flex justify-between w-[100%]">
-                <Icon
-                  icon="vi-ant-design:github-filled"
-                  size={iconSize}
-                  class="cursor-pointer ant-icon"
-                  color={iconColor}
-                  hoverColor={hoverColor}
-                />
-                <Icon
-                  icon="vi-ant-design:wechat-filled"
-                  size={iconSize}
-                  class="cursor-pointer ant-icon"
-                  color={iconColor}
-                  hoverColor={hoverColor}
-                />
-                <Icon
-                  icon="vi-ant-design:alipay-circle-filled"
-                  size={iconSize}
-                  color={iconColor}
-                  hoverColor={hoverColor}
-                  class="cursor-pointer ant-icon"
-                />
-                <Icon
-                  icon="vi-ant-design:weibo-circle-filled"
-                  size={iconSize}
-                  color={iconColor}
-                  hoverColor={hoverColor}
-                  class="cursor-pointer ant-icon"
-                />
-              </div>
-            </>
-          )
-        }
+        default: () => (
+          <>
+            <div class="w-[100%]">
+              <BaseButton loading={loading.value} type="primary" class="w-[100%]" onClick={signIn}>
+                登录
+              </BaseButton>
+            </div>
+            <div class="w-[100%] mt-15px">
+              <BaseButton class="w-[100%]" onClick={toRegister}>
+                注册
+              </BaseButton>
+            </div>
+          </>
+        )
       }
     }
   }
 ])
-
-const iconSize = 30
 
 const remember = ref(userStore.getRememberMe)
 
@@ -210,10 +119,6 @@ const { formRegister, formMethods } = useForm()
 const { getFormData, getElFormExpose, setValues } = formMethods
 
 const loading = ref(false)
-
-const iconColor = '#999'
-
-const hoverColor = 'var(--el-color-primary)'
 
 const redirect = ref<string>('')
 

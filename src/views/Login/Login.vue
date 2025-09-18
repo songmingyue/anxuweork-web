@@ -2,7 +2,6 @@
 import { LoginForm, RegisterForm } from './components'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
-import { useI18n } from '@/hooks/web/useI18n'
 import { underlineToHump } from '@/utils'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
@@ -10,19 +9,12 @@ import { ref } from 'vue'
 import { ElScrollbar } from 'element-plus'
 
 const { getPrefixCls } = useDesign()
-
 const prefixCls = getPrefixCls('login')
-
 const appStore = useAppStore()
-
-const { t } = useI18n()
-
 const isLogin = ref(true)
-
 const toRegister = () => {
   isLogin.value = false
 }
-
 const toLogin = () => {
   isLogin.value = true
 }
@@ -48,10 +40,10 @@ const toLogin = () => {
               tag="div"
               enter-active-class="animate__animated animate__bounceInLeft"
             >
-              <img src="@/assets/svgs/login-box-bg.svg" key="1" alt="" class="w-350px" />
-              <div class="text-3xl text-white" key="2">{{ t('login.welcome') }}</div>
+              <img src="@/assets/svgs/login-box-bg.png" key="1" alt="" class="w-350px" />
+              <div class="text-3xl text-white" key="2">欢迎登录</div>
               <div class="mt-5 font-normal text-white text-14px" key="3">
-                {{ t('login.message') }}
+                请输入您的账号密码登录系统
               </div>
             </TransitionGroup>
           </div>

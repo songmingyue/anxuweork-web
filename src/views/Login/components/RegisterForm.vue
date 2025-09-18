@@ -1,7 +1,6 @@
 <script setup lang="tsx">
 import { Form, FormSchema } from '@/components/Form'
 import { reactive, ref, unref } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import { useForm } from '@/hooks/web/useForm'
 import { ElInput, FormRules } from 'element-plus'
 import { useValidator } from '@/hooks/web/useValidator'
@@ -12,8 +11,6 @@ const emit = defineEmits(['to-login'])
 
 const { formRegister, formMethods } = useForm()
 const { getElFormExpose } = formMethods
-
-const { t } = useI18n()
 
 const { required, check } = useValidator()
 
@@ -34,85 +31,66 @@ const getCode = () => {
 const schema = reactive<FormSchema[]>([
   {
     field: 'title',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => {
-          return <h2 class="text-2xl font-bold text-center w-[100%]">{t('login.register')}</h2>
-        }
+        default: () => <h2 class="text-2xl font-bold text-center w-[100%]">注册账号</h2>
       }
     }
   },
   {
     field: 'username',
-    label: t('login.username'),
+    label: '用户名',
     value: '',
     component: 'Input',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     componentProps: {
-      placeholder: t('login.usernamePlaceholder')
+      placeholder: '请输入用户名'
     }
   },
   {
     field: 'password',
-    label: t('login.password'),
+    label: '密码',
     value: '',
     component: 'InputPassword',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     componentProps: {
-      style: {
-        width: '100%'
-      },
+      style: { width: '100%' },
       strength: true,
-      placeholder: t('login.passwordPlaceholder')
+      placeholder: '请输入密码'
     }
   },
   {
     field: 'check_password',
-    label: t('login.checkPassword'),
+    label: '确认密码',
     value: '',
     component: 'InputPassword',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     componentProps: {
-      style: {
-        width: '100%'
-      },
+      style: { width: '100%' },
       strength: true,
-      placeholder: t('login.passwordPlaceholder')
+      placeholder: '请再次输入密码'
     }
   },
   {
     field: 'code',
-    label: t('login.code'),
-    colProps: {
-      span: 24
-    },
+    label: '验证码',
+    colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: (formData) => {
-          return (
-            <div class="w-[100%] flex">
-              <ElInput v-model={formData.code} placeholder={t('login.codePlaceholder')} />
-              <BaseButton
-                type="primary"
-                disabled={unref(getCodeLoading)}
-                class="ml-10px"
-                onClick={getCode}
-              >
-                {t('login.getCode')}
-                {unref(getCodeLoading) ? `(${unref(getCodeTime)})` : ''}
-              </BaseButton>
-            </div>
-          )
-        }
+        default: (formData) => (
+          <div class="w-[100%] flex">
+            <ElInput v-model={formData.code} placeholder="请输入验证码" />
+            <BaseButton
+              type="primary"
+              disabled={unref(getCodeLoading)}
+              class="ml-10px"
+              onClick={getCode}
+            >
+              获取验证码{unref(getCodeLoading) ? `(${unref(getCodeTime)})` : ''}
+            </BaseButton>
+          </div>
+        )
       }
     }
   },
@@ -145,32 +123,28 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'register',
-    colProps: {
-      span: 24
-    },
+    colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => {
-          return (
-            <>
-              <div class="w-[100%]">
-                <BaseButton
-                  type="primary"
-                  class="w-[100%]"
-                  loading={loading.value}
-                  onClick={loginRegister}
-                >
-                  {t('login.register')}
-                </BaseButton>
-              </div>
-              <div class="w-[100%] mt-15px">
-                <BaseButton class="w-[100%]" onClick={toLogin}>
-                  {t('login.hasUser')}
-                </BaseButton>
-              </div>
-            </>
-          )
-        }
+        default: () => (
+          <>
+            <div class="w-[100%]">
+              <BaseButton
+                type="primary"
+                class="w-[100%]"
+                loading={loading.value}
+                onClick={loginRegister}
+              >
+                注册
+              </BaseButton>
+            </div>
+            <div class="w-[100%] mt-15px">
+              <BaseButton class="w-[100%]" onClick={toLogin}>
+                已有账号？去登录
+              </BaseButton>
+            </div>
+          </>
+        )
       }
     }
   }

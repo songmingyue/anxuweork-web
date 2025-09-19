@@ -1,35 +1,55 @@
+import { Layout } from '@/utils/routerHelper'
+
 export const serviceCof = [
   {
     path: '/sysConfig',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'sysConfig',
-    meta: {
-      father: 'serviceCof',
-      hidden: false,
-      title: '基础信息',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/serviceCof/serviceCof.vue'),
+        name: 'sysConfigChild',
+        meta: {
+          title: '基础信息',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/wado',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'wado',
-    meta: {
-      father: 'serviceCof',
-      hidden: false,
-      title: 'wado管理',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/serviceCof/wado.vue'),
+        name: 'wadoChild',
+        meta: {
+          title: 'wado管理',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/scpDeviceManage',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'scpDeviceManage',
-    meta: {
-      father: 'serviceCof',
-      hidden: false,
-      title: 'SCP设备管理',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/serviceCof/scpDeviceManage.vue'),
+        name: 'scpDeviceManageChild',
+        meta: {
+          title: 'SCP设备管理',
+          icon: ''
+        }
+      }
+    ]
   }
 ]

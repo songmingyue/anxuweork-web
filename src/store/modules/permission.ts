@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia'
 import { asyncRouterMap, constantRouterMap } from '@/router'
-import {
-  generateRoutesByFrontEnd,
-  generateRoutesByServer,
-  flatMultiLevelRoutes
-} from '@/utils/routerHelper'
+import { generateRoutesByFrontEnd, flatMultiLevelRoutes } from '@/utils/routerHelper'
 import { store } from '../index'
 import { cloneDeep } from 'lodash-es'
 
@@ -37,22 +33,30 @@ export const usePermissionStore = defineStore('permission', {
     }
   },
   actions: {
-    generateRoutes(
-      type: 'server' | 'frontEnd' | 'static',
-      routers?: AppCustomRouteRecordRaw[] | string[]
-    ): Promise<unknown> {
+    /**
+     * 递归提取后端路由所有 url 字段
+     */
+    extractKeys(routes: any[], keys: string[] = []): string[] {
+      for (const route of routes) {
+        if (route.url) keys.push(route.url)
+        if (route.children) this.extractKeys(route.children, keys)
+      }
+      return keys
+    },
+
+    /**
+     * 生成前端可用路由
+     * @param backendRoutes 后端返回的路由 JSON
+     */
+    generateRoutes(backendRoutes?: any[]): Promise<unknown> {
       return new Promise<void>((resolve) => {
         let routerMap: AppRouteRecordRaw[] = []
-        if (type === 'server') {
-          // 模拟后端过滤菜单
-          routerMap = generateRoutesByServer(routers as AppCustomRouteRecordRaw[])
-        } else if (type === 'frontEnd') {
-          // 模拟前端过滤菜单
-          routerMap = generateRoutesByFrontEnd(cloneDeep(asyncRouterMap), routers as string[])
-        } else {
-          // 直接读取静态路由表
-          routerMap = cloneDeep(asyncRouterMap)
+        let keys: string[] = []
+        if (backendRoutes && Array.isArray(backendRoutes)) {
+          keys = this.extractKeys(backendRoutes)
         }
+        routerMap = generateRoutesByFrontEnd(cloneDeep(asyncRouterMap), keys)
+
         // 动态路由，404一定要放到最后面
         this.addRouters = routerMap.concat([
           {

@@ -1,13 +1,21 @@
+import { Layout } from '@/utils/routerHelper'
+
 export const plugConf = [
   {
     path: '/plugConf',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'plugConf',
-    meta: {
-      father: 'plugConf',
-      hidden: false,
-      title: '插件配置',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/plugConf/index.vue'),
+        name: 'plugConfChild',
+        meta: {
+          title: '插件配置',
+          icon: ''
+        }
+      }
+    ]
   }
 ]

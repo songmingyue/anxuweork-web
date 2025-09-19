@@ -12,6 +12,7 @@ import { UserType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
+import { decryptWithPrivateKey } from '@/utils/encrypt'
 
 const { required } = useValidator()
 
@@ -37,6 +38,26 @@ const schema = reactive<FormSchema[]>([
     formItemProps: {
       slots: {
         default: () => <h2 class="text-2xl font-bold text-center w-[100%]">登录</h2>
+      }
+    }
+  },
+  {
+    field: 'organizationID',
+    label: '机构',
+    component: 'Select',
+    colProps: { span: 24 },
+    componentProps: {
+      style: { width: '100%' },
+      placeholder: '请选择机构',
+      options: [
+        { label: '机构一', value: '123456789' },
+        { label: '机构二', value: 'org2' },
+        { label: '机构三', value: 'org3' }
+      ],
+      filterable: true,
+      clearable: true,
+      onChange: (value: string) => {
+        console.log('选择的机构ID:', value)
       }
     }
   },
@@ -134,6 +155,10 @@ watch(
 
 // 登录
 const signIn = async () => {
+  const aa =
+    '¬NobLtLvubJhK8h+KsD+14QXKFJo6o5OgayGeqOXOtL/QjMZw5bCdefVP8Ge+cC5mzsGqdFJ3nMJiEbXT87rBUEgP8r0jZ2zTprJMqSK0JJSVheqJNCeO/hyq7Uedr0kg9spW5dXnl2P2Y3H+kCq/+0c6YBWjz3Pf/A93HKnQ0bg=¬kaqwekiD5AOJhAWr/vmQkfLapBxsP0k/rGeq9eGddAdXTIB35tz6C6IIR0U4wThkT9/eSqxFEADAlzdy498yG3BxxPM265tm+Isrf2psEHl/XIw87ZBgFbbyLHuVvX5WEPWtwIU7fZIn8mt+dzWWQMNwD1THCKymbR+tlaWO1Bs=¬QjIrk0QXEbFMrz5sQfxeGjcsQPXNuxL/ELVy44SIhoA6EvKZGQqGHO0ASlpOl+Eo1JtYw0T2H/fUk+GgHLtLFVnX7O2F7Z4GKlkAFrjvFj7XyafyK2i3Ti5P4AkARgnyObKQ8XEfqzEAqXaxT6BwqqFTCElzN/EjWoKoSnhJUyk="¬O/LsqZXMirChxTa+76p2zBWjJV1sbW3V9eCEjQwM9GyVIquN1ouPcsu9ztFjDcI5O7uh/9aytJ1XSIxZHnM9KMp4tIAQ4xhYPFfRwoeMPGaNHq3tOrHrztcvHnGpqehWlt7jToYI3f5XZHh0Hy7QtN/1kg8eT/rB5X7hhm6DoOc='
+  const bb = decryptWithPrivateKey(aa)
+  console.log(bb, '========')
   const formRef = await getElFormExpose()
   await formRef?.validate(async (isValid) => {
     if (isValid) {
@@ -157,14 +182,7 @@ const signIn = async () => {
           userStore.setUserInfo(res.data)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
-            getRole()
-          } else {
-            await permissionStore.generateRoutes('static').catch(() => {})
-            permissionStore.getAddRouters.forEach((route) => {
-              addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
-            })
-            permissionStore.setIsAddRouters(true)
-            push({ path: redirect.value || permissionStore.addRouters[0].path })
+            getRole(res.data.menuList)
           }
         }
       } finally {
@@ -175,7 +193,7 @@ const signIn = async () => {
 }
 
 // 获取角色信息
-const getRole = async () => {
+const getRole = async (menuList: MenuList[]) => {
   const formData = await getFormData<UserType>()
   const params = {
     roleName: formData.username
@@ -185,12 +203,8 @@ const getRole = async () => {
       ? await getAdminRoleApi(params)
       : await getTestRoleApi(params)
   if (res) {
-    const routers = res.data || []
-    userStore.setRoleRouters(routers)
-    appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await permissionStore.generateRoutes('server', routers).catch(() => {})
-      : await permissionStore.generateRoutes('frontEnd', routers).catch(() => {})
-
+    userStore.setRoleRouters(menuList)
+    await permissionStore.generateRoutes(menuList).catch(() => {})
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })

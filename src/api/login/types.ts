@@ -8,4 +8,5 @@ export interface UserType {
   password: string
   role: string
   roleId: string
+  menuList: MenuList[]
 }

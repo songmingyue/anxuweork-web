@@ -75,4 +75,12 @@ declare global {
     redirect: string
     children?: AppCustomRouteRecordRaw[]
   }
+  declare interface MenuList {
+    url: string
+    meta: {
+      title: string
+      requiresAuth?: boolean
+    }
+    children: MenuList[]
+  }
 }

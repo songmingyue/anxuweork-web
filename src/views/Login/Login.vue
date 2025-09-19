@@ -40,11 +40,7 @@ const toLogin = () => {
               tag="div"
               enter-active-class="animate__animated animate__bounceInLeft"
             >
-              <img src="@/assets/svgs/login-box-bg.png" key="1" alt="" class="w-350px" />
-              <div class="text-3xl text-white" key="2">欢迎登录</div>
-              <div class="mt-5 font-normal text-white text-14px" key="3">
-                请输入您的账号密码登录系统
-              </div>
+              <img src="@/assets/svgs/login-box-bg.png" key="1" alt="" class="w-450px" />
             </TransitionGroup>
           </div>
         </div>

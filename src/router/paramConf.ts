@@ -1,57 +1,89 @@
+import { Layout } from '@/utils/routerHelper'
+
 export const paramConf = [
   {
     path: '/storageMedium',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'storageMedium',
-    meta: {
-      father: 'paramConf',
-      hidden: false,
-      title: '存储媒介',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/paramConf/storageMedium.vue'),
+        name: 'storageMediumChild',
+        meta: {
+          title: '存储媒介',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/systemParam',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'systemParam',
-    meta: {
-      father: 'paramConf',
-      hidden: false,
-      title: '系统参数',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/paramConf/systemParam.vue'),
+        name: 'systemParamChild',
+        meta: {
+          title: '系统参数',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/dataDictionary',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'dataDictionary',
-    meta: {
-      father: 'paramConf',
-      hidden: false,
-      title: '数据字典',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/paramConf/dataDictionary.vue'),
+        name: 'dataDictionaryChild',
+        meta: {
+          title: '数据字典',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/plugTaskConfig',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'plugTaskConfig',
-    meta: {
-      father: 'paramConf',
-      hidden: false,
-      title: '插件设置',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/paramConf/plugTaskConfig.vue'),
+        name: 'plugTaskConfigChild',
+        meta: {
+          title: '插件设置',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/taskConfig',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'taskConfig',
-    meta: {
-      father: 'paramConf',
-      hidden: false,
-      title: '任务配置',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/paramConf/taskConfig.vue'),
+        name: 'taskConfigChild',
+        meta: {
+          title: '任务配置',
+          icon: ''
+        }
+      }
+    ]
   }
 ]

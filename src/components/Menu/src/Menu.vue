@@ -1,130 +1,99 @@
-<script lang="tsx">
-import { computed, defineComponent, unref, PropType } from 'vue'
-import { ElMenu, ElScrollbar } from 'element-plus'
-import { useAppStore } from '@/store/modules/app'
-import { usePermissionStore } from '@/store/modules/permission'
-import { useRenderMenuItem } from './components/useRenderMenuItem'
+<script setup lang="ts">
+import { computed, ref, h, unref } from 'vue'
+import { ElMenu, ElSubMenu, ElMenuItem } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { isUrl } from '@/utils/is'
+import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
 
+// 获取本地存储的菜单数据
+const userinfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+const menuList = userinfo.menuList || []
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('menu')
 
-export default defineComponent({
-  name: 'Menu',
-  props: {
-    menuSelect: {
-      type: Function as PropType<(index: string) => void>,
-      default: undefined
-    }
-  },
-  setup(props) {
-    const appStore = useAppStore()
+const router = useRouter()
+// 当前激活菜单key，取当前路由path
+const activeMenu = computed(() => router.currentRoute.value.path)
+const appStore = useAppStore()
+const layout = ref(computed(() => appStore.getLayout))
+const collapse = computed(() => appStore.getCollapse)
+const uniqueOpened = computed(() => appStore.getUniqueOpened)
+const menuMode = computed((): 'vertical' | 'horizontal' => {
+  // 竖
+  const vertical: LayoutType[] = ['classic', 'topLeft', 'cutMenu']
 
-    const layout = computed(() => appStore.getLayout)
-
-    const { push, currentRoute } = useRouter()
-
-    const permissionStore = usePermissionStore()
-
-    const menuMode = computed((): 'vertical' | 'horizontal' => {
-      // 竖
-      const vertical: LayoutType[] = ['classic', 'topLeft', 'cutMenu']
-
-      if (vertical.includes(unref(layout))) {
-        return 'vertical'
-      } else {
-        return 'horizontal'
-      }
-    })
-
-    const routers = computed(() =>
-      unref(layout) === 'cutMenu' ? permissionStore.getMenuTabRouters : permissionStore.getRouters
-    )
-
-    const collapse = computed(() => appStore.getCollapse)
-
-    const uniqueOpened = computed(() => appStore.getUniqueOpened)
-
-    const activeMenu = computed(() => {
-      const { meta, path } = unref(currentRoute)
-      // if set path, the sidebar will highlight the path you set
-      if (meta.activeMenu) {
-        return meta.activeMenu as string
-      }
-      return path
-    })
-
-    const menuSelect = (index: string) => {
-      if (props.menuSelect) {
-        props.menuSelect(index)
-      }
-      // 自定义事件
-      if (isUrl(index)) {
-        window.open(index)
-      } else {
-        push(index)
-      }
-    }
-
-    const renderMenuWrap = () => {
-      if (unref(layout) === 'top') {
-        return renderMenu()
-      } else {
-        return <ElScrollbar>{renderMenu()}</ElScrollbar>
-      }
-    }
-
-    const renderMenu = () => {
-      return (
-        <ElMenu
-          defaultActive={unref(activeMenu)}
-          mode={unref(menuMode)}
-          collapse={
-            unref(layout) === 'top' || unref(layout) === 'cutMenu' ? false : unref(collapse)
-          }
-          uniqueOpened={unref(layout) === 'top' ? false : unref(uniqueOpened)}
-          backgroundColor="var(--left-menu-bg-color)"
-          textColor="var(--left-menu-text-color)"
-          activeTextColor="var(--left-menu-text-active-color)"
-          popperClass={
-            unref(menuMode) === 'vertical'
-              ? `${prefixCls}-popper--vertical`
-              : `${prefixCls}-popper--horizontal`
-          }
-          onSelect={menuSelect}
-        >
-          {{
-            default: () => {
-              const { renderMenuItem } = useRenderMenuItem(menuMode)
-              return renderMenuItem(unref(routers))
-            }
-          }}
-        </ElMenu>
-      )
-    }
-
-    return () => (
-      <div
-        id={prefixCls}
-        class={[
-          `${prefixCls} ${prefixCls}__${unref(menuMode)}`,
-          'h-[100%] overflow-hidden flex-col bg-[var(--left-menu-bg-color)]',
-          {
-            'w-[var(--left-menu-min-width)]': unref(collapse) && unref(layout) !== 'cutMenu',
-            'w-[var(--left-menu-max-width)]': !unref(collapse) && unref(layout) !== 'cutMenu'
-          }
-        ]}
-      >
-        {renderMenuWrap()}
-      </div>
-    )
+  if (vertical.includes(unref(layout))) {
+    return 'vertical'
+  } else {
+    return 'horizontal'
   }
 })
-</script>
+// 菜单点击事件
+function handleMenuSelect(index: string) {
+  // 查找当前点击的菜单项
+  function findMenu(list: any[]): any {
+    for (const item of list) {
+      if (item.url === index) return item
+      if (item.children) {
+        const found = findMenu(item.children)
+        if (found) return found
+      }
+    }
+    return null
+  }
+  const menu = findMenu(menuList)
 
+  if (menu && !menu.children) {
+    // 跳转到url
+    router.push(menu.url)
+  }
+}
+
+// 递归渲染菜单，返回VNode数组
+function renderMenu(list: any[]) {
+  return list.map((item: any) => {
+    if (item.children && item.children.length > 0) {
+      return h(
+        ElSubMenu,
+        { index: item.url, key: item.url },
+        {
+          title: () => item.meta?.title || item.url,
+          default: () => renderMenu(item.children)
+        }
+      )
+    } else {
+      return h(ElMenuItem, { index: item.url, key: item.url }, () => item.meta?.title || item.url)
+    }
+  })
+}
+</script>
+<template>
+  <div
+    :id="prefixCls"
+    :class="[
+      `${prefixCls} ${prefixCls}__${menuMode}`,
+      'h-[100%] overflow-hidden flex-col bg-[var(--left-menu-bg-color)]',
+      {
+        'w-[var(--left-menu-min-width)]': collapse && layout !== 'cutMenu',
+        'w-[var(--left-menu-max-width)]': !collapse && layout !== 'cutMenu'
+      }
+    ]"
+  >
+    <ElMenu
+      :uniqueOpened="layout === 'top' ? false : uniqueOpened"
+      :collapse="layout === 'top' || layout === 'cutMenu' ? false : collapse"
+      backgroundColor="var(--left-menu-bg-color)"
+      textColor="var(--left-menu-text-color)"
+      activeTextColor="var(--left-menu-text-active-color)"
+      :default-active="activeMenu"
+      mode="vertical"
+      @select="handleMenuSelect"
+    >
+      <component v-for="item in renderMenu(menuList)" :is="item" :key="item.key" />
+    </ElMenu>
+  </div>
+</template>
 <style lang="less" scoped>
 @prefix-cls: ~'@{adminNamespace}-menu';
 

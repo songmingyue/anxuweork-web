@@ -1,24 +1,38 @@
+import { Layout } from '@/utils/routerHelper'
+
 export const diagnosisInfo = [
   {
     path: '/patientView',
-    component: () => import('@/views/Login/Login.vue'),
-    name: 'patientView',
-    meta: {
-      father: 'diagnosisInfo',
-      hidden: false,
-      title: '病人视图',
-      noTagsView: true
-    }
+    component: () => Layout,
+    name: 'checkInfos',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/diagnosisInfo/patientView.vue'),
+        name: 'diagnosisInfo',
+        meta: {
+          title: '检查信息',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
   },
   {
     path: '/diagnosisView',
-    component: () => import('@/views/Login/Login.vue'),
-    name: 'diagnosisView',
-    meta: {
-      father: 'diagnosisInfo',
-      hidden: false,
-      title: '就诊视图',
-      noTagsView: true
-    }
+    component: () => Layout,
+    name: 'diagnosisViews',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/diagnosisInfo/patientView.vue'),
+        name: 'diagnosisView',
+        meta: {
+          title: '检查信息',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
   }
 ]

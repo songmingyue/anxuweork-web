@@ -4,7 +4,8 @@ import { defaultRequestInterceptors, defaultResponseInterceptors } from './confi
 import { AxiosInstance, InternalAxiosRequestConfig, RequestConfig, AxiosResponse } from './types'
 import { ElMessage } from 'element-plus'
 import { REQUEST_TIMEOUT } from '@/constants'
-
+import { encryptWithPublicKey } from '@/utils/encrypt'
+import { nowTimestamp } from '@/utils/timeDate'
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
 const abortControllerMap: Map<string, AbortController> = new Map()
@@ -14,9 +15,15 @@ const axiosInstance: AxiosInstance = axios.create({
   baseURL: PATH_URL
 })
 
+const filderUrl = ['/system/version', '/key', '/login'] // 加密白名单
+
 axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
   const controller = new AbortController()
   const url = res.url || ''
+  if (!filderUrl.find((item) => url.includes(item))) {
+    res.data = encryptWithPublicKey(JSON.stringify(res.data))
+    res.url = `${url}?t=${nowTimestamp}`
+  }
   res.signal = controller.signal
   abortControllerMap.set(
     import.meta.env.VITE_USE_MOCK === 'true' ? url.replace('/mock', '') : url,

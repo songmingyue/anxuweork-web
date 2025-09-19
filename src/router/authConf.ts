@@ -1,35 +1,55 @@
+import { Layout } from '@/utils/routerHelper'
+
 export const authConf = [
   {
     path: '/userManage',
-    component: () => import('@/views/Login/Login.vue'),
-    name: 'userManage',
-    meta: {
-      father: 'authConf',
-      hidden: false,
-      title: '用户管理',
-      noTagsView: true
-    }
+    component: Layout,
+    name: 'UserManages',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/authConf/userManage.vue'),
+        name: 'UserManage',
+        meta: {
+          title: '用户信息',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
   },
   {
     path: '/roleManage',
-    component: () => import('@/views/Login/Login.vue'),
-    name: 'roleManage',
-    meta: {
-      father: 'authConf',
-      hidden: false,
-      title: '角色管理',
-      noTagsView: true
-    }
+    component: () => Layout,
+    name: 'RoleManages',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/authConf/roleManage.vue'),
+        name: 'RroleManages',
+        meta: {
+          title: '角色管理',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
   },
   {
-    path: '/systemParam',
-    component: () => import('@/views/Login/Login.vue'),
-    name: 'systemParam',
-    meta: {
-      father: 'authConf',
-      hidden: false,
-      title: '机构管理',
-      noTagsView: true
-    }
+    path: '/departmentMag',
+    component: () => Layout,
+    name: 'departmentMag',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/authConf/departmentMag.vue'),
+        name: 'RdepartmentMag',
+        meta: {
+          title: '机构管理',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
   }
 ]

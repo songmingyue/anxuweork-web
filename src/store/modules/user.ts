@@ -11,7 +11,7 @@ interface UserState {
   userInfo?: UserType
   tokenKey: string
   token: string
-  roleRouters?: string[] | AppCustomRouteRecordRaw[]
+  roleRouters?: string[] | MenuList[]
   rememberMe: boolean
   loginInfo?: UserLoginType
 }
@@ -36,9 +36,10 @@ export const useUserStore = defineStore('user', {
       return this.token
     },
     getUserInfo(): UserType | undefined {
+      localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
       return this.userInfo
     },
-    getRoleRouters(): string[] | AppCustomRouteRecordRaw[] | undefined {
+    getRoleRouters(): string[] | MenuList[] | undefined {
       return this.roleRouters
     },
     getRememberMe(): boolean {
@@ -58,7 +59,7 @@ export const useUserStore = defineStore('user', {
     setUserInfo(userInfo?: UserType) {
       this.userInfo = userInfo
     },
-    setRoleRouters(roleRouters: string[] | AppCustomRouteRecordRaw[]) {
+    setRoleRouters(roleRouters: string[] | MenuList[]) {
       this.roleRouters = roleRouters
     },
     logoutConfirm() {

@@ -1,79 +1,123 @@
+import { Layout } from '@/utils/routerHelper'
+
 export const logConfig = [
   {
     path: '/logOperate',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'logOperate',
-    meta: {
-      father: 'logConfig',
-      hidden: false,
-      title: '打印日志"',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logConfig/logOperate.vue'),
+        name: 'logOperateChild',
+        meta: {
+          title: '打印日志',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/collectedLog',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'collectedLog',
-    meta: {
-      father: 'logConfig',
-      hidden: false,
-      title: '采集日志',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logConfig/collectedLog.vue'),
+        name: 'collectedLogChild',
+        meta: {
+          title: '采集日志',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/searchLog',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'searchLog',
-    meta: {
-      father: 'logConfig',
-      hidden: false,
-      title: '查询日志',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logConfig/searchLog.vue'),
+        name: 'searchLogChild',
+        meta: {
+          title: '查询日志',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/abnormalReport',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'abnormalReport',
-    meta: {
-      father: 'logConfig',
-      hidden: false,
-      title: '上传失败',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logConfig/abnormalReport.vue'),
+        name: 'abnormalReportChild',
+        meta: {
+          title: '上传失败',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/uploadLog',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'uploadLog',
-    meta: {
-      father: 'logConfig',
-      hidden: false,
-      title: '上传日志',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logConfig/uploadLog.vue'),
+        name: 'uploadLogChild',
+        meta: {
+          title: '上传日志',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/failTaskManage',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'failTaskManage',
-    meta: {
-      father: 'logConfig',
-      hidden: false,
-      title: '失败任务管理',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logConfig/failTaskManage.vue'),
+        name: 'failTaskManageChild',
+        meta: {
+          title: '失败任务管理',
+          icon: ''
+        }
+      }
+    ]
   },
   {
     path: '/sensitiveLogManage',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => Layout,
     name: 'sensitiveLogManage',
-    meta: {
-      father: 'logConfig',
-      hidden: false,
-      title: '敏感操作管理',
-      noTagsView: true
-    }
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logConfig/sensitiveLogManage.vue'),
+        name: 'sensitiveLogManageChild',
+        meta: {
+          title: '敏感操作管理',
+          icon: ''
+        }
+      }
+    ]
   }
 ]

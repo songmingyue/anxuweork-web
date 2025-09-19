@@ -5,6 +5,12 @@ import { Layout } from '@/utils/routerHelper'
 import { NO_RESET_WHITE_LIST } from '@/constants'
 import { authConf } from './authConf'
 import { paramConf } from './paramConf'
+import { checkInfo } from './checkInfo'
+import { logConfig } from './logConfig'
+import { plugConf } from './plugConf'
+import { serviceCof } from './serviceCof'
+import { diagnosisInfo } from './diagnosisInfo'
+
 export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/redirect',
@@ -65,7 +71,36 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       title: '404',
       noTagsView: true
     }
-  }
+  },
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/userManage',
+  //   name: 'userManage_toop',
+  //   meta: {
+  //     title: '个人中心',
+  //     hidden: true,
+  //     canTo: true
+  //   },
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('@/views/authConf/userManage.vue'),
+  //       name: 'UserManage',
+  //       meta: {
+  //         title: '用户信息',
+  //         icon: 'vi-cib:telegram-plane'
+  //       }
+  //     }
+  //   ]
+  // },
+  ...authConf,
+  ...paramConf,
+  ...checkInfo,
+  ...logConfig,
+  ...plugConf,
+  ...serviceCof,
+  ...diagnosisInfo
 ]
 
 export const asyncRouterMap: AppRouteRecordRaw[] = [
@@ -100,46 +135,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       }
     ]
-  },
-  {
-    path: '/error',
-    component: Layout,
-    redirect: '/error/404',
-    name: 'Error',
-    meta: {
-      title: '错误页面',
-      icon: 'vi-ci:error',
-      alwaysShow: false
-    },
-    children: [
-      {
-        path: '404-demo',
-        component: () => import('@/views/Error/404.vue'),
-        name: '404Demo',
-        meta: {
-          title: '404'
-        }
-      },
-      {
-        path: '403-demo',
-        component: () => import('@/views/Error/403.vue'),
-        name: '403Demo',
-        meta: {
-          title: '403'
-        }
-      },
-      {
-        path: '500-demo',
-        component: () => import('@/views/Error/500.vue'),
-        name: '500Demo',
-        meta: {
-          title: '500'
-        }
-      }
-    ]
-  },
-  ...authConf,
-  ...paramConf
+  }
 ]
 
 const router = createRouter({

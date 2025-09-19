@@ -1,13 +1,21 @@
+import { Layout } from '@/utils/routerHelper'
+
 export const checkInfo = [
   {
     path: '/checkInfo',
-    component: () => import('@/views/Login/Login.vue'),
-    name: 'checkInfo',
-    meta: {
-      father: 'checkInfo',
-      hidden: false,
-      title: '检查信息',
-      noTagsView: true
-    }
+    component: () => Layout,
+    name: 'checkInfos',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/checkInfo/index.vue'),
+        name: 'checkInfo',
+        meta: {
+          title: '检查信息',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
   }
 ]

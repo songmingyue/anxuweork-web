@@ -1,11 +1,11 @@
 import axios, { AxiosError } from 'axios'
-import { defaultRequestInterceptors, defaultResponseInterceptors } from './config'
 
 import { AxiosInstance, InternalAxiosRequestConfig, RequestConfig, AxiosResponse } from './types'
 import { ElMessage } from 'element-plus'
 import { REQUEST_TIMEOUT } from '@/constants'
-import { encryptWithPublicKey } from '@/utils/encrypt'
 import { nowTimestamp } from '@/utils/timeDate'
+import { decodeProtoMsg, encodeProtoMsg } from '@/utils/encrypt'
+
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
 const abortControllerMap: Map<string, AbortController> = new Map()
@@ -15,13 +15,23 @@ const axiosInstance: AxiosInstance = axios.create({
   baseURL: PATH_URL
 })
 
-const filderUrl = ['/system/version', '/key', '/login'] // 加密白名单
+const filderUrl = ['/system/version', '/key'] // 加密白名单
 
 axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
   const controller = new AbortController()
   const url = res.url || ''
+  // 只对非白名单接口做protobuf序列化
   if (!filderUrl.find((item) => url.includes(item))) {
-    res.data = encryptWithPublicKey(JSON.stringify(res.data))
+    if (res.data) {
+      if (res.proto && res.proto.requestTem) {
+        const buffer = encodeProtoMsg(res.data, res.proto.requestTem)
+        res.data = buffer
+      }
+    }
+    // 设置请求头为二进制（移到条件内部）
+    if (res.headers) {
+      res.headers['Content-Type'] = 'application/octet-stream'
+    }
     res.url = `${url}?t=${nowTimestamp}`
   }
   res.signal = controller.signal
@@ -34,9 +44,11 @@ axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
 
 axiosInstance.interceptors.response.use(
   (res: AxiosResponse) => {
-    const url = res.config.url || ''
-    abortControllerMap.delete(url)
-    // 这里不能做任何处理，否则后面的 interceptors 拿不到完整的上下文了
+    const { config } = res
+    if (config.proto && config.proto.responseTem) {
+      const buffer = decodeProtoMsg(res.data, config.proto.responseTem)
+      res.data = buffer
+    }
     return res
   },
   (error: AxiosError) => {
@@ -46,16 +58,12 @@ axiosInstance.interceptors.response.use(
   }
 )
 
-axiosInstance.interceptors.request.use(defaultRequestInterceptors)
-axiosInstance.interceptors.response.use(defaultResponseInterceptors)
-
 const service = {
   request: (config: RequestConfig) => {
     return new Promise((resolve, reject) => {
       if (config.interceptors?.requestInterceptors) {
         config = config.interceptors.requestInterceptors(config as any)
       }
-
       axiosInstance
         .request(config)
         .then((res) => {

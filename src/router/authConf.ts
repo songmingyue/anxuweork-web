@@ -5,7 +5,10 @@ export const authConf = [
     path: '/userManage',
     component: Layout,
     name: 'UserManages',
-    meta: {},
+    meta: {
+      title: '用户信息',
+      icon: 'vi-cib:telegram-plane'
+    },
     children: [
       {
         path: '',
@@ -20,13 +23,16 @@ export const authConf = [
   },
   {
     path: '/roleManage',
-    component: () => Layout,
+    component: Layout,
     name: 'RoleManages',
-    meta: {},
+    meta: {
+      title: '角色管理',
+      icon: 'vi-cib:telegram-plane'
+    },
     children: [
       {
         path: '',
-        component: () => import('@/views/authConf/roleManage.vue'),
+        component: import('@/views/authConf/roleManage.vue'),
         name: 'RroleManages',
         meta: {
           title: '角色管理',
@@ -37,7 +43,7 @@ export const authConf = [
   },
   {
     path: '/departmentMag',
-    component: () => Layout,
+    component: Layout,
     name: 'departmentMag',
     meta: {},
     children: [

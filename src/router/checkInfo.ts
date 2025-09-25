@@ -3,7 +3,7 @@ import { Layout } from '@/utils/routerHelper'
 export const checkInfo = [
   {
     path: '/checkInfo',
-    component: () => Layout,
+    component: Layout,
     name: 'checkInfos',
     meta: {},
     children: [

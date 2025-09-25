@@ -9,3 +9,13 @@ export const getDictApi = () => {
 export const getDictOneApi = async () => {
   return request.get({ url: '/mock/dict/one' })
 }
+
+export const getLoginKey = async (): Promise<string> => {
+  const response = await request.post({ url: '/api/Login/key', responseType: 'json' })
+  return response.data.data
+}
+
+export const getVersion = async (): Promise<string> => {
+  const response = await request.get({ url: '/api/system/version', responseType: 'json' })
+  return response.data.data
+}

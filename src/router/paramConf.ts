@@ -3,7 +3,7 @@ import { Layout } from '@/utils/routerHelper'
 export const paramConf = [
   {
     path: '/storageMedium',
-    component: () => Layout,
+    component: Layout,
     name: 'storageMedium',
     meta: {},
     children: [
@@ -20,7 +20,7 @@ export const paramConf = [
   },
   {
     path: '/systemParam',
-    component: () => Layout,
+    component: Layout,
     name: 'systemParam',
     meta: {},
     children: [
@@ -37,7 +37,7 @@ export const paramConf = [
   },
   {
     path: '/dataDictionary',
-    component: () => Layout,
+    component: Layout,
     name: 'dataDictionary',
     meta: {},
     children: [
@@ -54,7 +54,7 @@ export const paramConf = [
   },
   {
     path: '/plugTaskConfig',
-    component: () => Layout,
+    component: Layout,
     name: 'plugTaskConfig',
     meta: {},
     children: [
@@ -71,7 +71,7 @@ export const paramConf = [
   },
   {
     path: '/taskConfig',
-    component: () => Layout,
+    component: Layout,
     name: 'taskConfig',
     meta: {},
     children: [

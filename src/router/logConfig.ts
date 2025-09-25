@@ -3,7 +3,7 @@ import { Layout } from '@/utils/routerHelper'
 export const logConfig = [
   {
     path: '/logOperate',
-    component: () => Layout,
+    component: Layout,
     name: 'logOperate',
     meta: {},
     children: [
@@ -20,7 +20,7 @@ export const logConfig = [
   },
   {
     path: '/collectedLog',
-    component: () => Layout,
+    component: Layout,
     name: 'collectedLog',
     meta: {},
     children: [
@@ -37,7 +37,7 @@ export const logConfig = [
   },
   {
     path: '/searchLog',
-    component: () => Layout,
+    component: Layout,
     name: 'searchLog',
     meta: {},
     children: [
@@ -54,7 +54,7 @@ export const logConfig = [
   },
   {
     path: '/abnormalReport',
-    component: () => Layout,
+    component: Layout,
     name: 'abnormalReport',
     meta: {},
     children: [
@@ -71,7 +71,7 @@ export const logConfig = [
   },
   {
     path: '/uploadLog',
-    component: () => Layout,
+    component: Layout,
     name: 'uploadLog',
     meta: {},
     children: [
@@ -88,7 +88,7 @@ export const logConfig = [
   },
   {
     path: '/failTaskManage',
-    component: () => Layout,
+    component: Layout,
     name: 'failTaskManage',
     meta: {},
     children: [
@@ -105,7 +105,7 @@ export const logConfig = [
   },
   {
     path: '/sensitiveLogManage',
-    component: () => Layout,
+    component: Layout,
     name: 'sensitiveLogManage',
     meta: {},
     children: [

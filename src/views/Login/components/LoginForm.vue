@@ -8,12 +8,13 @@ import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
-import { UserType } from '@/api/login/types'
+import { UserLoginTypes, UserType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
-import { decryptWithPrivateKey } from '@/utils/encrypt'
-
+import { encryptWithPublicKey } from '@/utils/encrypt'
+import { getLoginKey } from '@/api/common'
+const publicKey = ref('')
 const { required } = useValidator()
 
 const emit = defineEmits(['to-register'])
@@ -29,6 +30,10 @@ const { currentRoute, addRoute, push } = useRouter()
 const rules = {
   username: [required()],
   password: [required()]
+}
+const getLoginKeyMsd = async () => {
+  publicKey.value = await getLoginKey()
+  console.log('获取的公钥', publicKey.value)
 }
 
 const schema = reactive<FormSchema[]>([
@@ -49,11 +54,7 @@ const schema = reactive<FormSchema[]>([
     componentProps: {
       style: { width: '100%' },
       placeholder: '请选择机构',
-      options: [
-        { label: '机构一', value: '123456789' },
-        { label: '机构二', value: 'org2' },
-        { label: '机构三', value: 'org3' }
-      ],
+      options: [{ label: '机构一', value: '-1' }],
       filterable: true,
       clearable: true,
       onChange: (value: string) => {
@@ -62,7 +63,7 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'username',
+    field: 'account',
     label: '用户名',
     component: 'Input',
     colProps: { span: 24 },
@@ -128,12 +129,13 @@ const remember = ref(userStore.getRememberMe)
 const initLoginInfo = () => {
   const loginInfo = userStore.getLoginInfo
   if (loginInfo) {
-    const { username, password } = loginInfo
-    setValues({ username, password })
+    const { account, password, organizationID } = loginInfo
+    setValues({ username: account, password, organizationID })
   }
 }
 onMounted(() => {
   initLoginInfo()
+  getLoginKeyMsd()
 })
 
 const { formRegister, formMethods } = useForm()
@@ -155,25 +157,29 @@ watch(
 
 // 登录
 const signIn = async () => {
-  const aa =
-    '¬NobLtLvubJhK8h+KsD+14QXKFJo6o5OgayGeqOXOtL/QjMZw5bCdefVP8Ge+cC5mzsGqdFJ3nMJiEbXT87rBUEgP8r0jZ2zTprJMqSK0JJSVheqJNCeO/hyq7Uedr0kg9spW5dXnl2P2Y3H+kCq/+0c6YBWjz3Pf/A93HKnQ0bg=¬kaqwekiD5AOJhAWr/vmQkfLapBxsP0k/rGeq9eGddAdXTIB35tz6C6IIR0U4wThkT9/eSqxFEADAlzdy498yG3BxxPM265tm+Isrf2psEHl/XIw87ZBgFbbyLHuVvX5WEPWtwIU7fZIn8mt+dzWWQMNwD1THCKymbR+tlaWO1Bs=¬QjIrk0QXEbFMrz5sQfxeGjcsQPXNuxL/ELVy44SIhoA6EvKZGQqGHO0ASlpOl+Eo1JtYw0T2H/fUk+GgHLtLFVnX7O2F7Z4GKlkAFrjvFj7XyafyK2i3Ti5P4AkARgnyObKQ8XEfqzEAqXaxT6BwqqFTCElzN/EjWoKoSnhJUyk="¬O/LsqZXMirChxTa+76p2zBWjJV1sbW3V9eCEjQwM9GyVIquN1ouPcsu9ztFjDcI5O7uh/9aytJ1XSIxZHnM9KMp4tIAQ4xhYPFfRwoeMPGaNHq3tOrHrztcvHnGpqehWlt7jToYI3f5XZHh0Hy7QtN/1kg8eT/rB5X7hhm6DoOc='
-  const bb = decryptWithPrivateKey(aa)
-  console.log(bb, '========')
   const formRef = await getElFormExpose()
   await formRef?.validate(async (isValid) => {
     if (isValid) {
       loading.value = true
-      const formData = await getFormData<UserType>()
+      const formData = await getFormData<UserLoginTypes>()
 
       try {
-        const res = await loginApi(formData)
-
+        const passwordEncrypted: UserLoginTypes = {
+          password: encryptWithPublicKey(formData.password || '', unref(publicKey)) || '',
+          account: encryptWithPublicKey(formData.account || '', unref(publicKey)) || '',
+          organizationID:
+            encryptWithPublicKey(formData.organizationID || '', unref(publicKey)) || '',
+          rememberMe: encryptWithPublicKey('', unref(publicKey)) || ''
+        }
+        const res = await loginApi(passwordEncrypted)
+        console.log('登录返回的信息', res)
         if (res) {
           // 是否记住我
           if (unref(remember)) {
             userStore.setLoginInfo({
-              username: formData.username,
-              password: formData.password
+              account: formData.account,
+              password: formData.password,
+              organizationID: formData.organizationID
             })
           } else {
             userStore.setLoginInfo(undefined)
@@ -182,7 +188,7 @@ const signIn = async () => {
           userStore.setUserInfo(res.data)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
-            getRole(res.data.menuList)
+            getRole(res.data.viewParts)
           }
         }
       } finally {

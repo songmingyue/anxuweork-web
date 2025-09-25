@@ -3,7 +3,7 @@ import { Layout } from '@/utils/routerHelper'
 export const serviceCof = [
   {
     path: '/sysConfig',
-    component: () => Layout,
+    component: Layout,
     name: 'sysConfig',
     meta: {},
     children: [
@@ -20,7 +20,7 @@ export const serviceCof = [
   },
   {
     path: '/wado',
-    component: () => Layout,
+    component: Layout,
     name: 'wado',
     meta: {},
     children: [
@@ -37,7 +37,7 @@ export const serviceCof = [
   },
   {
     path: '/scpDeviceManage',
-    component: () => Layout,
+    component: Layout,
     name: 'scpDeviceManage',
     meta: {},
     children: [

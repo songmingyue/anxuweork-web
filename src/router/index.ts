@@ -72,35 +72,28 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       noTagsView: true
     }
   },
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   redirect: '/userManage',
-  //   name: 'userManage_toop',
-  //   meta: {
-  //     title: '个人中心',
-  //     hidden: true,
-  //     canTo: true
-  //   },
-  //   children: [
-  //     {
-  //       path: '',
-  //       component: () => import('@/views/authConf/userManage.vue'),
-  //       name: 'UserManage',
-  //       meta: {
-  //         title: '用户信息',
-  //         icon: 'vi-cib:telegram-plane'
-  //       }
-  //     }
-  //   ]
-  // },
-  ...authConf,
-  ...paramConf,
-  ...checkInfo,
-  ...logConfig,
-  ...plugConf,
-  ...serviceCof,
-  ...diagnosisInfo
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/userManage',
+    name: 'userManage_toop',
+    meta: {
+      title: '个人中心',
+      hidden: true,
+      canTo: true
+    },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/authConf/userManage.vue'),
+        name: 'UserManage',
+        meta: {
+          title: '用户信息',
+          icon: 'vi-cib:telegram-plane'
+        }
+      }
+    ]
+  }
 ]
 
 export const asyncRouterMap: AppRouteRecordRaw[] = [
@@ -135,13 +128,20 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         }
       }
     ]
-  }
+  },
+  ...authConf,
+  ...paramConf,
+  ...checkInfo,
+  ...logConfig,
+  ...plugConf,
+  ...serviceCof,
+  ...diagnosisInfo
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   strict: true,
-  routes: constantRouterMap as RouteRecordRaw[],
+  routes: [...constantRouterMap, ...asyncRouterMap] as RouteRecordRaw[],
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
 

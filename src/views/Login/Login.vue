@@ -5,10 +5,13 @@ import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { underlineToHump } from '@/utils'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ElScrollbar } from 'element-plus'
+import { getLoginList } from '@/api/login'
+import { getVersion } from '@/api/common'
 
 const { getPrefixCls } = useDesign()
+const version = ref('')
 const prefixCls = getPrefixCls('login')
 const appStore = useAppStore()
 const isLogin = ref(true)
@@ -18,6 +21,20 @@ const toRegister = () => {
 const toLogin = () => {
   isLogin.value = true
 }
+
+const getVersionMsd = async () => {
+  const data = await getVersion()
+  version.value = data
+}
+
+const getorgbylogin = async () => {
+  const aa = await getLoginList()
+  console.log('根据登录获取机构信息', aa)
+}
+onMounted(() => {
+  getVersionMsd()
+  getorgbylogin()
+})
 </script>
 
 <template>
@@ -59,19 +76,23 @@ const toLogin = () => {
             </div>
           </div>
           <Transition appear enter-active-class="animate__animated animate__bounceInRight">
-            <div
-              class="h-full flex items-center m-auto w-[100%] at-2xl:max-w-500px at-xl:max-w-500px at-md:max-w-500px at-lg:max-w-500px"
-            >
-              <LoginForm
-                v-if="isLogin"
-                class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
-                @to-register="toRegister"
-              />
-              <RegisterForm
-                v-else
-                class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
-                @to-login="toLogin"
-              />
+            <div class="flex flex-col justify-center items-center h-[calc(100%-60px)]">
+              <div class="flex flex-col justify-center w-500px">
+                <LoginForm
+                  v-if="isLogin"
+                  class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
+                  @to-register="toRegister"
+                />
+
+                <RegisterForm
+                  v-else
+                  class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
+                  @to-login="toLogin"
+                />
+                <div class="class-message">
+                  宁波全网云医疗科技股份有限公司 eWordIMCIS {{ version }}
+                </div>
+              </div>
             </div>
           </Transition>
         </div>
@@ -100,5 +121,11 @@ const toLogin = () => {
       content: '';
     }
   }
+}
+
+.class-message {
+  margin-top: 20px;
+  color: #fff;
+  text-align: center;
 }
 </style>

@@ -36,6 +36,11 @@ declare global {
 
   declare type AxiosResponseType = 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream'
 
+  export interface RequestTem {
+    requestTem?: string // 请求的protobuf类型
+    responseTem?: string // 响应的protobuf类型
+  }
+
   declare interface AxiosConfig {
     params?: any
     data?: any
@@ -43,6 +48,7 @@ declare global {
     method?: AxiosMethod
     headers?: RawAxiosRequestHeaders
     responseType?: AxiosResponseType
+    requestTem?: RequestTem // 请求的protobuf类型
   }
 
   declare interface IResponse<T = any> {

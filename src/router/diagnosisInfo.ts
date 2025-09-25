@@ -3,7 +3,7 @@ import { Layout } from '@/utils/routerHelper'
 export const diagnosisInfo = [
   {
     path: '/patientView',
-    component: () => Layout,
+    component: Layout,
     name: 'checkInfos',
     meta: {},
     children: [
@@ -20,7 +20,7 @@ export const diagnosisInfo = [
   },
   {
     path: '/diagnosisView',
-    component: () => Layout,
+    component: Layout,
     name: 'diagnosisViews',
     meta: {},
     children: [

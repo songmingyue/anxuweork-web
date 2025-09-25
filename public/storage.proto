@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+message AdminLoginInputProto {
+  string account = 1;
+  string password = 2;
+  string organizationID = 3;
+  string rememberMe = 4;
+}
+
+
+message PageResponse {
+  bool isSuccess = 1;
+  string message = 2;
+  PageBase pageBase = 3;
+  repeated google.protobuf.Any data = 4; // 需要 Any 时使用
+  int32 warnCode = 5;
+} 
+
+message AdminLoginUserInfoProto {
+  string userUID = 1;
+  string loginName = 2;
+  string userName = 3;
+  string workNO = 4;
+  string officePhone = 5;
+  string privatePhone = 6;
+  string email = 7;
+  string isSuperManager = 8;
+  string organizationID = 9;
+  string organizationName = 10;
+  string deptID = 11;
+  string deptName = 12;
+  repeated ViewPartProto viewParts = 13;
+  UserRightDtoProto UserRight = 14;
+  string accessToken = 15;
+  string isCurrentPageOpen = 16;
+}
+
+message ViewPartProto {
+  string url = 1;
+  repeated ChildrenProto children = 2;
+  metaProto meta = 3;
+}
+
+message ChildrenProto {
+  string url = 1;
+  metaProto meta = 2;
+}
+
+message metaProto {
+  bool requiresAuth = 1;
+  string title = 2;
+}
+
+message UserRightDtoProto {
+  string userUID = 1;
+  ExamInfoRightProto examInfo = 2;
+  ClinicInfoRightProto clinicInfo = 3;
+  StatisticInfoRightProto statisticInfo = 4;
+  DataRightProto data = 5;
+  ReportPrintRightProto reportPrint = 6;
+  DisplayStyleRightProto displayStyleRightInfo = 7;
+}
+
+message ExamInfoRightProto {
+  string visible = 1;
+  string doctorVisible = 2;
+  string departmentVisible = 3;
+  string organizationVisible = 4;
+  string listVisible = 5;
+  string checkChargeVisible = 6;
+}
+
+message ClinicInfoRightProto {
+  string visible = 1;
+  string doctorVisible = 2;
+  string departmentVisible = 3;
+  string organizationVisible = 4;
+}
+
+message StatisticInfoRightProto {
+  string visible = 1;
+  string doctorVisible = 2;
+  string departmentVisible = 3;
+  string organizationVisible = 4;
+}
+
+message DataRightProto {
+  string requestVisible = 1;
+  string reportVisible = 2;
+  string imageVisible = 3;
+  string filmVisible = 4;
+  string isOpenUpload = 5;
+  string editExamVisible = 6;
+}
+
+message ReportPrintRightProto {
+  string ServiceSectIDs = 1;
+}
+
+message DisplayStyleRightProto {
+  string ServiceSectIDs = 1;
+}
+
+message PageBase {
+  int32 pageIndex = 1;   // 当前页
+  int32 pageSize = 2;   // 每页大小
+  int64 total = 3;   // 总条数
+  int32 pages = 4;   // 总页数
+}
+message BaseResponse {
+  bool isSuccess = 1;                 // 是否成功
+  string message = 2;                 // 提示信息
+  string token = 3;                   // 可选的令牌
+  google.protobuf.Any data = 4;       // 业务数据，使用 Any 包裹
+}
+message OrganizationDtoProto {
+  string organizationID = 1;
+  string organizationName = 2;
+  repeated DeptMstDtoProto deptMstDto = 3;
+}
+
+message DeptMstDtoProto {
+  string organizationID = 1;
+  string deptName = 2;
+  string deptID = 3;
+  string organizationName = 4;
+  string deptType = 5;
+}

@@ -7,7 +7,7 @@ import { useDesign } from '@/hooks/web/useDesign'
 
 // 获取本地存储的菜单数据
 const userinfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-const menuList = userinfo.menuList || []
+const menuList = userinfo.viewParts || []
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('menu')

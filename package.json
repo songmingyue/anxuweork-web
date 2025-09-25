@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "i": "pnpm install",
-    "dev": "pnpm vite --mode base",
+    "dev": "pnpm vite --mode dev",
     "ts:check": "pnpm vue-tsc --noEmit --skipLibCheck",
     "build:pro": "pnpm vite build --mode pro",
     "build:gitee": "pnpm vite build --mode gitee",
@@ -49,6 +49,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^4.2.0",
+    "protobufjs": "^7.5.4",
     "qrcode": "^1.5.4",
     "qs": "^6.13.1",
     "url": "^0.11.4",

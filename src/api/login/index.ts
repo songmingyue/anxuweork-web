@@ -1,13 +1,23 @@
 import request from '@/axios'
 import type { UserType } from './types'
-
 interface RoleParams {
   roleName: string
 }
 
-export const loginApi = (data: UserType): Promise<IResponse<UserType>> => {
-  return request.post({ url: '/api/login/userlogin', data })
+export const loginApi = (data: any): Promise<IResponse<UserType>> => {
+  return request.post({
+    url: '/api/login/userlogin',
+    data,
+    requestTem: {
+      requestTem: 'AdminLoginInputProto',
+      responseTem: 'AdminLoginUserInfoProto'
+    }
+  })
 }
+
+// export const loginApi = (data: UserLoginTypes): Promise<IResponse<UserType>> => {
+//   return request.post({ url: '/api/login/userlogin', data })
+// }
 
 export const loginOutApi = (): Promise<IResponse> => {
   return request.get({ url: '/mock/user/loginOut' })
@@ -31,4 +41,13 @@ export const getAdminRoleApi = (
 
 export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {
   return request.get({ url: '/mock/role/list2', params })
+}
+
+export const getLoginList = () => {
+  return request.post({
+    url: `/api/register/getorgbylogin`,
+    requestTem: {
+      responseTem: 'OrganizationDtoProto'
+    }
+  })
 }

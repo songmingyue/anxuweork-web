@@ -3,7 +3,7 @@ import { Layout } from '@/utils/routerHelper'
 export const plugConf = [
   {
     path: '/plugConf',
-    component: () => Layout,
+    component: Layout,
     name: 'plugConf',
     meta: {},
     children: [

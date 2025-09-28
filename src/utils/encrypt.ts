@@ -2,6 +2,7 @@ import forge from 'node-forge'
 
 import protobuf from 'protobufjs'
 import { ElMessage } from 'element-plus'
+import { useUserStoreWithOut } from '@/store/modules/user'
 const root = await protobuf.load('/storage.proto')
 // 用指定公钥字符串加密明文，返回base64
 
@@ -30,10 +31,22 @@ export const decodeProtoMsg = (buffer: Uint8Array, protoType: string): any => {
       message.data = message.data.map((item) => {
         return dataType.decode(item.value)
       })
+      return message.data
+    } else if (message.pageBase) {
+      message.data = {
+        pageBase: message.pageBase,
+        data: {}
+      }
     } else {
       message.data = dataType.decode(message.data.value)
+      if (message.token) {
+        const userStore = useUserStoreWithOut()
+        userStore.setToken('Bearer ' + message.token.split(' ')[1])
+        localStorage.setItem('token', 'Bearer ' + message.token.split(' ')[1])
+        console.log('token', message.token)
+      }
+      return message.data
     }
-    return message.data
   }
   // const
 }

@@ -1,0 +1,33 @@
+import request from '@/axios'
+
+export const getStorageList = (data): Promise<any> => {
+  return request.post({
+    url: 'api/storage/getstoragelist',
+    data,
+    requestTem: {
+      requestTem: 'StorageInputProto',
+      responseTem: 'StorageTempProto'
+    }
+  })
+}
+
+export const getDicmsg = (data): Promise<any> => {
+  return request.post({
+    url: 'api/check/getdicmsg',
+    data,
+    requestTem: {
+      requestTem: 'DicItemMstInputProto',
+      responseTem: 'DicItemMstProto'
+    }
+  })
+}
+
+export const getOrg = (): Promise<any> => {
+  return request.post({
+    url: 'api/register/getorg',
+    requestTem: {
+      requestTem: 'OrganizationInputProto',
+      responseTem: 'OrganizationDtoProto'
+    }
+  })
+}

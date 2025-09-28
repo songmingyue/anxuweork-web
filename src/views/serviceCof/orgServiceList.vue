@@ -38,18 +38,18 @@ function handleViewStatus() {
   // TODO: 查看状态
 }
 function handleEdit(row: Row) {
-  // TODO: 编辑
   console.log(row, 'row')
+  // TODO: 编辑
 }
 function handleDelete(row: Row) {
-  // TODO: 删除
   console.log(row, 'row')
+  // TODO: 删除
 }
 </script>
 
 <template>
   <div class="page">
-    <el-card shadow="never">
+    <el-card shadow="never" body-style="{padding:'12px 16px'}">
       <el-form :inline="true" :model="query" label-width="100px">
         <el-form-item label="医疗机构标识">
           <el-input v-model="query.orgId" placeholder="请输入" clearable style="width: 260px" />

@@ -4,13 +4,13 @@ export const diagnosisInfo = [
   {
     path: '/patientView',
     component: Layout,
-    name: 'checkInfos',
+    name: 'diagnosisInfo',
     meta: {},
     children: [
       {
         path: '',
         component: () => import('@/views/diagnosisInfo/patientView.vue'),
-        name: 'diagnosisInfo',
+        name: 'diagnosisInfoChildren',
         meta: {
           title: '检查信息',
           icon: 'vi-cib:telegram-plane'

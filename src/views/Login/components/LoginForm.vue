@@ -8,7 +8,7 @@ import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
-import { UserLoginTypes, UserType } from '@/api/login/types'
+import { OrganizationList, UserLoginTypes, UserType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
@@ -18,7 +18,11 @@ const publicKey = ref('')
 const { required } = useValidator()
 
 const emit = defineEmits(['to-register'])
+const props = defineProps<{
+  organizationList: OrganizationList[]
+}>()
 
+console.log('传入的机构列表', props.organizationList)
 const appStore = useAppStore()
 
 const userStore = useUserStore()
@@ -54,7 +58,10 @@ const schema = reactive<FormSchema[]>([
     componentProps: {
       style: { width: '100%' },
       placeholder: '请选择机构',
-      options: [{ label: '机构一', value: '-1' }],
+      options: props.organizationList.map((org) => ({
+        label: org.organizationName,
+        value: org.organizationID
+      })),
       filterable: true,
       clearable: true,
       onChange: (value: string) => {
@@ -186,6 +193,7 @@ const signIn = async () => {
           }
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data)
+          console.log('登录返回的信息2222', res.data)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
             getRole(res.data.viewParts)

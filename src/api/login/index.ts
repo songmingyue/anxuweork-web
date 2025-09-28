@@ -1,5 +1,5 @@
 import request from '@/axios'
-import type { UserType } from './types'
+import type { OrganizationList, UserType } from './types'
 interface RoleParams {
   roleName: string
 }
@@ -43,7 +43,7 @@ export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>>
   return request.get({ url: '/mock/role/list2', params })
 }
 
-export const getLoginList = () => {
+export const getLoginList = (): Promise<IResponse<OrganizationList[]>> => {
   return request.post({
     url: `/api/register/getorgbylogin`,
     requestTem: {

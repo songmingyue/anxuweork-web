@@ -27,3 +27,9 @@ export interface UserLoginTypes {
   organizationID: string
   rememberMe: string
 }
+
+export interface OrganizationList {
+  deptMstDto: any[]
+  organizationID: string
+  organizationName: string
+}

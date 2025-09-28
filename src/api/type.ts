@@ -3,3 +3,8 @@ export interface RequestType {
   requestTem?: string // 请求的protobuf类型
   responseTem?: string // 响应的protobuf类型
 }
+
+export interface PageType {
+  currentPage: number
+  pageSize: number
+}

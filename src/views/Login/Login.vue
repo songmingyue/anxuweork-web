@@ -9,10 +9,12 @@ import { onMounted, ref } from 'vue'
 import { ElScrollbar } from 'element-plus'
 import { getLoginList } from '@/api/login'
 import { getVersion } from '@/api/common'
+import { OrganizationList } from '@/api/login/types'
 
 const { getPrefixCls } = useDesign()
 const version = ref('')
 const prefixCls = getPrefixCls('login')
+const organizationList = ref<OrganizationList[]>([])
 const appStore = useAppStore()
 const isLogin = ref(true)
 const toRegister = () => {
@@ -28,8 +30,8 @@ const getVersionMsd = async () => {
 }
 
 const getorgbylogin = async () => {
-  const aa = await getLoginList()
-  console.log('根据登录获取机构信息', aa)
+  const datas = await getLoginList()
+  organizationList.value = datas.data || []
 }
 onMounted(() => {
   getVersionMsd()
@@ -48,7 +50,7 @@ onMounted(() => {
           :class="`${prefixCls}__left flex-1 bg-gray-500 bg-opacity-20 relative p-30px lt-xl:hidden`"
         >
           <div class="flex items-center relative text-white">
-            <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
+            <img src="@/assets/imgs/logo.svg" alt="" class="w-48px h-48px mr-10px" />
             <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
           </div>
           <div class="flex justify-center items-center h-[calc(100%-60px)]">
@@ -66,7 +68,7 @@ onMounted(() => {
             class="flex justify-between items-center text-white at-2xl:justify-end at-xl:justify-end"
           >
             <div class="flex items-center at-2xl:hidden at-xl:hidden">
-              <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
+              <img src="@/assets/imgs/logo.svg" alt="" class="w-48px h-48px mr-10px" />
               <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
             </div>
 
@@ -79,7 +81,8 @@ onMounted(() => {
             <div class="flex flex-col justify-center items-center h-[calc(100%-60px)]">
               <div class="flex flex-col justify-center w-500px">
                 <LoginForm
-                  v-if="isLogin"
+                  v-if="isLogin && organizationList.length > 0"
+                  :organizationList="organizationList"
                   class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
                   @to-register="toRegister"
                 />

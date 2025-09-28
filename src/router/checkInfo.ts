@@ -10,7 +10,7 @@ export const checkInfo = [
       {
         path: '',
         component: () => import('@/views/checkInfo/index.vue'),
-        name: 'checkInfo',
+        name: 'checkInfoChild',
         meta: {
           title: '检查信息',
           icon: 'vi-cib:telegram-plane'

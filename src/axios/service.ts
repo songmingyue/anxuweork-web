@@ -47,6 +47,8 @@ axiosInstance.interceptors.response.use(
     const { config } = res
     if (config.proto && config.proto.responseTem) {
       const buffer = decodeProtoMsg(res.data, config.proto.responseTem)
+      console.log('解密后的数据', buffer)
+
       res.data = buffer
     }
     return res

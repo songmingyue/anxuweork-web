@@ -8,3 +8,10 @@ export interface PageType {
   currentPage: number
   pageSize: number
 }
+
+export interface PageBase {
+  currentPage: number
+  pageSize: number
+  token: string
+  totalRecords: number
+}

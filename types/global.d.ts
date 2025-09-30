@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'vue'
 import { RawAxiosRequestHeaders } from 'axios'
+import { PageBase } from '@/api/type'
 declare global {
   declare interface Fn<T = any> {
     (...arg: T[]): T
@@ -49,11 +50,15 @@ declare global {
     headers?: RawAxiosRequestHeaders
     responseType?: AxiosResponseType
     requestTem?: RequestTem // 请求的protobuf类型
+    pageBase?: PageBase
   }
 
   declare interface IResponse<T = any> {
     code: number
     data: T extends any ? T : T & any
+    pageBase?: PageBase
+    isSuccess?: boolean
+    message?: string
   }
 
   declare interface ThemeTypes {

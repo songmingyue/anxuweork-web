@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { ElPagination } from 'element-plus'
 import {
   ElTable,
   ElTableColumn,
@@ -11,7 +12,7 @@ import {
   ElOption,
   ElSwitch
 } from 'element-plus'
-import { getOrg } from '@/api/paramConf'
+import { getOrg, getStorage } from '@/api/paramConf'
 // import { AddStorageMedium } from './components/AddStorageMedium.vue' // 引入新增存储媒介组件
 const searchType = ref('')
 const dialogMsg = ref({
@@ -42,12 +43,26 @@ const tableData = ref([
   }
 ])
 
+// 分页相关变量
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+
+function handleSizeChange(val: number) {
+  pageSize.value = val
+  getStorageList()
+}
+function handleCurrentChange(val: number) {
+  currentPage.value = val
+  getStorageList()
+}
+
 const onAdd = () => {
   dialogMsg.value.isShowDialog = true
 }
 
 function onSearch() {
-  // 查询逻辑
+  getStorageList()
 }
 
 function onEdit(row: any) {
@@ -69,8 +84,21 @@ const getTableList = async () => {
   // 获取表格数据逻辑
 }
 
+const getStorageList = async () => {
+  const res = await getStorage({
+    currentPage: currentPage.value,
+    pageSize: pageSize.value
+  })
+  // 假设后端返回 { total, list }
+  if (res) {
+    console.log('res', res)
+    tableData.value = res.data || []
+    total.value = res.total || 0
+  }
+}
 onMounted(() => {
   getTableList()
+  getStorageList()
 })
 </script>
 <template>
@@ -89,6 +117,7 @@ onMounted(() => {
         </el-col>
       </el-row>
     </el-card>
+
     <el-card shadow="never">
       <el-table :data="tableData" border style="width: 100%">
         <el-table-column prop="mediaUid" label="媒质UID" show-overflow-tooltip />
@@ -111,6 +140,16 @@ onMounted(() => {
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :total="total"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        class="mt-4 mb-4"
+      />
     </el-card>
   </div>
   <!-- <AddStorageMedium ref="addDialog" @success="onAddSuccess" /> -->

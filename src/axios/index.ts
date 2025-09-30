@@ -12,6 +12,13 @@ const request = (option: AxiosConfig) => {
     responseType: responseType ? responseType : 'arraybuffer',
     headers: {
       [userStore.getTokenKey ?? 'Authorization']: userStore.getToken ?? '',
+      UserInfo: userStore.getUserInfo
+        ? JSON.stringify({
+            userUID: userStore.getUserInfo[0].userUID,
+            organizationID: userStore.getUserInfo[0].organizationID
+          })
+        : '',
+      'X-Requested-With': 'XMLHttpRequest',
       ...headers
     },
     proto: requestTem

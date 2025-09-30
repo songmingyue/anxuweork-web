@@ -17,35 +17,42 @@ export function encryptWithPublicKey(text: string, pemPublicKey: string): string
 }
 
 export const decodeProtoMsg = (buffer: Uint8Array, protoType: string): any => {
-  const baseProtType = ['AdminLoginUserInfoProto']
-  const isBaseType = baseProtType.includes(protoType) ? true : false
-  const MessageType = isBaseType ? root.lookupType('BaseResponse') : root.lookupType('PageResponse')
+  const MessageType = root.lookupType('PageResponse')
   const message: any = MessageType.decode(new Uint8Array(buffer))
+  const userStore = useUserStoreWithOut()
   if (!message.isSuccess) {
     ElMessage.error(message.message || 'Error')
     throw new Error(message.message || 'Error')
     return {}
   } else {
+    if (protoType === 'whitelist') {
+      if (message.pageBase.token) {
+        userStore.setToken(message.pageBase.token)
+      }
+      return message || {}
+    }
     const dataType = root.lookupType(protoType)
-    if (!isBaseType && message.data) {
-      message.data = message.data.map((item) => {
-        return dataType.decode(item.value)
-      })
-      return message.data
-    } else if (message.pageBase) {
-      message.data = {
-        pageBase: message.pageBase,
-        data: {}
+    if (message.data) {
+      if (Array.isArray(message.data)) {
+        message.data = message.data.map((item) => {
+          return dataType.decode(item.value)
+        })
+      } else {
+        message.data = dataType.decode(message.data.value)
       }
+      if (message.pageBase) {
+        message.data = { pageBase: message.pageBase, data: message.data }
+        if (message.pageBase.token) {
+          userStore.setToken(message.pageBase.token)
+        }
+      }
+      message.data = Object.assign(
+        { message: message.message, isSuccess: message.isSuccess },
+        message.data
+      )
+      return message.data
     } else {
-      message.data = dataType.decode(message.data.value)
-      if (message.token) {
-        const userStore = useUserStoreWithOut()
-        userStore.setToken('Bearer ' + message.token.split(' ')[1])
-        localStorage.setItem('token', 'Bearer ' + message.token.split(' ')[1])
-        console.log('token', message.token)
-      }
-      return message.data
+      return {}
     }
   }
   // const

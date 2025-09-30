@@ -1,6 +1,12 @@
 import request from '@/axios'
 
-export const getStorageList = (data): Promise<any> => {
+export interface StorageList {
+  currentPage: number
+  organizationID?: string
+  pageSize: number
+}
+
+export const getStorage = (data: StorageList): Promise<any> => {
   return request.post({
     url: 'api/storage/getstoragelist',
     data,

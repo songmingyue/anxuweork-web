@@ -104,10 +104,12 @@ message DisplayStyleRightProto {
 }
 
 message PageBase {
-  int32 pageIndex = 1;   // 当前页
-  int32 pageSize = 2;   // 每页大小
-  int64 total = 3;   // 总条数
-  int32 pages = 4;   // 总页数
+  int32 currentPage = 1;
+  int32 pageSize = 2;
+  int32 totalRecords = 3;
+  string token = 4;
+  int32 errorTimes = 5;
+  int32 loginStatus = 6;
 }
 message BaseResponse {
   bool isSuccess = 1;                 // 是否成功
@@ -304,6 +306,60 @@ message UserMstInfoOutputProto {
   string deptName          = 25;
 }
 
-  message  organizationIDInputProto {
-    string organizationID = 1;
-  }
+
+message SysParameterMstProto {
+  string code = 1;
+  string name = 2;
+  string value = 3;
+  string module = 4;
+  string memo = 5;
+}
+message UserDisableInputProto {
+  string userUID = 1;
+  bool status = 2;
+}
+
+message UserResetInputProto {
+  string userUID = 1;
+  string account = 2;
+  string organizationID = 3;
+}
+
+message UserMstEntityInputProto {
+  string userUID = 1;
+  string account = 2;
+  string password = 3;
+  string type = 4;
+  string name = 5;
+  string iDCardNO = 6;
+  string officePhone = 7;
+  string privatePhone = 8;
+  string email = 9;
+  string address = 10;
+  string status = 11;
+  string organizationID = 12;
+  string deptID = 13;
+  string workNO = 14;
+  string validityStartDate = 15;
+  string validityEndDate = 16;
+  string createUserUID = 17;
+  string createUserName = 18;
+  string createDate = 19;
+  string lastLogonTime = 20;
+  string memo = 21;
+  string rowTimestamp = 22;
+  string updateDate = 23;
+  string isSuperManager = 24;
+}
+
+message RoleMstInputProto {
+  string roleUID = 1;          // 角色唯一标识
+  string roleName = 2;        // 角色名称
+  string createUserUID = 3;   // 创建者UID
+  string createUserName = 4;   // 创建者姓名
+  string createDate = 5;      // 创建时间（ISO 8601格式）
+  string memo = 6;            // 备注信息
+  string organizationID = 7;  // 所属组织ID
+  int32 currentPage = 8;      // 当前页码（分页参数）
+  int32 pageSize = 9;         // 每页记录数（分页参数）
+}

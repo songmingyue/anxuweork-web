@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 
-import { AxiosInstance, InternalAxiosRequestConfig, RequestConfig, AxiosResponse } from './types'
+import { AxiosInstance, RequestConfig } from './types'
 import { ElMessage } from 'element-plus'
 import { REQUEST_TIMEOUT } from '@/constants'
 import { nowTimestamp } from '@/utils/timeDate'
@@ -12,12 +12,13 @@ const abortControllerMap: Map<string, AbortController> = new Map()
 
 const axiosInstance: AxiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
-  baseURL: PATH_URL
+  baseURL: PATH_URL,
+  withCredentials: true
 })
 
 const filderUrl = ['/system/version', '/key'] // 加密白名单
-
-axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
+axiosInstance.interceptors.request.use((res: any) => {
+  // axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
   const controller = new AbortController()
   const url = res.url || ''
   // 只对非白名单接口做protobuf序列化
@@ -43,13 +44,15 @@ axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
 })
 
 axiosInstance.interceptors.response.use(
-  (res: AxiosResponse) => {
+  (res: any) => {
+    // (res: AxiosResponse) => {
     const { config } = res
     if (config.proto && config.proto.responseTem) {
       const buffer = decodeProtoMsg(res.data, config.proto.responseTem)
       console.log('解密后的数据', buffer)
 
       res.data = buffer
+      res = res.data
     }
     return res
   },

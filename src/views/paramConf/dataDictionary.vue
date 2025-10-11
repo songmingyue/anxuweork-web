@@ -148,7 +148,8 @@ import {
   ElTableColumn,
   ElCard,
   ElInput,
-  ElButton
+  ElButton,
+  ElPagination
 } from 'element-plus'
 
 /* 类型定义（可按实际接口调整） */
@@ -240,7 +241,7 @@ async function apiFetchTypeList(params: {
     }
   ]
   // 过滤
-  let filtered = all.filter(
+  const filtered = all.filter(
     (x) =>
       (!params.category || x.category === params.category) &&
       (!params.typeCode || x.typeCode.toLowerCase().includes(params.typeCode.toLowerCase())) &&

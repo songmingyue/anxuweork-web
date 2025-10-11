@@ -7,7 +7,6 @@ import { useCssVar } from '@vueuse/core'
 import { useAppStore } from '@/store/modules/app'
 import { trim, setCssVar } from '@/utils'
 import ColorRadioPicker from './components/ColorRadioPicker.vue'
-import LayoutRadioPicker from './components/LayoutRadioPicker.vue'
 import { useStorage } from '@/hooks/web/useStorage'
 import { useDesign } from '@/hooks/web/useDesign'
 
@@ -167,8 +166,8 @@ const clear = () => {
       <ThemeSwitch />
 
       <!-- 布局 -->
-      <ElDivider>{{ t('setting.layout') }}</ElDivider>
-      <LayoutRadioPicker />
+      <!-- <ElDivider>{{ t('setting.layout') }}</ElDivider> -->
+      <!-- <LayoutRadioPicker /> -->
 
       <!-- 系统主题 -->
       <ElDivider>{{ t('setting.systemTheme') }}</ElDivider>

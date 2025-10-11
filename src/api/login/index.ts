@@ -6,7 +6,7 @@ interface RoleParams {
 
 export const loginApi = (data: any): Promise<IResponse<UserType>> => {
   return request.post({
-    url: '/api/login/userlogin',
+    url: 'login/userlogin',
     data,
     requestTem: {
       requestTem: 'AdminLoginInputProto',
@@ -14,10 +14,6 @@ export const loginApi = (data: any): Promise<IResponse<UserType>> => {
     }
   })
 }
-
-// export const loginApi = (data: UserLoginTypes): Promise<IResponse<UserType>> => {
-//   return request.post({ url: '/api/login/userlogin', data })
-// }
 
 export const loginOutApi = (): Promise<IResponse> => {
   return request.get({ url: '/mock/user/loginOut' })
@@ -45,7 +41,7 @@ export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>>
 
 export const getLoginList = (): Promise<IResponse<OrganizationList[]>> => {
   return request.post({
-    url: `/api/register/getorgbylogin`,
+    url: `register/getorgbylogin`,
     requestTem: {
       responseTem: 'OrganizationDtoProto'
     }

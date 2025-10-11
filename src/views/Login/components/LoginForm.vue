@@ -13,7 +13,7 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
 import { encryptWithPublicKey } from '@/utils/encrypt'
-import { getLoginKey, getsysparametersingle } from '@/api/common'
+import { getLoginKey } from '@/api/common'
 const publicKey = ref('')
 const { required } = useValidator()
 
@@ -161,7 +161,6 @@ watch(
     immediate: true
   }
 )
-
 // 登录
 const signIn = async () => {
   const formRef = await getElFormExpose()
@@ -194,9 +193,6 @@ const signIn = async () => {
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data)
           userStore.setToken(res.pageBase?.token || '')
-          await getsysparametersingle()
-
-          console.log('登录返回的信息2222', res.data)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
             getRole(res.data.viewParts)

@@ -6,6 +6,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { NO_REDIRECT_WHITE_LIST } from '@/constants'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { setCssVar } from './utils'
 
 const { start, done } = useNProgress()
 
@@ -24,6 +25,7 @@ router.beforeEach(async (to, from, next) => {
         next()
         return
       }
+      setCssVar('--tags-view-height', '0px') // 进入页面时先隐藏标签页 这个标签页不要了
 
       // 开发者可根据实际情况进行修改
       const roleRouters = JSON.parse(localStorage.getItem('userInfo') || '{}').menuList

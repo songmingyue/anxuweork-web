@@ -1,8 +1,13 @@
 import request from '@/axios'
 
-export const getrolelist = (): Promise<any> => {
+export const getrolelist = (data: {
+  roleName: string
+  page: number
+  size: number
+}): Promise<any> => {
   return request.post({
-    url: 'api/user/getrolelist?',
+    url: 'user/getrolelist',
+    data,
     requestTem: {
       requestTem: 'organizationIDInputProto',
       responseTem: 'RoleMstProto'

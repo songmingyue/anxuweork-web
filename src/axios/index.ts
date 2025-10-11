@@ -3,9 +3,10 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 
 const request = (option: AxiosConfig) => {
   const { url, method, params, data, headers, responseType, requestTem } = option
+  const baseURL = 'api/'
   const userStore = useUserStoreWithOut()
   return service.request({
-    url: url,
+    url: baseURL + url,
     method,
     params,
     data: data,

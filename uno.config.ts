@@ -91,7 +91,7 @@ ${selector}:after {
   position: absolute;
   top: 0;
   right: 0;
-  width: 1px;
+  width: 0px;
   height: 100%;
   background-color: var(--el-border-color);
   z-index: 3;

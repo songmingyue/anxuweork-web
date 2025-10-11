@@ -1,3 +1,4 @@
+
 syntax = "proto3";
 
 import "google/protobuf/any.proto";
@@ -362,4 +363,137 @@ message RoleMstInputProto {
   string organizationID = 7;  // 所属组织ID
   int32 currentPage = 8;      // 当前页码（分页参数）
   int32 pageSize = 9;         // 每页记录数（分页参数）
+}
+
+message RightMstOutputProto {
+  string rightID = 1;
+  string rightClass = 2;
+  string rightName = 3;
+  string title = 4;
+  string controllerName = 5;
+  string actionName = 6;
+  string parameter = 7;
+  string active = 8;
+  string parentRightID = 9;
+  string sortNO = 10;
+  string memo = 11;
+  string lAY_CHECKED = 12;
+}
+
+message RightInputProto {
+  string roleUID = 1;
+  string userUID = 2;
+  string isSuperManager = 3;
+}
+
+message EditUserRightInputProto {
+  string organizationID = 1;
+  string roleUID = 2;
+  repeated RoleRightOutputProto right = 3;
+}
+
+message RoleRightOutputProto {
+  string rightID = 1;
+  string rightClass = 2;
+  string rightName = 3;
+  string title = 4;
+  string controllerName = 5;
+  string actionName = 6;
+  string parameter = 7;
+  string active = 8;
+  string parentRightID = 9;
+  string sortNO = 10;
+  string memo = 11;
+  string createUserUID = 12;
+  string createUserName = 13;
+  string createDate = 14;
+  string LAYChecked = 15;
+}
+
+// ================== Added OrgInputProto & OrganizationTreeProto ==================
+// 原始 JSON/JS 定义转换为 proto3 message，保持字段顺序与类型
+message OrgInputProto {
+  string organizationName     = 1;  // 机构名称
+  string searchOrganizationID = 2;  // 查询使用的组织ID
+  string deptType             = 3;  // 科室类型
+}
+
+message OrganizationTreeProto {
+  string searchOrganizationID  = 1;  // 查询组织ID
+  string organizationName      = 2;  // 机构名称
+  string alias                 = 3;  // 别名
+  string inputCode             = 4;  // 输入码
+  string contactUserName       = 5;  // 联系人
+  string officePhoneNO         = 6;  // 办公电话
+  string personalPhoneNO       = 7;  // 个人电话
+  string email                 = 8;  // 邮箱
+  string address               = 9;  // 地址
+  string organizationTypeCode  = 10; // 机构类型代码
+  string parentOrganizationID  = 11; // 上级机构ID
+  string createUserUID         = 12; // 创建人UID
+  string createDate            = 13; // 创建时间
+  string memo                  = 14; // 备注
+  string deleteFlag            = 15; // 删除标记
+  string organizationCode      = 16; // 机构编码
+  string province              = 17; // 省
+  string city                  = 18; // 市
+  string district              = 19; // 区/县
+  int32  sortNO                = 20; // 排序号
+  repeated OrganizationTreeProto children = 21; // 子节点
+  int32  defaultShareDuration  = 22; // 默认共享时长
+  string cardBackgroundColour  = 23; // 卡片背景色
+  string logoURL               = 24; // Logo 地址
+  string backGroundURL         = 25; // 背景图地址
+}
+
+message DeptMstInputProto {
+  string searchOrganizationID = 1;  // 搜索用组织ID
+  string deptID = 2;               // 部门ID
+  string deptName = 3;             // 部门名称
+  int32 pageSize = 4;              // 每页数据量
+  int32 currentPage = 5;           // 当前页码
+}
+
+message DeptMstInfoProto {
+  string deptID = 1;               // 部门ID（唯一标识）
+  string deptOrganizationID = 2;   // 所属组织ID
+  string deptName = 3;            // 部门名称
+  string officePhoneNO = 4;       // 办公电话
+  string inputCode = 5;           // 输入码（如拼音首字母）
+  string memo = 6;                // 备注信息
+  string deleteFlag = 7;          // 删除标记（"是"/"否"或布尔值更佳）
+  string rowTimestamp = 8;         // 行时间戳（建议改用int64表示毫秒时间戳）
+  string deptType = 9;            // 部门类型编码
+  string examClass = 10;          // 检查分类编码
+  string alias = 11;              // 部门别名
+  string deptTypeName = 12;       // 部门类型名称（可考虑与deptType合并为枚举）
+  string examClassName = 13;      // 检查分类名称
+}
+
+message OrganizationMstProto {
+  string searchOrganizationID = 1;     // 搜索用组织ID
+  string organizationName = 2;        // 组织名称
+  string alias = 3;                    // 组织别名
+  string inputCode = 4;                // 输入码（如拼音首字母）
+  string contactUserName = 5;          // 联系人姓名
+  string officePhoneNO = 6;            // 办公电话
+  string personalPhoneNO = 7;         // 个人电话
+  string email = 8;                    // 邮箱地址
+  string address = 9;                  // 详细地址
+  string organizationTypeCode = 10;    // 组织类型编码
+  string parentOrganizationID = 11;    // 父组织ID（"-1"表示根节点）
+  string createUserUID = 12;            // 创建者UUID
+  string createDate = 13;              // 创建时间（格式：YYYY-MM-DD HH:mm:ss）
+  string memo = 14;                    // 备注信息
+  string deleteFlag = 15;              // 删除标记（"是"/"否"）
+  string rowTimestamp = 16;           // 行时间戳（建议改用int64）
+  string organizationCode = 17;        // 组织机构代码
+  string province = 18;               // 省份
+  string city = 19;                   // 城市
+  string district = 20;               // 区县
+  string sortNO = 21;                  // 排序号（可优化为int32）
+  int32 defaultShareDuration = 22;     // 默认共享时长（数字类型）
+  string cardBackgroundColour = 23;     // 卡片背景色（十六进制，如"#FFFFFF"）
+  string logoURL = 24;                 // Logo URL路径
+  string backGroundURL = 25;           // 背景图URL路径
 }

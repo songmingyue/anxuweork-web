@@ -8,7 +8,7 @@ export interface StorageList {
 
 export const getStorage = (data: StorageList): Promise<any> => {
   return request.post({
-    url: 'api/storage/getstoragelist',
+    url: 'storage/getstoragelist',
     data,
     requestTem: {
       requestTem: 'StorageInputProto',
@@ -19,7 +19,7 @@ export const getStorage = (data: StorageList): Promise<any> => {
 
 export const getDicmsg = (data): Promise<any> => {
   return request.post({
-    url: 'api/check/getdicmsg',
+    url: 'check/getdicmsg',
     data,
     requestTem: {
       requestTem: 'DicItemMstInputProto',
@@ -30,7 +30,7 @@ export const getDicmsg = (data): Promise<any> => {
 
 export const getOrg = (): Promise<any> => {
   return request.post({
-    url: 'api/register/getorg',
+    url: 'register/getorg',
     requestTem: {
       requestTem: 'OrganizationInputProto',
       responseTem: 'OrganizationDtoProto'

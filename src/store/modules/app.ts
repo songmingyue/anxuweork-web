@@ -47,11 +47,11 @@ export const useAppStore = defineStore('app', {
       collapse: false, // 折叠菜单
       uniqueOpened: false, // 是否只保持一个子菜单的展开
       hamburger: true, // 折叠图标
-      screenfull: true, // 全屏图标
-      size: true, // 尺寸图标
-      locale: true, // 多语言图标
-      tagsView: true, // 标签页
-      tagsViewIcon: true, // 是否显示标签图标
+      screenfull: false, // 全屏图标
+      size: false, // 尺寸图标
+      locale: false, // 多语言图标
+      tagsView: false, // 标签页
+      tagsViewIcon: false, // 是否显示标签图标
       logo: true, // logo
       fixedHeader: true, // 固定toolheader
       footer: true, // 显示页脚
@@ -119,6 +119,7 @@ export const useAppStore = defineStore('app', {
     },
     getLocale(): boolean {
       return this.locale
+      // return false
     },
     getTagsView(): boolean {
       return this.tagsView

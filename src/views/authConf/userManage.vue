@@ -244,10 +244,11 @@ onMounted(() => {
         />
         <el-table-column prop="createDate" label="创建时间" min-width="160" show-overflow-tooltip />
         <el-table-column prop="memo" label="备注" min-width="140" show-overflow-tooltip />
-        <el-table-column label="状态" width="120">
+        <el-table-column label="状态" width="140">
           <template #default="{ row }">
             <el-switch
               v-model="row.status"
+              size="small"
               :active-value="true"
               :inactive-value="false"
               active-text="启用"
@@ -258,8 +259,10 @@ onMounted(() => {
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="{ row }">
-            <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button link type="danger" @click="handlePassword(row)">重置密码</el-button>
+            <el-button link size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
+            <el-button link size="small" type="danger" @click="handlePassword(row)"
+              >重置密码</el-button
+            >
           </template>
         </el-table-column>
       </el-table>

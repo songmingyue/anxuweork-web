@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { ElPagination } from 'element-plus'
+import { ElMessage, ElPagination } from 'element-plus'
 import {
   ElTable,
   ElTableColumn,
@@ -12,37 +12,19 @@ import {
   ElOption,
   ElSwitch
 } from 'element-plus'
-import { getOrg, getStorage } from '@/api/paramConf'
-// import { AddStorageMedium } from './components/AddStorageMedium.vue' // 引入新增存储媒介组件
+import { CloudStorageConfig, getOrg, getStorage, storageDelete, storageEdit } from '@/api/paramConf'
+import AddStorageMedium from './components/AddStorageMedium.vue'
+interface OrgOption {
+  label: string
+  value: string
+}
 const searchType = ref('')
-const dialogMsg = ref({
-  isShowDialog: false
-})
-const tableData = ref([
-  {
-    mediaUid: '3A0C1F78-4896-42A1-8618-B1D10126C12A',
-    mediaName: '本地存储',
-    mediaType: '文件存储',
-    pathType: '文档存储',
-    path: 'E:\\DATA\\files',
-    subDir: '',
-    orgName: '哈尔滨市方正县人民医院',
-    desc: '',
-    status: true
-  },
-  {
-    mediaUid: '820B0961-DE34-436A-AAA3-B1D2017EBC71',
-    mediaName: '云存储',
-    mediaType: '云存储',
-    pathType: '云存储',
-    path: 'ewyd3',
-    subDir: 'U6LAK8ATCDB... 哈尔滨市方正县人民医院',
-    orgName: '哈尔滨市方正县人民医院',
-    desc: '',
-    status: true
-  }
-])
+const dialogVisible = ref(false)
+const dialogIsEdit = ref(false)
+const dialogFormData = ref<Partial<CloudStorageConfig>>({})
+const tableData = ref<CloudStorageConfig[]>()
 
+const orgOptions = ref<OrgOption[]>([])
 // 分页相关变量
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -58,57 +40,83 @@ function handleCurrentChange(val: number) {
 }
 
 const onAdd = () => {
-  dialogMsg.value.isShowDialog = true
+  dialogIsEdit.value = false
+  dialogFormData.value = {}
+  dialogVisible.value = true
 }
 
 function onSearch() {
+  currentPage.value = 1
   getStorageList()
 }
 
-function onEdit(row: any) {
-  console.log('编辑', row)
-  // 编辑逻辑
+function onEdit(row: CloudStorageConfig) {
+  dialogIsEdit.value = true
+  dialogFormData.value = { ...row }
+  dialogVisible.value = true
 }
 
-function onDelete(row: any) {
-  console.log('删除', row)
+async function onDelete(row: CloudStorageConfig) {
+  const { isSuccess, message } = await storageDelete(row)
+  if (isSuccess) {
+    getStorageList()
+    ElMessage.success(message || '删除成功')
+  } else {
+    ElMessage.error(message || '删除失败')
+  }
   // 删除逻辑
-}
-// const onAddSuccess = (newData: any) => {
-//   tableData.value.push(newData)
-// }
-
-const getTableList = async () => {
-  const aa = await getOrg()
-  console.log('aa', aa)
-  // 获取表格数据逻辑
 }
 
 const getStorageList = async () => {
-  const res = await getStorage({
+  const { data, pageBase } = await getStorage({
+    organizationID: searchType.value,
     currentPage: currentPage.value,
     pageSize: pageSize.value
   })
+  tableData.value = data || []
   // 假设后端返回 { total, list }
-  if (res) {
-    console.log('res', res)
-    tableData.value = res.data || []
-    total.value = res.total || 0
+  total.value = pageBase?.totalRecords || 0
+}
+
+const getOrgList = async () => {
+  const res = await getOrg()
+  const list = Array.isArray(res?.data) ? res.data : []
+  orgOptions.value = list.map((o: any) => ({ label: o.organizationName, value: o.organizationID }))
+}
+// 运行状态
+
+const editSwitch = async (row: CloudStorageConfig) => {
+  const { isSuccess, message } = await storageEdit(row)
+  if (isSuccess) {
+    ElMessage.success(message || '操作成功')
+  } else {
+    // revert on failure
+    ElMessage.error(message || '操作失败')
   }
 }
+
 onMounted(() => {
-  getTableList()
   getStorageList()
+  getOrgList()
 })
+
+async function onConfirmStorage() {
+  dialogVisible.value = false
+  getStorageList()
+}
 </script>
 <template>
   <div>
     <el-card shadow="never" class="mb2">
       <el-row :gutter="4">
         <el-col :span="4">
-          <el-select v-model="searchType" placeholder="检索机构" clearable>
-            <el-option label="南院区" value="南院区" />
-            <el-option label="北院区" value="北院区" />
+          <el-select v-model="searchType" placeholder="检查机构" clearable>
+            <el-option
+              v-for="opt in orgOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
           </el-select>
         </el-col>
         <el-col :span="12">
@@ -120,23 +128,73 @@ onMounted(() => {
 
     <el-card shadow="never">
       <el-table :data="tableData" border style="width: 100%">
-        <el-table-column prop="mediaUid" sortable label="媒质UID" show-overflow-tooltip />
-        <el-table-column prop="mediaName" sortable label="媒质名称" show-overflow-tooltip />
-        <el-table-column prop="mediaType" sortable label="媒质类型" show-overflow-tooltip />
-        <el-table-column prop="pathType" sortable label="路径类型" show-overflow-tooltip />
-        <el-table-column prop="path" sortable label="路径/地址" show-overflow-tooltip />
-        <el-table-column prop="subDir" sortable label="子目录" show-overflow-tooltip />
-        <el-table-column prop="orgName" sortable label="机构名称" show-overflow-tooltip />
-        <el-table-column prop="desc" sortable label="描述" show-overflow-tooltip />
-        <el-table-column prop="status" label="运行状态" width="150">
+        <el-table-column
+          fixed="left"
+          prop="mediaUID"
+          sortable
+          label="媒质UID"
+          min-width="290"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="name"
+          sortable
+          label="媒质名称"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="type"
+          sortable
+          label="路径类型"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="path"
+          min-width="120"
+          sortable
+          label="路径/地址"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="accessID"
+          min-width="120"
+          sortable
+          label="子目录"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="organizationName"
+          min-width="120"
+          sortable
+          label="机构名称"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="description"
+          min-width="120"
+          sortable
+          label="描述"
+          show-overflow-tooltip
+        />
+        <el-table-column prop="ifEnable" label="运行状态" width="150">
           <template #default="{ row }">
-            <el-switch v-model="row.status" size="small" active-text="启用" inactive-text="停用" />
+            <el-switch
+              v-model="row.ifEnable"
+              active-value="true"
+              inactive-value="false"
+              size="small"
+              @change="editSwitch(row)"
+              active-text="启用"
+              inactive-text="停用"
+            />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="140">
+        <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <el-button type="text" size="small" @click="onEdit(row)">编辑</el-button>
-            <el-button type="text" size="small" @click="onDelete(row)">删除</el-button>
+            <el-button link type="primary" size="small" @click="onEdit(row)">编辑</el-button>
+            <el-button link type="danger" size="small" @click="onDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -152,5 +210,12 @@ onMounted(() => {
       />
     </el-card>
   </div>
-  <!-- <AddStorageMedium ref="addDialog" @success="onAddSuccess" /> -->
+  <AddStorageMedium
+    v-if="dialogVisible"
+    v-model:visible="dialogVisible"
+    :isEdit="dialogIsEdit"
+    :formData="dialogFormData"
+    :orgOptions="orgOptions"
+    @confirm="onConfirmStorage"
+  />
 </template>

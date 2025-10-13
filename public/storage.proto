@@ -497,3 +497,28 @@ message OrganizationMstProto {
   string logoURL = 24;                 // Logo URL路径
   string backGroundURL = 25;           // 背景图URL路径
 }
+
+message StorageDtoProto {
+  string mediaUID = 1;                // 媒体资源唯一标识
+  string name = 2;                   // 存储配置名称
+  string type = 3;                   // 存储类型（如云存储/本地存储）
+  string path = 4;                   // 存储路径或域名
+  string organizationID = 5;         // 所属组织ID
+  string subDir = 6;                 // 子目录路径
+  string ifEnable = 7;               // 是否启用（建议改用bool类型）
+  string customConfig = 8;           // 自定义配置（JSON字符串）
+  string description = 9;            // 描述信息
+  string host = 10;                  // 服务主机地址
+  string bucket = 11;                // 存储桶名称
+  string accessID = 12;              // 访问密钥ID（敏感信息）
+  string accessKey = 13;             // 访问密钥（需加密存储）
+  string isSharePath = 14;           // 是否为共享路径（建议改用bool）
+  string shareAddress = 15;          // 共享地址
+  string shareUserName = 16;          // 共享用户名
+  string sharePassWord = 17;         // 共享密码（需加密）
+  string uploadMediaUID = 18;        // 上传媒体资源唯一标识
+  string userUID = 19;               // 用户唯一标识
+  string uploadURL = 20;            // 文件上传地址
+  string downloadURL = 21;           // 文件下载地址
+  string httpPath = 22;              // HTTP访问路径
+}

@@ -117,11 +117,14 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       ]
     },
     esbuild: {
+      target: 'es2022', // enable top-level await in esbuild transform
       pure: env.VITE_DROP_CONSOLE === 'true' ? ['console.log'] : undefined,
       drop: env.VITE_DROP_DEBUGGER === 'true' ? ['debugger'] : undefined
     },
     build: {
-      target: 'es2015',
+      // Top-level await requires modern targets (ES2022+). If you need legacy support,
+      // consider using a transform plugin instead.
+      target: 'es2022',
       outDir: env.VITE_OUT_DIR || 'dist',
       sourcemap: env.VITE_SOURCEMAP === 'true',
       // brotliSize: false,

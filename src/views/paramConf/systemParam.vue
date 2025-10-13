@@ -4,7 +4,8 @@
       <el-collapse-item v-for="g in groups" :key="g.key" :name="g.key" class="group">
         <template #title>
           <div class="collapse-title">
-            <i :class="['hdr-icon', g.icon]" />
+            <!-- <i :class="['hdr-icon', g.icon]"></i> -->
+
             <span class="title">{{ g.title }}</span>
           </div>
         </template>
@@ -36,15 +37,19 @@ import { ElMessage, ElCollapse, ElCollapseItem, ElButton, ElCol, ElRow } from 'e
 
 type CfgItem = { key: string; name: string; desc?: string }
 type GroupKey = 'plugin' | 'archive' | 'exam' | 'system' | 'province' | 'others'
-
-const groups = [
-  { key: 'plugin', title: '插件', icon: 'i-plugin' },
-  { key: 'archive', title: '归档', icon: 'i-archive' },
-  { key: 'exam', title: '检查', icon: 'i-exam' },
-  { key: 'system', title: '系统', icon: 'i-system' },
-  { key: 'province', title: '省平台', icon: 'i-gov' },
-  { key: 'others', title: '其他平台', icon: 'i-others' }
-] as { key: GroupKey; title: string; icon: string }[]
+interface Group {
+  key: GroupKey
+  title: string
+  icon: string
+}
+const groups: Group[] = [
+  { key: 'plugin', title: '插件', icon: 'a-bianzu23' },
+  { key: 'archive', title: '归档', icon: 'guidang' },
+  { key: 'exam', title: '检查', icon: 'jiancharenwufenpei' },
+  { key: 'system', title: '系统', icon: 'xitong' },
+  { key: 'province', title: '省平台', icon: 'yinhangcunguan' },
+  { key: 'others', title: '其他平台', icon: 'a-106_other' }
+]
 
 const items: Record<GroupKey, CfgItem[]> = {
   // 插件（图2）
@@ -172,46 +177,15 @@ function onConfig(item: CfgItem) {
   color: #909399;
 }
 
-/* 简单图标占位（可替换为真实图标库） */
-.i-plugin::before {
-  display: inline-flex;
-  content: '🧩';
-  align-items: center;
-  justify-content: center;
-}
-
-.i-archive::before {
-  content: '📄';
-}
-
-.i-exam::before {
-  content: '🔎';
-}
-
-.i-system::before {
-  content: '🖥️';
-}
-
-.i-gov::before {
-  content: '🏛️';
-}
-
-.i-others::before {
-  content: '🧱';
-}
-
-.hdr-icon::before {
-  display: flex;
-  width: 28px;
-  height: 28px;
-  align-items: center;
-  justify-content: center;
-}
-
 .flex-col {
   display: flex !important;
   flex-direction: row;
   place-items: center center;
-  justify-content: center;
+  justify-content: flex-start;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
 }
 </style>

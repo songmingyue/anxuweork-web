@@ -35,6 +35,9 @@ export const useUserStore = defineStore('user', {
     getToken(): string {
       return this.token
     },
+    getUserUID(): string | undefined {
+      return (this.userInfo && this.userInfo[0]?.userUID) || ''
+    },
     getUserInfo(): UserType | undefined {
       localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
       return this.userInfo

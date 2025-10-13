@@ -1,0 +1,58 @@
+{
+  "id": "5039005",
+  "name": "全网云",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "全网云前端icon",
+  "glyphs": [
+    {
+      "icon_id": "2743879",
+      "name": "归档",
+      "font_class": "guidang",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "6510092",
+      "name": "系统",
+      "font_class": "xitong",
+      "unicode": "e835",
+      "unicode_decimal": 59445
+    },
+    {
+      "icon_id": "7171141",
+      "name": "任务分配",
+      "font_class": "jiancharenwufenpei",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "10434642",
+      "name": "银行存管",
+      "font_class": "yinhangcunguan",
+      "unicode": "e725",
+      "unicode_decimal": 59173
+    },
+    {
+      "icon_id": "22511058",
+      "name": "其他平台",
+      "font_class": "a-106_other",
+      "unicode": "e681",
+      "unicode_decimal": 59009
+    },
+    {
+      "icon_id": "27451821",
+      "name": "归档",
+      "font_class": "guidang1",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "38291377",
+      "name": "插件管理",
+      "font_class": "a-bianzu23",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    }
+  ]
+}

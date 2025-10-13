@@ -11,7 +11,7 @@ import { getLoginList } from '@/api/login'
 import { getVersion } from '@/api/common'
 import { OrganizationList } from '@/api/login/types'
 import { useStorage } from '@/hooks/web/useStorage'
-const { setStorage, getStorage } = useStorage('localStorage')
+const { setStorage } = useStorage('localStorage')
 const { getPrefixCls } = useDesign()
 const version = ref('')
 const prefixCls = getPrefixCls('login')
@@ -40,8 +40,6 @@ const getorgbylogin = async () => {
       value: item.organizationID
     }))
   setStorage('org', orgList)
-  const aa = getStorage('org')
-  console.log('获取的机构列表', aa)
 }
 onMounted(() => {
   getVersionMsd()

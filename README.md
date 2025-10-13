@@ -19,3 +19,8 @@
 
 - build:dev 测试环境包
 - build:pro 线上环境包
+
+# 测试环境账号
+
+- 超管机构： admin /TomTaw@HZ
+- 测试机构： admin/TomTaw@HZ1993

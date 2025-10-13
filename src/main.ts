@@ -35,6 +35,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 import './permission'
+import './assets/iconfont/iconfont.js'
 
 // 创建实例
 const setupAll = async () => {

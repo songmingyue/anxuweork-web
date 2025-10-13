@@ -3,12 +3,12 @@ import { reactive, ref, watch, onMounted, unref } from 'vue'
 import { Form, FormSchema } from '@/components/Form'
 import { ElCheckbox } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import { loginApi, getTestRoleApi, getAdminRoleApi } from '@/api/login'
+import { loginApi } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
-import { OrganizationList, UserLoginTypes, UserType } from '@/api/login/types'
+import { OrganizationList, UserLoginTypes } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
@@ -207,23 +207,24 @@ const signIn = async () => {
 
 // 获取角色信息
 const getRole = async (menuList: MenuList[]) => {
-  const formData = await getFormData<UserType>()
-  const params = {
-    roleName: formData.username
-  }
-  const res =
-    appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await getAdminRoleApi(params)
-      : await getTestRoleApi(params)
-  if (res) {
-    userStore.setRoleRouters(menuList)
-    await permissionStore.generateRoutes(menuList).catch(() => {})
-    permissionStore.getAddRouters.forEach((route) => {
-      addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
-    })
-    permissionStore.setIsAddRouters(true)
-    push({ path: redirect.value || permissionStore.addRouters[0].path })
-  }
+  // const formData = await getFormData<UserType>()
+  // const params = {
+  //   roleName: formData.username
+  // }
+
+  // const res =
+  //   appStore.getDynamicRouter && appStore.getServerDynamicRouter
+  //     ? await getAdminRoleApi(params)
+  //     : await getTestRoleApi(params)
+  // if (res) {
+  userStore.setRoleRouters(menuList)
+  await permissionStore.generateRoutes(menuList).catch(() => {})
+  permissionStore.getAddRouters.forEach((route) => {
+    addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
+  })
+  permissionStore.setIsAddRouters(true)
+  push({ path: redirect.value || permissionStore.addRouters[0].path })
+  // }
 }
 
 // 去注册页面

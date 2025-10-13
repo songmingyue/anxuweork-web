@@ -215,8 +215,12 @@ onMounted(() => {
         <el-table-column prop="createDate" label="创建时间" min-width="180" />
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click.stop="handleEdit(row)">编辑</el-button>
-            <el-button link type="danger" @click.stop="handleDelete(row)">删除</el-button>
+            <el-button link type="primary" size="small" @click.stop="handleEdit(row)"
+              >编辑</el-button
+            >
+            <el-button link type="danger" size="small" @click.stop="handleDelete(row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>

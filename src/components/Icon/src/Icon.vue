@@ -52,7 +52,7 @@ const getIconName = computed(() => {
 
     <template v-else>
       <Icon v-if="isUseOnline" :icon="getIconName" :style="getIconifyStyle" />
-      <div v-else :class="`${icon} iconify`" :style="getIconifyStyle"></div>
+      <i v-else :class="`i-${getIconName}`" :style="getIconifyStyle"></i>
     </template>
   </ElIcon>
 </template>

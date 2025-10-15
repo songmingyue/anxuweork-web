@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus'
-import { useI18n } from '@/hooks/web/useI18n'
 import { useDesign } from '@/hooks/web/useDesign'
 import LockDialog from './components/LockDialog.vue'
 import { ref, computed } from 'vue'
@@ -21,22 +20,11 @@ const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('user-info')
 
-const { t } = useI18n()
-
 const loginOut = () => {
   userStore.logoutConfirm()
 }
 
 const dialogVisible = ref<boolean>(false)
-
-// 锁定屏幕
-const lockScreen = () => {
-  dialogVisible.value = true
-}
-
-const toDocument = () => {
-  window.open('https://element-plus-admin-doc.cn/')
-}
 
 const toPage = (path: string) => {
   push(path)
@@ -45,31 +33,17 @@ const toPage = (path: string) => {
 
 <template>
   <ElDropdown class="custom-hover" :class="prefixCls" trigger="click">
-    <div class="flex items-center">
-      <img
-        src="@/assets/imgs/avatar.jpg"
-        alt=""
-        class="w-[calc(var(--logo-height)-25px)] rounded-[50%]"
-      />
-      <span class="<lg:hidden text-14px pl-[5px] text-[var(--top-header-text-color)]">{{
-        userStore.getUserInfo?.username
-      }}</span>
+    <div class="user-info">
+      <img src="@/assets/imgs/avatar.jpg" alt="" class="avatar" />
+      <span class="username">{{ userStore.getUserInfo?.username }}</span>
     </div>
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem>
-          <div @click="toPage('/personal/personal-center')">
-            {{ t('router.personalCenter') }}
-          </div>
+          <div @click="toPage('/personal/personal-center')"> 个人中心 </div>
         </ElDropdownItem>
         <ElDropdownItem>
-          <div @click="toDocument">{{ t('common.document') }}</div>
-        </ElDropdownItem>
-        <ElDropdownItem divided>
-          <div @click="lockScreen">{{ t('lock.lockScreen') }}</div>
-        </ElDropdownItem>
-        <ElDropdownItem>
-          <div @click="loginOut">{{ t('common.loginOut') }}</div>
+          <div @click="loginOut">退出登录</div>
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>
@@ -99,5 +73,28 @@ const toPage = (path: string) => {
 .fade-bottom-leave-to {
   opacity: 0;
   transform: translateY(10%);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: calc(var(--logo-height) - 25px);
+  height: calc(var(--logo-height) - 25px);
+  border-radius: 50%;
+}
+
+.username {
+  padding-left: 5px;
+  font-size: 14px;
+  color: var(--top-header-text-color);
+}
+
+@media (width <= 1023px) {
+  .username {
+    display: none;
+  }
 }
 </style>

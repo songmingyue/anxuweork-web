@@ -48,58 +48,47 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    :class="prefixCls"
-    class="h-[100%] relative lt-xl:bg-[var(--login-bg-color)] lt-sm:px-10px lt-xl:px-10px lt-md:px-10px"
-  >
-    <ElScrollbar class="h-full">
-      <div class="relative flex mx-auto min-h-100vh">
-        <div
-          :class="`${prefixCls}__left flex-1 bg-gray-500 bg-opacity-20 relative p-30px lt-xl:hidden`"
-        >
-          <div class="flex items-center relative text-white">
-            <img src="@/assets/imgs/logo.svg" alt="" class="w-48px h-48px mr-10px" />
-            <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
+  <div :class="prefixCls" class="login-root">
+    <ElScrollbar class="scroll">
+      <div class="wrapper">
+        <div :class="`${prefixCls}__left left-pane`">
+          <div class="brand">
+            <img src="@/assets/imgs/logo.svg" alt="" class="logo" />
+            <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span>
           </div>
-          <div class="flex justify-center items-center h-[calc(100%-60px)]">
+          <div class="left-inner">
             <TransitionGroup
               appear
               tag="div"
               enter-active-class="animate__animated animate__bounceInLeft"
             >
-              <img src="@/assets/svgs/login-box-bg.png" key="1" alt="" class="w-450px" />
+              <img src="@/assets/svgs/login-box-bg.png" key="1" alt="" class="big-illustration" />
             </TransitionGroup>
           </div>
         </div>
-        <div class="flex-1 p-30px lt-sm:p-10px dark:bg-[var(--login-bg-color)] relative">
-          <div
-            class="flex justify-between items-center text-white at-2xl:justify-end at-xl:justify-end"
-          >
-            <div class="flex items-center at-2xl:hidden at-xl:hidden">
-              <img src="@/assets/imgs/logo.svg" alt="" class="w-48px h-48px mr-10px" />
-              <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
+        <div class="right-pane">
+          <div class="header-row">
+            <div class="brand-mini">
+              <img src="@/assets/imgs/logo.svg" alt="" class="logo" />
+              <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span>
             </div>
 
-            <div class="flex justify-end items-center space-x-10px">
+            <div class="actions">
               <ThemeSwitch />
-              <LocaleDropdown class="lt-xl:text-white dark:text-white" />
+              <LocaleDropdown />
             </div>
           </div>
           <Transition appear enter-active-class="animate__animated animate__bounceInRight">
-            <div class="flex flex-col justify-center items-center h-[calc(100%-60px)]">
-              <div class="flex flex-col justify-center w-500px">
+            <div class="right-inner">
+              <div class="form-box">
                 <LoginForm
                   v-if="isLogin && organizationList.length > 0"
                   :organizationList="organizationList"
-                  class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
+                  class="form-card"
                   @to-register="toRegister"
                 />
 
-                <RegisterForm
-                  v-else
-                  class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
-                  @to-login="toLogin"
-                />
+                <RegisterForm v-else class="form-card" @to-login="toLogin" />
                 <div class="class-message">
                   宁波全网云医疗科技股份有限公司 eWordIMCIS {{ version }}
                 </div>
@@ -116,7 +105,16 @@ onMounted(() => {
 @prefix-cls: ~'@{adminNamespace}-login';
 
 .@{prefix-cls} {
+  position: relative;
+  height: 100%;
   overflow: auto;
+
+  // 小于 xl 时背景与左右留白
+  @media (width <= 1279px) {
+    padding-right: 10px;
+    padding-left: 10px;
+    background: var(--login-bg-color);
+  }
 
   &__left {
     &::before {
@@ -131,6 +129,128 @@ onMounted(() => {
       background-repeat: no-repeat;
       content: '';
     }
+  }
+}
+
+.login-root {
+  position: relative;
+  height: 100%;
+}
+
+.scroll {
+  height: 100%;
+}
+
+.wrapper {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+.left-pane {
+  position: relative;
+  flex: 1 1 0;
+  padding: 30px;
+  background: rgb(107 114 128 / 20%); // gray-500 with 20% opacity
+
+  // 小于 xl 隐藏
+  @media (width <= 1279px) {
+    display: none;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  color: #fff;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  margin-right: 10px;
+}
+
+.brand-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.left-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% - 60px);
+}
+
+.big-illustration {
+  width: 450px;
+}
+
+.right-pane {
+  position: relative;
+  flex: 1 1 0;
+  padding: 30px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+
+  // >= xl 时右对齐
+  @media (width >= 1280px) {
+    justify-content: flex-end;
+  }
+}
+
+.brand-mini {
+  display: flex;
+  align-items: center;
+
+  // >= xl 时隐藏（有左侧大面板和品牌）
+  @media (width >= 1280px) {
+    display: none;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.actions > * + * {
+  margin-left: 10px;
+}
+
+.right-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% - 60px);
+}
+
+.form-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 500px;
+  max-width: 100%;
+}
+
+.form-card {
+  height: auto;
+  padding: 20px;
+  margin: 0 auto;
+
+  // 小于 xl 圆角+白底（light）
+  @media (width <= 1279px) {
+    background: #fff;
+    border-radius: 24px;
   }
 }
 

@@ -174,7 +174,7 @@
       <div class="right">
         <div class="preview-toolbar">
           <span>预览</span>
-          <div class="spacer" />
+          <div class="spacer"></div>
           <el-button size="small">缩放</el-button>
           <el-button size="small">下载</el-button>
         </div>

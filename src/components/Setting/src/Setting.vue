@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ElDrawer, ElDivider } from 'element-plus'
 import { ref, unref } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { useCssVar } from '@vueuse/core'
 import { useAppStore } from '@/store/modules/app'
@@ -17,8 +16,6 @@ const { getPrefixCls } = useDesign()
 const prefixCls = getPrefixCls('setting')
 
 const appStore = useAppStore()
-
-const { t } = useI18n()
 
 const drawer = ref(false)
 
@@ -147,22 +144,18 @@ const clear = () => {
 </script>
 
 <template>
-  <div
-    :class="prefixCls"
-    class="fixed top-[45%] right-0 w-40px h-40px flex items-center justify-center bg-[var(--el-color-primary)] cursor-pointer z-10"
-    @click="drawer = true"
-  >
+  <div :class="prefixCls" class="setting-trigger" @click="drawer = true">
     <Icon icon="vi-ant-design:setting-outlined" color="#fff" />
   </div>
 
   <ElDrawer v-model="drawer" direction="rtl" size="350px" :z-index="4000">
     <template #header>
-      <span class="text-16px font-700">{{ t('setting.projectSetting') }}</span>
+      <span class="setting-title">项目配置</span>
     </template>
 
-    <div class="text-center">
+    <div class="setting-content">
       <!-- 主题 -->
-      <ElDivider>{{ t('setting.theme') }}</ElDivider>
+      <ElDivider>主题</ElDivider>
       <ThemeSwitch />
 
       <!-- 布局 -->
@@ -170,7 +163,7 @@ const clear = () => {
       <!-- <LayoutRadioPicker /> -->
 
       <!-- 系统主题 -->
-      <ElDivider>{{ t('setting.systemTheme') }}</ElDivider>
+      <ElDivider>系统主题</ElDivider>
       <ColorRadioPicker
         v-model="systemTheme"
         :schema="[
@@ -187,7 +180,7 @@ const clear = () => {
       />
 
       <!-- 头部主题 -->
-      <ElDivider>{{ t('setting.headerTheme') }}</ElDivider>
+      <ElDivider>头部主题</ElDivider>
       <ColorRadioPicker
         v-model="headerTheme"
         :schema="[
@@ -204,7 +197,7 @@ const clear = () => {
       />
 
       <!-- 菜单主题 -->
-      <ElDivider>{{ t('setting.menuTheme') }}</ElDivider>
+      <ElDivider>菜单主题</ElDivider>
       <ColorRadioPicker
         v-model="menuTheme"
         :schema="[
@@ -231,10 +224,8 @@ const clear = () => {
         t('setting.copy')
       }}</BaseButton>
     </div> -->
-    <div class="mt-5px">
-      <BaseButton type="danger" class="w-full" @click="clear">
-        {{ t('setting.clearAndReset') }}
-      </BaseButton>
+    <div class="setting-footer">
+      <BaseButton type="danger" class="full-width" @click="clear"> 清除缓存并且重置 </BaseButton>
     </div>
   </ElDrawer>
 </template>
@@ -244,5 +235,36 @@ const clear = () => {
 
 .@{prefix-cls} {
   border-radius: 6px 0 0 6px;
+}
+
+.setting-trigger {
+  position: fixed;
+  top: 45%;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background-color: var(--el-color-primary);
+  align-items: center;
+  justify-content: center;
+}
+
+.setting-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.setting-content {
+  text-align: center;
+}
+
+.setting-footer {
+  margin-top: 5px;
+}
+
+.full-width {
+  width: 100%;
 }
 </style>

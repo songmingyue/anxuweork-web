@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { store } from '../index'
 import { UserLoginType, UserType } from '@/api/login/types'
 import { ElMessageBox } from 'element-plus'
-import { useI18n } from '@/hooks/web/useI18n'
 import { loginOutApi } from '@/api/login'
 import { useTagsViewStore } from './tagsView'
 import router from '@/router'
@@ -42,6 +41,9 @@ export const useUserStore = defineStore('user', {
       localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
       return this.userInfo
     },
+    getorganizationID(): string | undefined {
+      return (this.userInfo && this.userInfo[0]?.organizationID) || ''
+    },
     getRoleRouters(): string[] | MenuList[] | undefined {
       return this.roleRouters
     },
@@ -66,10 +68,9 @@ export const useUserStore = defineStore('user', {
       this.roleRouters = roleRouters
     },
     logoutConfirm() {
-      const { t } = useI18n()
-      ElMessageBox.confirm(t('common.loginOutMessage'), t('common.reminder'), {
-        confirmButtonText: t('common.ok'),
-        cancelButtonText: t('common.cancel'),
+      ElMessageBox.confirm('是否退出本系统', '温馨提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
         type: 'warning'
       })
         .then(async () => {

@@ -12,7 +12,6 @@ import ServerUrlCopy from 'vite-plugin-url-copy'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
-import UnoCSS from 'unocss/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
@@ -91,8 +90,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         : undefined,
       ViteEjsPlugin({
         title: env.VITE_APP_TITLE
-      }),
-      UnoCSS()
+      })
     ],
 
     css: {

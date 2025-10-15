@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, h, unref } from 'vue'
+import { computed, ref, h, unref, reactive } from 'vue'
 import { ElMenu, ElSubMenu, ElMenuItem } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
+import { Icon } from '@/components/Icon'
 
 // 获取本地存储的菜单数据
 const userinfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
@@ -19,6 +20,41 @@ const appStore = useAppStore()
 const layout = ref(computed(() => appStore.getLayout))
 const collapse = computed(() => appStore.getCollapse)
 const uniqueOpened = computed(() => appStore.getUniqueOpened)
+const menuIconList = reactive<
+  Array<{
+    key: string
+    icon: string
+  }>
+>([
+  {
+    key: '/paramConf',
+    icon: 'canshu'
+  },
+  {
+    key: '/authConf',
+    icon: 'quanxian'
+  },
+  {
+    key: '/plugConf',
+    icon: 'chajianpeizhi'
+  },
+  {
+    key: '/serviceCof',
+    icon: 'setting'
+  },
+  {
+    key: '/checkInfo',
+    icon: 'jiancharenwufenpei'
+  },
+  {
+    key: '/diagnosisInfo',
+    icon: 'zhenliao'
+  },
+  {
+    key: '/logConfig',
+    icon: 'rizhi'
+  }
+])
 const menuMode = computed((): 'vertical' | 'horizontal' => {
   // 竖
   const vertical: LayoutType[] = ['classic', 'topLeft', 'cutMenu']
@@ -50,48 +86,95 @@ function handleMenuSelect(index: string) {
   }
 }
 
+// 根据 url 匹配图标
+function getMenuIcon(url: string): string | '' {
+  const found = menuIconList.find((m) => url?.startsWith(m.key))
+  return found ? `svg-icon:${found.icon}` : ''
+}
+
+// 判断当前路由是否激活此菜单（自身或子路由）
+function isActiveUrl(url: string): boolean {
+  const path = router.currentRoute.value.path || ''
+  return path === url || path.startsWith(url + '/')
+}
+
 // 递归渲染菜单，返回VNode数组
 function renderMenu(list: any[]) {
   return list.map((item: any) => {
     if (item.children && item.children.length > 0) {
+      const iconName = getMenuIcon(item.url)
+      const isAct = isActiveUrl(item.url)
       return h(
         ElSubMenu,
         { index: item.url, key: item.url },
         {
-          title: () => item.meta?.title || item.url,
+          title: () =>
+            h('span', { class: `${prefixCls}__title` }, [
+              iconName
+                ? h(Icon as any, {
+                    icon: iconName,
+                    size: 16,
+                    color: isAct
+                      ? 'var(--menu-icon-active-color, var(--left-menu-text-active-color))'
+                      : 'var(--left-menu-text-color)',
+                    style: 'margin-right:6px;'
+                  })
+                : null,
+              item.meta?.title || item.url
+            ]),
+          // icon: () =>
           default: () => renderMenu(item.children)
         }
       )
     } else {
-      return h(ElMenuItem, { index: item.url, key: item.url }, () => item.meta?.title || item.url)
+      const iconName = getMenuIcon(item.url)
+      const isAct = isActiveUrl(item.url)
+      return h(ElMenuItem, { index: item.url, key: item.url }, () =>
+        h('span', { class: `${prefixCls}__title` }, [
+          iconName
+            ? h(Icon as any, {
+                icon: iconName,
+                size: 16,
+                color: isAct
+                  ? 'var(--menu-icon-active-color, var(--left-menu-text-active-color))'
+                  : 'var(--left-menu-text-color)',
+                style: 'margin-right:6px;'
+              })
+            : null,
+          item.meta?.title || item.url
+        ])
+      )
     }
   })
 }
 </script>
 <template>
-  <div
-    :id="prefixCls"
-    :class="[
-      `${prefixCls} ${prefixCls}__${menuMode}`,
-      'h-[100%] overflow-hidden flex-col bg-[var(--left-menu-bg-color)]',
-      {
-        'w-[var(--left-menu-min-width)]': collapse && layout !== 'cutMenu',
-        'w-[var(--left-menu-max-width)]': !collapse && layout !== 'cutMenu'
-      }
-    ]"
-  >
-    <ElMenu
-      :uniqueOpened="layout === 'top' ? false : uniqueOpened"
-      :collapse="layout === 'top' || layout === 'cutMenu' ? false : collapse"
-      backgroundColor="var(--left-menu-bg-color)"
-      textColor="var(--left-menu-text-color)"
-      activeTextColor="var(--left-menu-text-active-color)"
-      :default-active="activeMenu"
-      mode="vertical"
-      @select="handleMenuSelect"
+  <div class="el-scrollbar__wrap el-scrollbar__wrap--hidden-default">
+    <div
+      :id="prefixCls"
+      style="height: 100%; background-color: var(--left-menu-bg-color)"
+      :class="[
+        `${prefixCls} ${prefixCls}__${menuMode}`,
+        'menu-root',
+        {
+          'menu--min': collapse && layout !== 'cutMenu',
+          'menu--max': !collapse && layout !== 'cutMenu'
+        }
+      ]"
     >
-      <component v-for="item in renderMenu(menuList)" :is="item" :key="item.key" />
-    </ElMenu>
+      <ElMenu
+        :uniqueOpened="layout === 'top' ? false : uniqueOpened"
+        :collapse="layout === 'top' || layout === 'cutMenu' ? false : collapse"
+        backgroundColor="var(--left-menu-bg-color)"
+        textColor="var(--left-menu-text-color)"
+        activeTextColor="var(--left-menu-text-active-color)"
+        :default-active="activeMenu"
+        mode="vertical"
+        @select="handleMenuSelect"
+      >
+        <component v-for="item in renderMenu(menuList)" :is="item" :key="item.key" />
+      </ElMenu>
+    </div>
   </div>
 </template>
 <style lang="less" scoped>
@@ -100,6 +183,22 @@ function renderMenu(list: any[]) {
 .@{prefix-cls} {
   position: relative;
   transition: width var(--transition-time-02);
+
+  .menu-root {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    flex-direction: column;
+    background: var(--left-menu-bg-color);
+  }
+
+  .menu--min {
+    width: var(--left-menu-min-width);
+  }
+
+  .menu--max {
+    width: var(--left-menu-max-width);
+  }
 
   :deep(.@{elNamespace}-menu) {
     width: 100% !important;

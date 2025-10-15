@@ -522,3 +522,100 @@ message StorageDtoProto {
   string downloadURL = 21;           // 文件下载地址
   string httpPath = 22;              // HTTP访问路径
 }
+
+message UserQuerySetInputProto {
+  string userId = 1;
+  int32 querySeq = 2;
+  UserOrgInfoProto userInfo = 3;
+  string queryType = 4;
+}
+
+message UserQuerySetMstProto {
+  int32 querySeq = 1;          // 查询序列号
+  string queryType = 2;        // 查询类型
+  string userUID = 3;          // 用户唯一标识
+  string name = 4;             // 名称
+  string queryCondition = 5;   // 查询条件
+  string sortNO = 6;           // 排序编号
+  string defaultFlag = 7;      // 默认标志
+  string publicFlag = 8;       // 公开标志
+}
+message DicTypeMstInputProto {
+  string typeClass = 1;
+  string typeCode = 2;
+  string typeName = 3;
+  int32 pageSize = 4;
+  int32 currentPage = 5;
+}
+message DicTypeMstProto {
+    string typeCode = 1;
+    string typeName = 2;
+    string codeScheme = 3;
+    string typeClass = 4;
+    string allowCreateItem = 5;
+    string allowUpdateItem = 6;
+    string allowDeleteItem = 7;
+    string memo = 8;
+    string itemRepresenTitle = 9;
+    string itemRepresenExt1Title = 10;
+    string itemRepresenExt2Title = 11;
+    string itemRepresenExt3Title = 12;
+    string itemRepresenExt4Title = 13;
+    string itemRepresenExt5Title = 14;
+    string itemRepresenExt6Title = 15;
+    string itemRepresenExt7Title = 16;
+    string itemRepresenExt8Title = 17;
+    string itemRepresenExt9Title = 18;
+    string itemRepresenExt10Title = 19;
+    string itemRepresenExt11Title = 20;
+    string itemRepresenExt12Title = 21;
+    string itemRepresenExt13Title = 22;
+    string itemRepresenExt14Title = 23;
+    string itemRepresenExt15Title = 24;
+    string itemRepresenExt16Title = 25;
+    string itemRepresenExt17Title = 26;
+    string itemRepresenExt18Title = 27;
+    string itemRepresenExt19Title = 28;
+    string itemRepresenExt20Title = 29;
+}
+
+message PluginProto {
+  // 插件唯一标识符
+  string plugin_uid = 1;
+  
+  // 插件名称
+  string plugin_name = 2;
+  
+  // 动态链接库名称（DLL文件名）
+  string dll_name = 3;
+  
+  // 类名（插件实现类）
+  string class_name = 4;
+  
+  // 插件描述
+  string description = 5;
+  
+  // 插件类型
+  string plugin_type = 6;
+  
+  // 插件配置（JSON格式字符串）
+  string plugin_configs = 7;
+  
+  // 默认键值配置
+  string default_key_value = 8;
+  
+  // 插件功能描述
+  string plugin_function = 9;
+  
+  // 插件规则
+  string plugin_rule = 10;
+  
+  // 配置版本
+  string config_version = 11;
+  
+  // 是否支持检查
+  bool if_support_check = 12;
+  
+  // 是否显示
+  bool is_show = 13;
+}

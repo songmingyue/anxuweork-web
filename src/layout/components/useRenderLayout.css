@@ -1,0 +1,186 @@
+.rl-aside {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+.rl-aside.is-mobile {
+  position: fixed;
+  z-index: 3000;
+}
+.rl-logo {
+  background: var(--left-menu-bg-color);
+  position: relative;
+}
+.rl-logo.no-pl {
+  padding-left: 0;
+}
+.rl-logo.left-min {
+  width: var(--left-menu-min-width);
+}
+.rl-logo.left-max {
+  width: var(--left-menu-max-width);
+}
+.rl-menu.has-logo {
+  height: calc(100% - var(--logo-height));
+}
+.rl-content {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+.rl-content.content-left-min {
+  width: calc(100% - var(--left-menu-min-width));
+  left: var(--left-menu-min-width);
+}
+.rl-content.content-left-max {
+  width: calc(100% - var(--left-menu-max-width));
+  left: var(--left-menu-max-width);
+}
+.rl-content.mobile {
+  position: fixed;
+  width: 100% !important;
+  left: 0 !important;
+}
+.fixed-header {
+  height: calc(100% - var(--top-tool-height) - var(--tags-view-height)) !important;
+  margin-top: calc(var(--top-tool-height) + var(--tags-view-height));
+}
+.header-wrap.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+.header-wrap.header-left-min {
+  width: calc(100% - var(--left-menu-min-width)) !important;
+  left: var(--left-menu-min-width) !important;
+}
+.header-wrap.header-left-max {
+  width: calc(100% - var(--left-menu-max-width)) !important;
+  left: var(--left-menu-max-width) !important;
+}
+.header-wrap.mobile {
+  width: 100% !important;
+  left: 0 !important;
+}
+.top-header-bg {
+  background: var(--top-header-bg-color);
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  background: var(--top-header-bg-color);
+  position: relative;
+}
+.below-logo {
+  position: absolute;
+  top: calc(var(--logo-height) + 1px);
+  left: 0;
+  width: 100%;
+  height: calc(100% - 1px - var(--logo-height));
+  display: flex;
+}
+.menu-side {
+  height: 100% !important;
+  position: relative;
+}
+.content-pane {
+  height: 100%;
+}
+.fixed-tags {
+  height: calc(100% - var(--tags-view-height)) !important;
+  margin-top: calc(var(--tags-view-height));
+}
+.tags-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+.mt-logo {
+  margin-top: calc(var(--logo-height) + 1px);
+}
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--top-header-bg-color);
+  position: relative;
+}
+.top-menu {
+  padding-left: 10px;
+  padding-right: 10px;
+  height: var(--top-tool-height);
+}
+.content-top.no-fixed {
+  height: calc(100% - var(--top-tool-height));
+}
+.content-top.with-fixed {
+  height: calc(100% - var(--tags-view-height) - var(--top-tool-height));
+}
+.scrollbar-with-tags-fixed {
+  margin-top: var(--tags-view-height) !important;
+  padding-bottom: calc(var(--tags-view-height) + var(--app-footer-height)) !important;
+}
+.scrollbar-no-fixed {
+  padding-bottom: var(--app-footer-height);
+}
+.fixed-full {
+  position: fixed;
+  width: 100%;
+  top: calc(var(--top-tool-height) + 1px);
+  left: 0;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  background: var(--top-header-bg-color);
+  position: relative;
+}
+.below-logo-cut {
+  position: absolute;
+  top: var(--logo-height);
+  left: 0;
+  width: calc(100% - 2px);
+  height: calc(100% - var(--logo-height));
+  display: flex;
+}
+.content-cut-min {
+  width: calc(100% - var(--tab-menu-min-width));
+  left: var(--tab-menu-min-width);
+}
+.content-cut-max {
+  width: calc(100% - var(--tab-menu-max-width));
+  left: var(--tab-menu-max-width);
+}
+.content-cut-min-fixed {
+  width: calc(100% - var(--tab-menu-min-width) - var(--left-menu-max-width));
+  margin-left: var(--left-menu-max-width);
+}
+.content-cut-max-fixed {
+  width: calc(100% - var(--tab-menu-max-width) - var(--left-menu-max-width));
+  margin-left: var(--left-menu-max-width);
+}
+.tags-cut-min {
+  width: calc(100% - var(--tab-menu-min-width)) !important;
+  left: var(--tab-menu-min-width) !important;
+  margin-top: var(--logo-height);
+}
+.tags-cut-max {
+  width: calc(100% - var(--tab-menu-max-width)) !important;
+  left: var(--tab-menu-max-width) !important;
+  margin-top: var(--logo-height);
+}
+.tags-cut-min-fixed {
+  position: fixed;
+  top: 0;
+  left: calc(var(--tab-menu-min-width) + var(--left-menu-max-width)) !important;
+  z-index: 10;
+}
+.tags-cut-max-fixed {
+  position: fixed;
+  top: 0;
+  left: calc(var(--tab-menu-max-width) + var(--left-menu-max-width)) !important;
+  z-index: 10;
+}

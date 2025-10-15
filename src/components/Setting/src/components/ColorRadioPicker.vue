@@ -38,11 +38,11 @@ watch(
 </script>
 
 <template>
-  <div :class="prefixCls" class="flex flex-wrap space-x-14px">
+  <div :class="[prefixCls, 'crp']">
     <span
       v-for="(item, i) in schema"
       :key="`radio-${i}`"
-      class="w-20px h-20px cursor-pointer rounded-2px border-solid border-gray-300 border-2px text-center leading-20px mb-5px"
+      class="crp__item"
       :class="{ 'is-active': colorVal === item }"
       :style="{
         background: item
@@ -61,5 +61,24 @@ watch(
   .is-active {
     border-color: var(--el-color-primary);
   }
+}
+
+.crp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 14px;
+}
+
+.crp__item {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 5px;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  border-color: #d1d5db; // gray-300
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 2px;
 }
 </style>

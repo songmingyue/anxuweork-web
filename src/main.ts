@@ -1,13 +1,9 @@
 import 'vue/jsx'
 
 // 引入windi css
-import '@/plugins/unocss'
 
 // 导入全局的svg图标
 import '@/plugins/svgIcon'
-
-// 初始化多语言
-import { setupI18n } from '@/plugins/vueI18n'
 
 // 引入状态管理
 import { setupStore } from '@/store'
@@ -40,8 +36,6 @@ import './assets/iconfont/iconfont.js'
 // 创建实例
 const setupAll = async () => {
   const app = createApp(App)
-
-  await setupI18n(app)
 
   setupStore(app)
 

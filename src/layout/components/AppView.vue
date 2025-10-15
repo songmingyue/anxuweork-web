@@ -16,15 +16,7 @@ const getCaches = computed((): string[] => {
 </script>
 
 <template>
-  <section
-    :class="[
-      'box-border p-[var(--app-content-padding)] w-full bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]',
-      {
-        '!min-h-[calc(100vh-var(--top-tool-height)-var(--tags-view-height)-var(--app-footer-height))] pb-0':
-          footer
-      }
-    ]"
-  >
+  <section :class="['app-view', { 'has-footer': footer }]">
     <router-view>
       <template #default="{ Component, route }">
         <keep-alive :include="getCaches">
@@ -34,3 +26,25 @@ const getCaches = computed((): string[] => {
     </router-view>
   </section>
 </template>
+
+<style scoped>
+.app-view {
+  width: 100%;
+  padding: var(--app-content-padding);
+  background: var(--app-content-bg-color);
+  box-sizing: border-box;
+}
+
+/* Dark theme override for background */
+:deep(.dark) .app-view {
+  background: var(--el-bg-color);
+}
+
+.has-footer {
+  /* equals: min-h-[calc(100vh-var(--top-tool-height)-var(--tags-view-height)-var(--app-footer-height))] */
+  min-height: calc(
+    100vh - var(--top-tool-height) - var(--tags-view-height) - var(--app-footer-height)
+  );
+  padding-bottom: 0;
+}
+</style>

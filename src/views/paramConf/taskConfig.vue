@@ -23,8 +23,6 @@
           label="任务筛选条件"
           min-width="280"
           sortable
-          :sort-method="filterSortMethod"
-          :sort-orders="['ascending', 'descending', null]"
           show-overflow-tooltip
         />
 
@@ -110,12 +108,6 @@ const list = ref<TaskRow[]>([
     enabled: true
   }
 ])
-
-// 表头“任务筛选条件”排序：按字典序，长度作为次级规则
-function filterSortMethod(a: TaskRow, b: TaskRow) {
-  const s = a.filterCond.localeCompare(b.filterCond)
-  return s !== 0 ? s : a.filterCond.length - b.filterCond.length
-}
 
 function onSortChange(payload: {
   column: any

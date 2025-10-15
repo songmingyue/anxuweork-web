@@ -51,25 +51,17 @@ watch(
 <template>
   <div>
     <router-link
-      :class="[
-        prefixCls,
-        layout !== 'classic' ? `${prefixCls}__Top` : '',
-        'flex !h-[var(--logo-height)] items-center cursor-pointer pl-8px relative decoration-none overflow-hidden'
-      ]"
+      :class="[prefixCls, layout !== 'classic' ? `${prefixCls}__Top` : '', 'logo-link']"
       to="/"
     >
-      <img
-        src="@/assets/imgs/logo.svg"
-        class="w-[calc(var(--logo-height)-10px)] h-[calc(var(--logo-height)-10px)]"
-      />
+      <img src="@/assets/imgs/logo.svg" class="logo-img" />
       <div
         v-if="show"
         :class="[
-          'ml-10px text-16px font-700',
+          'logo-title',
           {
-            'text-[var(--logo-title-text-color)]': layout === 'classic',
-            'text-[var(--top-header-text-color)]':
-              layout === 'topLeft' || layout === 'top' || layout === 'cutMenu'
+            'color-classic': layout === 'classic',
+            'color-top': layout === 'topLeft' || layout === 'top' || layout === 'cutMenu'
           }
         ]"
       >
@@ -78,3 +70,35 @@ watch(
     </router-link>
   </div>
 </template>
+
+<style scoped>
+.logo-link {
+  position: relative;
+  display: flex;
+  height: var(--logo-height) !important;
+  padding-left: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  cursor: pointer;
+  align-items: center;
+}
+
+.logo-img {
+  width: calc(var(--logo-height) - 10px);
+  height: calc(var(--logo-height) - 10px);
+}
+
+.logo-title {
+  margin-left: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.logo-title.color-classic {
+  color: var(--logo-title-text-color);
+}
+
+.logo-title.color-top {
+  color: var(--top-header-text-color);
+}
+</style>

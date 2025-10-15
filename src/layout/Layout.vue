@@ -46,12 +46,9 @@ export default defineComponent({
   name: 'Layout',
   setup() {
     return () => (
-      <section class={[prefixCls, `${prefixCls}__${layout.value}`, 'w-[100%] h-[100%] relative']}>
+      <section class={[prefixCls, `${prefixCls}__${layout.value}`, 'layout-root']}>
         {mobile.value && !collapse.value ? (
-          <div
-            class="absolute top-0 left-0 w-full h-full opacity-30 z-99 bg-[var(--el-color-black)]"
-            onClick={handleClickOutside}
-          ></div>
+          <div class="mask" onClick={handleClickOutside}></div>
         ) : undefined}
 
         {renderLayout()}
@@ -70,5 +67,22 @@ export default defineComponent({
 
 .@{prefix-cls} {
   background-color: var(--app-content-bg-color);
+}
+
+.layout-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  width: 100%;
+  height: 100%;
+  background: var(--el-color-black);
+  opacity: 0.3;
 }
 </style>

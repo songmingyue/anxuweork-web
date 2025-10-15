@@ -6,6 +6,55 @@
   "description": "全网云前端icon",
   "glyphs": [
     {
+      "icon_id": "2320948",
+      "name": "诊疗信息",
+      "font_class": "zhenliao",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "4520330",
+      "name": "日志信息",
+      "font_class": "rizhi",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "5243980",
+      "name": "插件配置",
+      "font_class": "chajianpeizhi",
+      "unicode": "e69c",
+      "unicode_decimal": 59036
+    },
+    {
+      "icon_id": "6527123",
+      "name": "日志",
+      "font_class": "rizhi1",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    },
+    {
+      "icon_id": "12515461",
+      "name": "权限配置",
+      "font_class": "quanxian",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "41431467",
+      "name": "参数配置",
+      "font_class": "canshu",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "42084062",
+      "name": "服务配置",
+      "font_class": "setting",
+      "unicode": "e966",
+      "unicode_decimal": 59750
+    },
+    {
       "icon_id": "2743879",
       "name": "归档",
       "font_class": "guidang",

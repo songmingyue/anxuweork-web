@@ -37,22 +37,16 @@ export default defineComponent({
   name: 'ToolHeader',
   setup() {
     return () => (
-      <div
-        id={`${variables.namespace}-tool-header`}
-        class={[
-          prefixCls,
-          'h-[var(--top-tool-height)] relative px-[var(--top-tool-p-x)] flex items-center justify-between'
-        ]}
-      >
+      <div id={`${variables.namespace}-tool-header`} class={[prefixCls, 'tool-header']}>
         {layout.value !== 'top' ? (
-          <div class="h-full flex items-center">
+          <div class="left">
             {hamburger.value && layout.value !== 'cutMenu' ? (
               <Collapse class="custom-hover" color="var(--top-header-text-color)"></Collapse>
             ) : undefined}
             {breadcrumb.value ? <Breadcrumb class="<md:hidden"></Breadcrumb> : undefined}
           </div>
         ) : undefined}
-        <div class="h-full flex items-center">
+        <div class="right">
           {screenfull.value ? (
             <Screenfull class="custom-hover" color="var(--top-header-text-color)"></Screenfull>
           ) : undefined}
@@ -78,5 +72,22 @@ export default defineComponent({
 
 .@{prefix-cls} {
   transition: left var(--transition-time-02);
+}
+
+.tool-header {
+  position: relative;
+  display: flex;
+  height: var(--top-tool-height);
+  padding-right: var(--top-tool-p-x);
+  padding-left: var(--top-tool-p-x);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.left,
+.right {
+  display: flex;
+  height: 100%;
+  align-items: center;
 }
 </style>

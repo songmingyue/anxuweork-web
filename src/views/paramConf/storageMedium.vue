@@ -219,3 +219,9 @@ async function onConfirmStorage() {
     @confirm="onConfirmStorage"
   />
 </template>
+
+<style scoped>
+.mb2 {
+  margin-bottom: 8px;
+}
+</style>

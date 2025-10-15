@@ -108,7 +108,7 @@ const style = computed(() => {
 
 <template>
   <ElButton
-    :class="`${prefixCls} color-#fff`"
+    :class="prefixCls"
     v-bind="{ ...props }"
     :color="color"
     :style="style"
@@ -119,3 +119,12 @@ const style = computed(() => {
     <slot name="loading"></slot>
   </ElButton>
 </template>
+
+<style lang="less" scoped>
+@prefix-cls: ~'@{adminNamespace}-button';
+
+.@{prefix-cls} {
+  // Replace former `color-#fff` utility: ensure text remains readable when custom color is applied
+  color: #fff;
+}
+</style>

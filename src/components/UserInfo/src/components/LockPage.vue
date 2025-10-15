@@ -10,7 +10,7 @@ import { useNow } from '@/hooks/web/useNow'
 import { useDesign } from '@/hooks/web/useDesign'
 import { loginOutApi } from '@/api/login'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-
+import { Icon } from '@/components/Icon'
 const tagsViewStore = useTagsViewStore()
 
 const { clear } = useStorage()
@@ -81,6 +81,7 @@ function handleShowForm(show = false) {
       @click="handleShowForm(false)"
       v-show="showDate"
     >
+      <Icon icon="vi-ep:lock" />
       <span>{{ t('lock.unlock') }}</span>
     </div>
 

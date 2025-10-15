@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'iconfont'; /* Project id 5039005 */
+  /* Color fonts */
   src:
-    url('iconfont.woff2?t=1760321219029') format('woff2'),
-    url('iconfont.woff?t=1760321219029') format('woff'),
-    url('iconfont.ttf?t=1760321219029') format('truetype'),
-    url('iconfont.svg?t=1760321219029#iconfont') format('svg');
+    url('iconfont.woff2?t=1760335155340') format('woff2'),
+    url('iconfont.woff?t=1760335155340') format('woff'),
+    url('iconfont.ttf?t=1760335155340') format('truetype');
 }
 
 .iconfont {
@@ -13,6 +13,34 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-zhenliao:before {
+  content: '\e628';
+}
+
+.icon-rizhi:before {
+  content: '\e60c';
+}
+
+.icon-chajianpeizhi:before {
+  content: '\e69c';
+}
+
+.icon-rizhi1:before {
+  content: '\e647';
+}
+
+.icon-quanxian:before {
+  content: '\e60d';
+}
+
+.icon-canshu:before {
+  content: '\e60f';
+}
+
+.icon-setting:before {
+  content: '\e966';
 }
 
 .icon-guidang:before {

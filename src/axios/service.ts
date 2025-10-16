@@ -16,11 +16,22 @@ const axiosInstance: AxiosInstance = axios.create({
   withCredentials: true
 })
 
-const filderUrl = ['/system/version', '/key'] // 加密白名单
+const filderUrl = [
+  '/system/version',
+  '/key',
+  '/task/GetConfigs',
+  '/task/GetCondition',
+  '/task/AddConfig',
+  '/task/UpdateConfig',
+  '/task/UpdateCondition',
+  '/task/UpdateStatus',
+  '/task/DeleteConfig'
+] // 加密白名单
 axiosInstance.interceptors.request.use((res: any) => {
   // axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
   const controller = new AbortController()
   const url = res.url || ''
+  res.headers['Content-Type'] = 'application/json;charset=UTF-8'
   // 只对非白名单接口做protobuf序列化
   if (!filderUrl.find((item) => url.includes(item))) {
     if (res.data) {
@@ -43,6 +54,16 @@ axiosInstance.interceptors.request.use((res: any) => {
   return res
 })
 
+const listUnProto = [
+  'api/task/GetConfigs',
+  'api/task/DeleteConfig',
+  'api/task/GetCondition',
+  'api/task/AddConfig',
+  'api/task/UpdateConfig',
+  'api/task/UpdateCondition',
+  'api/task/UpdateStatus'
+] // 列表不解密白名单aaaaa又一种逻辑
+
 axiosInstance.interceptors.response.use(
   (res: any) => {
     // (res: AxiosResponse) => {
@@ -53,6 +74,13 @@ axiosInstance.interceptors.response.use(
 
       res.data = buffer
       res = res.data
+    } else if (listUnProto.includes(config.url)) {
+      res = res.data
+      if (res.isSuccess) {
+        ElMessage.success('请求成功')
+      } else {
+        ElMessage.error(res.message || '请求失败')
+      }
     }
     return res
   },

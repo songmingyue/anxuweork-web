@@ -143,6 +143,65 @@ export interface PluginWithOut {
   pluginUID: string
 }
 
+export enum TaskTypeEnum {
+  Upload = 'Upload',
+  Push = 'Push',
+  Download = 'Download',
+  Converter = 'Converter'
+}
+
+// TaskType 中文映射
+export const TaskTypeLabels = {
+  [TaskTypeEnum.Upload]: '上传',
+  [TaskTypeEnum.Push]: '推送',
+  [TaskTypeEnum.Download]: '下载',
+  [TaskTypeEnum.Converter]: '转换'
+} as const
+
+export enum TaskTargetEnum {
+  LocalStorage = 'LocalStorage',
+  CompanyCloud = 'CompanyCloud',
+  ZheJiangRecognitionPlatform = 'ZheJiangRecognitionPlatform',
+  IMCISCityPlatform = 'IMCISCityPlatform',
+  ZhejiangQualityPlatform = 'ZhejiangQualityPlatform'
+}
+
+export const TaskTargetLabels = {
+  [TaskTargetEnum.LocalStorage]: '本地存储',
+  [TaskTargetEnum.CompanyCloud]: '云胶片',
+  [TaskTargetEnum.ZheJiangRecognitionPlatform]: '浙江省平台',
+  [TaskTargetEnum.IMCISCityPlatform]: '集成市平台',
+  [TaskTargetEnum.ZhejiangQualityPlatform]: '浙江省质量平台'
+} as const
+
+export enum DataTypeEnum {
+  Exam = 'Exam',
+  Report = 'Report',
+  Film = 'Film',
+  Image = 'Image',
+  Pdf = 'Pdf',
+  KosFile = 'KosFile'
+}
+
+export const DataTypeLabels = {
+  [DataTypeEnum.Exam]: '检查',
+  [DataTypeEnum.Report]: '报告',
+  [DataTypeEnum.Film]: '胶片',
+  [DataTypeEnum.Image]: '影像',
+  [DataTypeEnum.Pdf]: 'PDF',
+  [DataTypeEnum.KosFile]: 'KOS文件'
+} as const
+
+export interface ConfigItem {
+  id?: string
+  taskName?: string
+  taskType?: TaskTypeEnum | string
+  taskTarget?: TaskTargetEnum | string
+  dataType?: DataTypeEnum | string
+  isEnable?: boolean
+  conditionDescription?: string
+}
+
 export const getrolelist = (data: {
   roleName: string
   page: number
@@ -273,5 +332,85 @@ export const editPluginIsShow = (data: PluginWithOut): Promise<IResponse<PluginW
       requestTem: 'PluginProto',
       responseTem: 'PluginProto'
     }
+  })
+}
+
+// 任务列表
+export const getConfigs = (): Promise<IResponse<ConfigItem[]>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/GetConfigs'
+  })
+}
+
+// 人物列表删除
+export const deleteConfig = (data: { id: string }): Promise<IResponse<[]>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/DeleteConfig',
+    data
+  })
+}
+
+// 任务列表更新状态
+export const updateStatus = (data: ConfigItem): Promise<IResponse<[]>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/UpdateStatus',
+    data
+  })
+}
+// 任务列表更新状态
+export const addConfig = (data: ConfigItem): Promise<IResponse<[]>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/AddConfig',
+    data
+  })
+}
+
+// 任务条件更新
+export const updateCondition = (data: {
+  id: string
+  condition: string
+}): Promise<IResponse<[]>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/UpdateCondition',
+    data
+  })
+}
+
+// 任务条件获取
+export const getCondition = (data: {
+  id: string
+}): Promise<IResponse<{ condition: string; conditionConfigs: any }>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/GetCondition',
+    data
+  })
+}
+
+// 创建任务
+export const createConfig = (data: {
+  taskName: string
+  taskType: TaskTypeEnum
+  taskTarget: TaskTargetEnum
+  dataType: DataTypeEnum
+}): Promise<IResponse<ConfigItem>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/CreateConfig',
+    data
+  })
+}
+
+// 更新任务
+export const updateConfig = (data: ConfigItem): Promise<IResponse<ConfigItem>> => {
+  return request.post({
+    responseType: 'json',
+    url: 'task/UpdateConfig',
+    data
   })
 }

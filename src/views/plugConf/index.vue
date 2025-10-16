@@ -1,9 +1,10 @@
 <template>
   <div class="plugin-config">
     <!-- 上：服务（有分页） -->
-    <el-card shadow="never" class="mb8">
+    <el-card>
       <el-button type="primary" @click="onCreateService">新增服务</el-button>
-
+    </el-card>
+    <el-card shadow="never" class="mb8">
       <el-table
         :data="serviceList"
         v-loading="svcLoading"

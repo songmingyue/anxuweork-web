@@ -12,14 +12,26 @@
         style="width: 100%"
         @sort-change="onSortChange"
       >
-        <el-table-column prop="name" label="任务名称" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="taskType" label="任务类型" width="100" />
-        <el-table-column prop="target" label="任务目的地" min-width="160" />
-        <el-table-column prop="dataType" label="数据类型" width="100" />
+        <el-table-column prop="taskName" label="任务名称" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="taskType" label="任务类型" width="100">
+          <template #default="{ row }">
+            {{ TaskTypeLabels[row.taskType] }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="target" label="任务目的地" min-width="160">
+          <template #default="{ row }">
+            {{ TaskTargetLabels[row.taskTarget] }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="dataType" label="数据类型" width="100">
+          <template #default="{ row }">
+            {{ DataTypeLabels[row.dataType] }}
+          </template>
+        </el-table-column>
 
         <!-- 任务筛选条件：点击表头排序 -->
         <el-table-column
-          prop="filterCond"
+          prop="conditionDescription"
           label="任务筛选条件"
           min-width="280"
           sortable
@@ -28,86 +40,76 @@
 
         <el-table-column label="运行状态" width="160" align="center">
           <template #default="{ row }">
-            <span class="muted">{{ row.enabled ? '启用' : '停用' }}</span>
-            <el-switch v-model="row.enabled" class="ml8" @change="toggleEnable(row)" />
+            <span class="muted">{{ row.isEnable ? '启用' : '停用' }}</span>
+            <el-switch v-model="row.isEnable" class="ml8" @change="toggleEnable(row)" />
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="260" fixed="right">
+        <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" type="primary" text @click="onEditFilter(row)"
+            <el-button size="small" link type="primary" @click="onEditFilter(row)"
               >编辑条件</el-button
             >
-            <el-button size="small" type="primary" text @click="onEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" text @click="onDelete(row)">删除</el-button>
+            <el-button size="small" link type="primary" @click="onEdit(row)">编辑</el-button>
+            <el-button size="small" link type="danger" @click="onDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 新增/编辑任务弹窗 -->
+    <TaskConfigDialog
+      v-model="showTaskDlg"
+      :title="dlgTitle"
+      :model="editTask || undefined"
+      @save="onTaskSave"
+    />
+
+    <!-- 条件编辑器弹窗 -->
+    <ConditionEditorDialog
+      v-model="showConditionDlg"
+      :title="`编辑条件 - ${editConditionTask?.taskName || ''}`"
+      :model="conditionFormData"
+      @save="onConditionSave"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ElMessage, ElMessageBox, ElTable, ElTableColumn, ElCard, ElButton } from 'element-plus'
+import { ref, onMounted } from 'vue'
+import {
+  ElMessage,
+  ElMessageBox,
+  ElTable,
+  ElTableColumn,
+  ElCard,
+  ElButton,
+  ElSwitch
+} from 'element-plus'
+import {
+  ConfigItem,
+  getConfigs,
+  TaskTargetLabels,
+  TaskTypeLabels,
+  DataTypeLabels,
+  deleteConfig,
+  updateStatus,
+  getCondition
+} from '@/api/authConf'
+import TaskConfigDialog from './components/TaskConfigDialog.vue'
+import ConditionEditorDialog from './components/ConditionEditorDialog.vue'
 
-type TaskRow = {
-  id: string
-  name: string
-  taskType: '上传' | '推送' | '下载' | '转化'
-  target: string
-  dataType: '影像' | '报告' | '胶片' | '检查' | 'PDF'
-  filterCond: string
-  enabled: boolean
-}
+const list = ref<ConfigItem[]>([])
 
-const list = ref<TaskRow[]>([
-  {
-    id: '1',
-    name: '上传云胶片影像',
-    taskType: '上传',
-    target: '云胶片',
-    dataType: '影像',
-    filterCond: 'CT, 今日',
-    enabled: true
-  },
-  {
-    id: '2',
-    name: '推送集成平台影像',
-    taskType: '推送',
-    target: '集成市平台',
-    dataType: '影像',
-    filterCond: '全部',
-    enabled: false
-  },
-  {
-    id: '3',
-    name: '推送集成平台检查',
-    taskType: '推送',
-    target: '集成市平台',
-    dataType: '检查',
-    filterCond: '门诊, 本周',
-    enabled: false
-  },
-  {
-    id: '4',
-    name: '下载本地报告',
-    taskType: '下载',
-    target: '本地存储',
-    dataType: '报告',
-    filterCond: '报告状态=已审核',
-    enabled: true
-  },
-  {
-    id: '5',
-    name: '上传云胶片报告',
-    taskType: '上传',
-    target: '云胶片',
-    dataType: '报告',
-    filterCond: '近3日',
-    enabled: true
-  }
-])
+// 任务弹窗状态
+const showTaskDlg = ref(false)
+const dlgTitle = ref('新增任务')
+const editTask = ref<Partial<ConfigItem> | null>(null)
+
+// 条件编辑器弹窗状态
+const showConditionDlg = ref(false)
+const editConditionTask = ref<ConfigItem | null>(null)
+const conditionFormData = ref<any>(null)
 
 function onSortChange(payload: {
   column: any
@@ -118,28 +120,146 @@ function onSortChange(payload: {
   console.log('sort-change', payload)
 }
 
-function toggleEnable(row: TaskRow) {
-  // TODO: 调用接口保存启用/停用
-  ElMessage.success(`${row.name} 已${row.enabled ? '启用' : '停用'}`)
+async function toggleEnable(row: ConfigItem) {
+  const data = await updateStatus({ ...row })
+  if (data.isSuccess) {
+    ElMessage.success(`${row.taskName} 已${row.isEnable ? '启用' : '停用'}`)
+    setTimeout(() => {
+      getConfigList()
+    }, 1000)
+  } else {
+    ElMessage.error(data.message || '操作失败')
+  }
 }
 
 function onCreate() {
-  ElMessage.info('点击了新增服务（在此弹窗或跳转配置页）')
+  dlgTitle.value = '新增任务'
+  editTask.value = {
+    taskName: '',
+    taskType: undefined,
+    taskTarget: undefined,
+    dataType: undefined
+  }
+  showTaskDlg.value = true
 }
-function onEditFilter(row: TaskRow) {
-  ElMessage.info(`编辑筛选条件：${row.name}`)
+async function onEditFilter(row: ConfigItem) {
+  editConditionTask.value = row
+  const { isSuccess, data } = await getCondition({
+    id: row.id || ''
+  })
+  if (isSuccess && data.condition) {
+    const condition: any = JSON.parse(data.condition)
+    console.log('condition', condition)
+    conditionFormData.value = {
+      taskName: row.taskName,
+      taskId: row.id,
+      logic: condition.LT, // 默认 AND,可根据实际解析
+      conditions: condition.CN.length
+        ? condition.CN.map((item) => {
+            const ctinput: any =
+              item.CT === 'String'
+                ? item.V
+                : item.V.split('|').length > 1
+                  ? item.V.split('|')
+                  : item.V
+            return {
+              id: `condition_${Date.now()}`,
+              field: item.F,
+              operator: item.CTV,
+              input: typeof ctinput !== 'string' ? ctinput[1] : ctinput,
+              compareType: typeof ctinput !== 'string' ? ctinput[0] : '',
+              value: typeof ctinput !== 'string' ? ctinput[1] : '',
+              unit: typeof ctinput !== 'string' ? ctinput[2] : '',
+              timeType: typeof ctinput !== 'string' ? 'now' : 'fixed',
+              // value: item.V,
+              // unit: item.U,
+              dateValue: typeof ctinput !== 'string' ? ctinput[1] : ctinput
+            }
+          })
+        : [
+            {
+              id: `condition_${Date.now()}`,
+              field: '',
+              operator: '',
+              compareType: 'String',
+              timeType: 'now',
+              value: '10',
+              unit: 's',
+              dateValue: '',
+              input: ''
+            }
+          ]
+    }
+
+    showConditionDlg.value = true
+  } else {
+    conditionFormData.value = {
+      taskName: row.taskName,
+      taskId: row.id,
+      logic: 'And',
+      conditions: [
+        {
+          id: `condition_${Date.now()}`,
+          field: '',
+          operator: '',
+          compareType: 'String',
+          timeType: 'now',
+          value: '10',
+          unit: 's',
+          dateValue: '',
+          input: ''
+        }
+      ]
+    }
+  }
+  showConditionDlg.value = true
+  // 解析现有的 conditionDescription 为表单数据
+  // 这里需要根据你的实际数据格式进行解析
 }
-function onEdit(row: TaskRow) {
-  ElMessage.info(`编辑：${row.name}`)
+
+// 保存条件编辑
+async function onConditionSave() {
+  // 将条件转换为描述文本
+  getConfigList()
+  showConditionDlg.value = false
 }
-function onDelete(row: TaskRow) {
-  ElMessageBox.confirm(`确定删除任务【${row.name}】吗？`, '提示', { type: 'warning' })
-    .then(() => {
-      list.value = list.value.filter((x) => x.id !== row.id)
-      ElMessage.success('删除成功')
+
+function onEdit(row: ConfigItem) {
+  dlgTitle.value = '编辑任务'
+  editTask.value = { ...row }
+  showTaskDlg.value = true
+}
+function onDelete(row: ConfigItem) {
+  ElMessageBox.confirm(`确定删除任务【${row.taskName}】吗？`, '提示', { type: 'warning' })
+    .then(async () => {
+      const data = await deleteConfig({
+        id: row.id || ''
+      })
+      if (data.isSuccess) {
+        getConfigList()
+        ElMessage.success(data.message || '删除成功')
+      } else {
+        ElMessage.error(data.message || '删除失败')
+      }
+      // list.value = list.value.filter((x) => x.id !== row.id)
+      // ElMessage.success('删除成功')
     })
     .catch(() => {})
 }
+
+const getConfigList = async () => {
+  const { data } = await getConfigs()
+  list.value = data
+}
+
+// 保存任务（新增或编辑）
+async function onTaskSave() {
+  await getConfigList()
+}
+
+onMounted(() => {
+  getConfigList()
+})
 </script>
 
 <style scoped>

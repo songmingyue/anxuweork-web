@@ -19,8 +19,8 @@
         <el-table-column prop="status" label="运行状态" width="120" />
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click.stop="ElMessage.info(row)">编辑</el-button>
-            <el-button link type="danger" @click.stop="ElMessage.info('删除服务')">删除</el-button>
+            <el-button link type="primary" @click.stop="onEditService(row)">编辑</el-button>
+            <el-button link type="danger" @click.stop="onDeleteService(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,17 +68,35 @@
       </el-table>
       <!-- 下表不分页：不渲染 el-pagination -->
     </el-card>
+
+    <!-- 新增服务对话框 -->
+    <ServiceConfigDialog
+      v-model="showServiceDlg"
+      :title="serviceDlgTitle"
+      :model="editService || undefined"
+      @save="onServiceSave"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElTable, ElTableColumn, ElCard, ElButton } from 'element-plus'
+import ServiceConfigDialog from './components/ServiceConfigDialog.vue'
 
 type ServiceItem = {
   uid: string
   groupName: string
   status: '运行中' | '已停止'
+  dbServiceIP?: string
+  dbName?: string
+  dbPort?: string
+  dbUser?: string
+  dbPassword?: string
+  dbType?: string
+  uploadServiceUID?: string
+  uploadMediumUID?: string
+  userUID?: string
 }
 type TaskItem = {
   uid: string
@@ -102,6 +120,11 @@ const servicePage = ref(1)
 const serviceSize = ref(10)
 const activeService = ref<ServiceItem | null>(null)
 const taskList = ref<TaskItem[]>([])
+
+// 服务对话框状态
+const showServiceDlg = ref(false)
+const serviceDlgTitle = ref('新增通用模板')
+const editService = ref<Partial<ServiceItem> | null>(null)
 
 // 模拟接口（请替换为真实请求）
 async function apiFetchServices(p: { page: number; size: number }) {
@@ -182,8 +205,29 @@ function onSvcSizeChange(s: number) {
 }
 
 function onCreateService() {
-  ElMessage.info('新增服务')
+  serviceDlgTitle.value = '新增通用模板'
+  editService.value = {}
+  showServiceDlg.value = true
 }
+
+function onServiceSave(formData: any) {
+  console.log('保存服务配置:', formData)
+  // TODO: 调用API保存服务配置
+  ElMessage.success('服务配置保存成功')
+  loadServices()
+}
+
+function onEditService(row: ServiceItem) {
+  serviceDlgTitle.value = '编辑服务'
+  editService.value = { ...row }
+  showServiceDlg.value = true
+}
+
+function onDeleteService(row: ServiceItem) {
+  ElMessage.info(`删除服务: ${row.groupName}`)
+  // TODO: 调用API删除服务
+}
+
 function onCreateTask() {
   if (!activeService.value) return ElMessage.warning('请先选择服务')
   ElMessage.info(`为服务 ${activeService.value.groupName} 新增任务`)

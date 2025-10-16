@@ -619,3 +619,12 @@ message PluginProto {
   // 是否显示
   bool is_show = 13;
 }
+
+message ServiceInputProto {
+  string service_uid = 1;
+  string service_name = 2;
+  string if_enable = 3;
+  string if_delete = 4;
+  int32 page_size = 5;
+  int32 current_page = 6;
+}

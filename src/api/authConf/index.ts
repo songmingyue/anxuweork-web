@@ -1,5 +1,6 @@
 import request from '@/axios'
 import { PageType } from '../type'
+import { UserType } from '../login/types'
 
 export enum CodeName {
   InsertTaskInfo = 'InsertTaskInfo', // 拆分任务插入上传和推送表配置
@@ -202,6 +203,13 @@ export interface ConfigItem {
   conditionDescription?: string
 }
 
+export interface Preset {
+  userInfo: UserType | undefined
+  querySeq?: number
+  userId?: string
+  queryType?: string
+}
+
 export const getrolelist = (data: {
   roleName: string
   page: number
@@ -244,7 +252,7 @@ export const editsysparametersingle = (data: {
   })
 }
 // 获取检查信息表格导出配置 表格
-export const getpreset = (data: { userInfo: any }): Promise<IResponse<PresetList[]>> => {
+export const getpreset = (data: Preset): Promise<IResponse<PresetList[]>> => {
   return request.post({
     url: 'check/getpreset',
     data,

@@ -1,33 +1,42 @@
 import request from '@/axios'
 import { PageType } from '../type'
 
-interface ServiceConfig {
+export interface ServiceConfig {
   ifEnable: boolean
   serviceName: string
+  serviceUID?: string
+}
+
+export interface Servicemaplist {
+  configVersion: string
+  ifSupportCheck: boolean
+  ifTriggerByDate: string
+  ifTriggerByDay: string
+  ifTriggerByTime: string
+  pluginName: string
+  pluginUID: string
   serviceUID: string
+  pluginServiceMapUID: string
+  taskFieldValue: string
+  triggerInternal: number
+  pluginConfigKeyValue: string
+  pluginConfigValues: string
+  pluginRule: string
 }
 
-enum DBType {
-  MySQL = '0'
-}
-
-enum QueryType {
-  Plugin = 'plugin'
-}
-
-interface StrictQueryConfig {
-  defaultFlag: '0' | '1'
+export interface PresetModal {
+  querySeq?: number
+  queryType: string
+  userUID?: string
   name: string
-  publicFlag: '0' | '1'
-  queryCondition: DBType
-  querySeq: number
-  queryType: QueryType
-  sortNO: string
-  userUID: string
+  queryCondition: string
+  sortNO?: string
+  defaultFlag: string // 1star 0 unstar
+  publicFlag?: string
 }
 
 // 获取服务
-export const getdictypelist = (data: PageType): Promise<IResponse<ServiceConfig[]>> => {
+export const getservicelist = (data: PageType): Promise<IResponse<ServiceConfig[]>> => {
   return request.post({
     url: 'plugin/getservicelist',
     data,
@@ -37,15 +46,97 @@ export const getdictypelist = (data: PageType): Promise<IResponse<ServiceConfig[
     }
   })
 }
-
-// 获取模板
-export const getpreset = (data: ServiceConfig): Promise<IResponse<StrictQueryConfig[]>> => {
+// 修改服务状态
+export const disableService = (data: ServiceConfig): Promise<IResponse<null>> => {
   return request.post({
-    url: 'check/getpreset',
+    url: 'plugin/disablepluginService',
     data,
     requestTem: {
-      requestTem: 'UserQuerySetInputProto',
-      responseTem: 'UserQuerySetMstProto'
+      requestTem: 'ServiceOutputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+// 创建服务
+export const createpluginService = (data: ServiceConfig): Promise<IResponse<null>> => {
+  return request.post({
+    url: 'plugin/createpluginService',
+    data,
+    requestTem: {
+      requestTem: 'ServiceOutputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+// 修改服务
+export const editpluginService = (data: ServiceConfig): Promise<IResponse<null>> => {
+  return request.post({
+    url: 'plugin/editpluginService',
+    data,
+    requestTem: {
+      requestTem: 'ServiceOutputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+// 删除
+export const deletepluginService = (data: ServiceConfig): Promise<IResponse<null>> => {
+  return request.post({
+    url: 'plugin/deletepluginService',
+    data,
+    requestTem: {
+      requestTem: 'ServiceOutputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+// 服务下任务列表
+
+export const getpluginservicemaplist = (
+  data: ServiceConfig
+): Promise<IResponse<Servicemaplist>> => {
+  return request.post({
+    url: 'plugin/getpluginservicemaplist',
+    data,
+    requestTem: {
+      requestTem: 'ServiceOutputProto',
+      responseTem: 'PluginServiceMapProto'
+    }
+  })
+}
+
+export const getallpluginlist = (): Promise<IResponse<Servicemaplist[]>> => {
+  return request.post({
+    url: 'plugin/getallpluginlist',
+    requestTem: {
+      requestTem: 'PluginProto',
+      responseTem: 'PluginProto'
+    }
+  })
+}
+// 新增模板
+export const addpreset = (data: PresetModal): Promise<IResponse<[]>> => {
+  return request.post({
+    url: 'check/addpreset',
+    data,
+    requestTem: {
+      requestTem: 'UserQuerySetMstDtoProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+// 编辑模板
+export const updateplugindefault = (data: PresetModal): Promise<IResponse<[]>> => {
+  return request.post({
+    data,
+    url: 'plugin/updateplugindefault',
+    requestTem: {
+      requestTem: 'UserQuerySetMstDtoProto',
+      responseTem: 'whitelist'
     }
   })
 }

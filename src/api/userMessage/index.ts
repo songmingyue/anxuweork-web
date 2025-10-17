@@ -17,10 +17,18 @@ export const StatusOptions = [
 
 export interface UserInfo {
   deptID?: string
+  userUID?: string
+  loginName?: string
+  userName?: string
+  workNO?: string
+  officePhone?: string
   name?: string
   organizationID?: string
   /** 传值使用 StatusEnum：StatusEnum.All | StatusEnum.Open | StatusEnum.Closed */
   status?: StatusEnum
+  deptName?: string
+  privatePhone?: string
+  email?: string
 }
 
 interface UserListData extends PageType, UserInfo {}

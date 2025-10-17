@@ -1,8 +1,35 @@
 <template>
   <div class="plugin-config">
     <!-- 上：服务（有分页） -->
-    <el-card>
+
+    <el-card body-style="display: flex; align-item: center; justify-content: space-between">
       <el-button type="primary" @click="onCreateService">新增服务</el-button>
+      <!-- todo: 应该拆出去，在代码太乱了 -->
+      <el-dropdown size="small" type="primary">
+        <el-button type="primary" size="small">
+          模板<el-icon><ArrowDownBold /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item
+              v-for="item in modalList"
+              :key="item.sortNO"
+              @click="editModalMed(item)"
+            >
+              <div class="icon-drop">
+                <span>{{ item.name }}</span>
+                <div>
+                  <el-icon class="icon-hover"><CloseBold /></el-icon>
+                  <el-icon class="icon-hover" v-if="item.defaultFlag === '0'"><Star /></el-icon>
+                  <el-icon v-else><StarFilled color="#fbc02d" /></el-icon>
+                </div>
+              </div>
+            </el-dropdown-item>
+            <el-dropdown-item divided :icon="Plus" @click="createModal">新增模板</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <!-- 到这里 -->
     </el-card>
     <el-card shadow="never" class="mb8">
       <el-table
@@ -14,9 +41,21 @@
         height="273"
         class="mt8"
       >
-        <el-table-column prop="uid" label="服务UID" min-width="200" />
-        <el-table-column prop="groupName" label="任务组名" min-width="200" />
-        <el-table-column prop="status" label="运行状态" width="120" />
+        <el-table-column prop="serviceUID" label="服务UID" min-width="200" />
+        <el-table-column prop="serviceName" label="任务组名" min-width="200" />
+        <el-table-column prop="ifEnable" label="运行状态" min-width="130">
+          <template #default="{ row }">
+            <el-switch
+              v-model="row.ifEnable"
+              :active-value="true"
+              :inactive-value="false"
+              size="small"
+              active-text="启用"
+              inactive-text="停用"
+              @change="() => changeStatus(row)"
+            />
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click.stop="onEditService(row)">编辑</el-button>
@@ -44,7 +83,7 @@
       <div class="flex">
         <el-button type="primary" @click="onCreateTask">新增任务</el-button>
         <span style="margin-left: 12px; color: #909399" v-if="activeService">
-          当前服务：{{ activeService.groupName }}（{{ activeService.uid }}）
+          当前服务：{{ activeService.serviceName }}（{{ activeService.serviceUID }}）
         </span>
       </div>
 
@@ -71,33 +110,65 @@
 
     <!-- 新增服务对话框 -->
     <ServiceConfigDialog
-      v-model="showServiceDlg"
-      :title="serviceDlgTitle"
-      :model="editService || undefined"
+      v-model="showModalDialog"
+      :title="modalDialogTitle"
+      :model="editModal || undefined"
       @save="onServiceSave"
     />
+    <el-dialog v-model="showServiceModal" :title="serviceDlgTitle" width="600px">
+      <el-form :rules="rules" v-model="serviceModal">
+        <el-form-item label="任务组名" label-width="80px" required>
+          <el-input v-model="serviceModal.serviceName" placeholder="请输入服务名称" />
+        </el-form-item>
+        <el-form-item label="运行状态" label-width="80px" required>
+          <el-select v-model="serviceModal.ifEnable">
+            <el-option label="启用" :value="true" />
+            <el-option label="停用" :value="false" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showServiceModal = false">取 消</el-button>
+        <el-button type="primary" @click="saveService">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElTable, ElTableColumn, ElCard, ElButton } from 'element-plus'
+import { ArrowDownBold, CloseBold, Plus, Star, StarFilled } from '@element-plus/icons-vue'
+import {
+  ElMessage,
+  ElTable,
+  ElTableColumn,
+  ElCard,
+  ElButton,
+  ElSwitch,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElSelect,
+  ElOption,
+  ElPagination,
+  ElDialog,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElDropdown,
+  ElIcon
+} from 'element-plus'
 import ServiceConfigDialog from './components/ServiceConfigDialog.vue'
+import {
+  createpluginService,
+  deletepluginService,
+  disableService,
+  editpluginService,
+  getservicelist,
+  ServiceConfig
+} from '@/api/plugConf'
+import { getpreset, PresetList } from '@/api/authConf'
+import { useUserStoreWithOut } from '@/store/modules/user'
 
-type ServiceItem = {
-  uid: string
-  groupName: string
-  status: '运行中' | '已停止'
-  dbServiceIP?: string
-  dbName?: string
-  dbPort?: string
-  dbUser?: string
-  dbPassword?: string
-  dbType?: string
-  uploadServiceUID?: string
-  uploadMediumUID?: string
-  userUID?: string
-}
 type TaskItem = {
   uid: string
   name: string
@@ -114,30 +185,27 @@ type TaskItem = {
 // 查询与状态
 const svcLoading = ref(false)
 const taskLoading = ref(false)
-const serviceList = ref<ServiceItem[]>([])
+const serviceList = ref<ServiceConfig[]>([])
 const serviceTotal = ref(0)
 const servicePage = ref(1)
 const serviceSize = ref(10)
-const activeService = ref<ServiceItem | null>(null)
+const activeService = ref<ServiceConfig | null>(null)
 const taskList = ref<TaskItem[]>([])
-
+const showServiceModal = ref(false)
+const serviceModal = ref<ServiceConfig>({
+  serviceName: '',
+  ifEnable: false
+})
 // 服务对话框状态
-const showServiceDlg = ref(false)
-const serviceDlgTitle = ref('新增通用模板')
-const editService = ref<Partial<ServiceItem> | null>(null)
-
-// 模拟接口（请替换为真实请求）
-async function apiFetchServices(p: { page: number; size: number }) {
-  await new Promise((r) => setTimeout(r, 200))
-  const all: ServiceItem[] = [
-    { uid: 'svc-001', groupName: '任务组A', status: '运行中' },
-    { uid: 'svc-002', groupName: '任务组B', status: '已停止' },
-    { uid: 'svc-003', groupName: '任务组C', status: '运行中' }
-  ]
-  const start = (p.page - 1) * p.size
-  return { total: all.length, records: all.slice(start, start + p.size) }
+const showModalDialog = ref(false)
+const serviceDlgTitle = ref('新增服务信息')
+const modalDialogTitle = ref('新增通用模板')
+const editService = ref<Partial<ServiceConfig> | null>(null)
+const editModal = ref({})
+const rules = {
+  serviceName: [{ required: true, message: '服务名称不能为空', trigger: 'blur' }],
+  ifEnable: [{ required: true, message: '请选择服务状态', trigger: 'change' }]
 }
-
 async function apiFetchTasks() {
   await new Promise((r) => setTimeout(r, 200))
   // 不分页，直接返回全量
@@ -156,23 +224,17 @@ async function apiFetchTasks() {
     }
   ] as TaskItem[]
 }
-
+const modalList = ref<PresetList[]>([])
 // 上表：加载服务（有分页）
 async function loadServices() {
   svcLoading.value = true
   try {
-    const { total, records } = await apiFetchServices({
-      page: servicePage.value,
-      size: serviceSize.value
+    const { pageBase, data } = await getservicelist({
+      currentPage: servicePage.value,
+      pageSize: serviceSize.value
     })
-    serviceTotal.value = total
-    serviceList.value = records
-    if (records.length) {
-      onServiceRowClick(records[0])
-    } else {
-      activeService.value = null
-      taskList.value = []
-    }
+    serviceTotal.value = pageBase?.totalRecords || 0
+    serviceList.value = data || []
   } finally {
     svcLoading.value = false
   }
@@ -190,7 +252,7 @@ async function loadTasks() {
 }
 
 // 事件
-function onServiceRowClick(row: ServiceItem) {
+function onServiceRowClick(row: ServiceConfig) {
   activeService.value = row
   loadTasks()
 }
@@ -205,35 +267,92 @@ function onSvcSizeChange(s: number) {
 }
 
 function onCreateService() {
-  serviceDlgTitle.value = '新增通用模板'
+  serviceDlgTitle.value = '新增服务信息'
   editService.value = {}
-  showServiceDlg.value = true
+  showServiceModal.value = true
 }
 
 function onServiceSave(formData: any) {
   console.log('保存服务配置:', formData)
-  // TODO: 调用API保存服务配置
   ElMessage.success('服务配置保存成功')
   loadServices()
 }
 
-function onEditService(row: ServiceItem) {
+function onEditService(row: ServiceConfig) {
   serviceDlgTitle.value = '编辑服务'
-  editService.value = { ...row }
-  showServiceDlg.value = true
+  serviceModal.value = { ...row, ifEnable: row.ifEnable || false }
+  showServiceModal.value = true
 }
 
-function onDeleteService(row: ServiceItem) {
-  ElMessage.info(`删除服务: ${row.groupName}`)
+async function onDeleteService(row: ServiceConfig) {
+  const { isSuccess, message } = await deletepluginService(row)
+
+  if (isSuccess) {
+    ElMessage.success(message || '服务删除成功')
+    showServiceModal.value = false
+    loadServices()
+  } else {
+    ElMessage.error(message || '服务删除失败')
+  }
   // TODO: 调用API删除服务
 }
 
 function onCreateTask() {
   if (!activeService.value) return ElMessage.warning('请先选择服务')
-  ElMessage.info(`为服务 ${activeService.value.groupName} 新增任务`)
+  ElMessage.info(`为服务 ${activeService.value.serviceName} 新增任务`)
+}
+// 切换状态
+const changeStatus = async (row: ServiceConfig) => {
+  const { isSuccess, message } = await disableService(row)
+  if (isSuccess) {
+    ElMessage.success('服务状态修改成功')
+    loadServices()
+  } else {
+    ElMessage.error(`服务状态修改失败: ${message}`)
+  }
+}
+const saveService = async () => {
+  let data: any = {}
+  if (editService.value && editService.value.serviceUID) {
+    data = await editpluginService({
+      ...serviceModal.value
+    })
+  } else {
+    data = await createpluginService(serviceModal.value)
+  }
+  if (data.isSuccess) {
+    ElMessage.success('服务保存成功')
+    showServiceModal.value = false
+    loadServices()
+  } else {
+    ElMessage.error(`服务保存失败: ${data.message}`)
+  }
+}
+const userStore = useUserStoreWithOut()
+const getModelList = async () => {
+  // 获取模板列表的逻辑
+  const { data } = await getpreset({
+    userInfo: userStore.getUserInfo, // 示例参数，根据实际API需求调整
+    queryType: 'plugin'
+  })
+  modalList.value = data || []
 }
 
-onMounted(loadServices)
+const createModal = () => {
+  modalDialogTitle.value = '新增通用模板'
+  editModal.value = {}
+  showModalDialog.value = true
+}
+
+const editModalMed = (item: PresetList) => {
+  modalDialogTitle.value = '编辑通用模板'
+  editModal.value = { ...item }
+  showModalDialog.value = true
+}
+onMounted(() => {
+  loadServices()
+  getModelList()
+})
 </script>
 
 <style scoped>
@@ -254,5 +373,27 @@ onMounted(loadServices)
 .flex {
   display: flex;
   align-items: center;
+}
+
+.new-modal {
+  display: flex;
+  border: 1px solid #dcdfe6;
+}
+
+.icon-drop {
+  display: flex;
+  justify-content: space-between;
+  min-width: 150px;
+  align-items: center;
+  padding: 2px 10px;
+}
+
+.icon-hover {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.icon-hover:hover {
+  transform: rotate(90deg);
 }
 </style>

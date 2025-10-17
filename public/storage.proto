@@ -628,3 +628,47 @@ message ServiceInputProto {
   int32 page_size = 5;
   int32 current_page = 6;
 }
+
+message ServiceOutputProto {
+  string serviceUID = 1;
+  string serviceName = 2;
+  bool ifEnable = 3;
+  bool ifDelete = 4;
+}
+message PluginServiceMapProto {
+  string serviceUID = 1;
+  string pluginUID = 2;
+  bool ifEnable = 3;
+  bool ifDelete = 4;
+  string pluginName = 5;
+  string pluginConfigValues = 6;
+  string pluginConfigKeyValue = 7;
+  int32 triggerInternal = 8;
+  string ifTriggerByTime = 9;
+  string triggerTime = 10;
+  string ifTriggerByDay = 11;
+  string triggerDayOfWeek = 12;
+  string ifTriggerByDate = 13;
+  string triggerBeginDate = 14;
+  string triggerEndDate = 15;
+  string triggerBeginTime = 16;
+  string triggerEndTime = 17;
+  int32 triggerTimes = 18;
+  string taskFieldValue = 19;
+  string pluginRule = 20;
+  string configVersion = 21;
+  string pluginServiceMapUID = 22;
+  bool ifSupportCheck = 23;  
+}
+
+message UserQuerySetMstDtoProto {
+  int32 query_seq = 1;           // 查询序列号
+  string query_type = 2;         // 查询类型
+  string user_uid = 3;           // 用户UID
+  string name = 4;               // 名称
+  string query_condition = 5;    // 查询条件
+  int32 sort_no = 6;            // 排序号
+  string default_flag = 7;      // 默认标志
+  string public_flag = 8;       // 公开标志
+  UserOrgInfoProto user_info = 9; // 用户组织信息
+}

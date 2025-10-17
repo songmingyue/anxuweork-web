@@ -9,7 +9,6 @@ import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import { viteMockServe } from 'vite-plugin-mock'
 import PurgeIcons from 'vite-plugin-purge-icons'
 import ServerUrlCopy from 'vite-plugin-url-copy'
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -63,11 +62,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         failOnWarning: false,
         failOnError: false,
         include: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx'] // 检查的文件
-      }),
-      VueI18nPlugin({
-        runtimeOnly: true,
-        compositionOnly: true,
-        include: [resolve(__dirname, 'src/locales/**')]
       }),
       createSvgIconsPlugin({
         iconDirs: [pathResolve('src/assets/svgs')],

@@ -33,40 +33,43 @@
             </ElFormItem>
           </ElCol>
         </ElRow>
+      </ElForm>
 
-        <!-- 动态表单区域 -->
-        <div v-if="formActive && formActive.length > 0" class="dynamic-form-container">
-          <DynamicFormRenderer
-            v-for="(configItem, index) in formActiveSmall"
-            :key="index"
-            :config="configItem"
-            :model-value="formData"
-            @update:modelValue="updateFormData"
+      <!-- 动态表单区域 -->
+      <ElForm ref="dynamicFormRef" :model="formData" :rules="dynamicRules" label-width="220px">
+        <div v-if="typeForm === 'step'" class="dynamic-form-container">
+          <DynamicFormField
+            v-for="(field, index) in processFormActiveSmall.fiedlInfos"
+            :key="field.prop || index"
+            :field="field"
+            :model="formData[processFormActiveSmall.prop]"
+            :rules="dynamicRules"
+            @update:model="handleFieldUpdate"
           />
         </div>
         <!-- 展开收起 -->
         <BusinessFormRenderer
+          v-if="typeForm === 'collapse'"
           :config="formHavecollapse"
           :model-value="formData"
+          :rules="dynamicRules"
           @update:model-value="updateFormData"
         />
 
         <!-- LinkPd 数组渲染器（用于纯输入字段，无 opt 属性的配置） -->
-        <div v-if="formJustInput && formJustInput.length > 0">
-          <LinkPdArrayRenderer
-            :linkPdArray="formJustInput"
-            :model-value="formData"
-            @update:model-value="updateFormData"
+        <div v-if="typeForm === 'justinput'">
+          <DynamicFormField
+            v-for="(field, index) in formJustInput"
+            :key="field.prop || index"
+            :field="field"
+            :model="formData"
+            :rules="dynamicRules"
+            @update:model="handleFieldUpdate"
           />
         </div>
       </ElForm>
     </div>
-    <el-steps
-      align-center
-      :active="stepActive"
-      v-if="formActive && formActive.length > 0"
-      finish-status="success"
-    >
+    <el-steps align-center :active="stepActive" v-if="typeForm === 'step'" finish-status="success">
       <el-step
         v-for="(item, index) in formActive"
         :key="item.index || index"
@@ -78,7 +81,7 @@
     </el-steps>
     <template #footer>
       <div class="dialog-footer">
-        <ElButton @click="visible = false">取消</ElButton>
+        <ElButton @click="cancel">取消</ElButton>
         <ElButton type="primary" @click="handleSubmit"> 确定 </ElButton>
       </div>
     </template>
@@ -101,14 +104,15 @@ import {
   ElCol,
   ElMessage
 } from 'element-plus'
-import DynamicFormRenderer from './DynamicFormRenderer.vue'
+import DynamicFormField from './DynamicFormField.vue'
 import BusinessFormRenderer from './BusinessFormRenderer.vue'
-import LinkPdArrayRenderer from './LinkPdArrayRenderer.vue'
+import { createpluginservicemap } from '@/api/plugConf'
 
 interface Props {
   modelValue: boolean
   title?: string
   configData?: any[]
+  serviceUID: string
   taskPurposeOptions: any[]
 }
 
@@ -117,7 +121,7 @@ const formActiveSmall = ref<any>([])
 const formHavecollapse = ref<any[]>([])
 const formJustInput = ref<any[]>([])
 const stepActive = ref(0)
-
+const typeForm = ref('')
 const props = withDefaults(defineProps<Props>(), {
   title: '新增任务',
   configData: () => [],
@@ -141,22 +145,88 @@ const baseForm = ref({
   pluginUID: ''
 })
 
-const baseRules = ref({
+const baseRules = {
   pluginName: [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
   pluginUID: [{ required: true, message: '请选择任务用途', trigger: 'change' }]
-})
+}
+
+// 动态表单验证规则
+const dynamicFormRef = ref()
+const dynamicRules = ref<Record<string, any>>({})
+
+// 生成验证规则
+const generateValidationRules = (configData: any[], pluginRules?: any) => {
+  const rules: Record<string, any> = {}
+
+  // 递归处理字段，提取所有需要验证的字段
+  const extractFieldRules = (fields: any[]) => {
+    if (!fields || !Array.isArray(fields)) return
+
+    fields.forEach((field) => {
+      // 如果字段有 required 属性，添加验证规则
+      if (field.required && field.prop) {
+        rules[field.prop] = [
+          {
+            required: true,
+            message: `请${field.type === 'select' ? '选择' : '输入'}${field.label || field.fieldLabel || field.prop}`,
+            trigger: field.type === 'select' ? 'change' : 'blur'
+          }
+        ]
+      }
+
+      // 递归处理 fiedlInfos
+      if (field.fiedlInfos && Array.isArray(field.fiedlInfos)) {
+        extractFieldRules(field.fiedlInfos)
+      }
+
+      // 递归处理 opt 中的 fiedlInfos
+      if (field.opt && Array.isArray(field.opt)) {
+        field.opt.forEach((option) => {
+          if (option.fiedlInfos && Array.isArray(option.fiedlInfos)) {
+            extractFieldRules(option.fiedlInfos)
+          }
+        })
+      }
+    })
+  }
+
+  if (typeForm.value === 'step') {
+    // 对于 step 形式，使用 pluginConfigs 下每个数组的 required 字段
+    configData.forEach((config) => {
+      if (config.fiedlInfos && Array.isArray(config.fiedlInfos)) {
+        extractFieldRules(config.fiedlInfos)
+      }
+    })
+  } else if (typeForm.value === 'collapse' || typeForm.value === 'justinput') {
+    // 对于 collapse 和 justinput 形式，递归提取所有字段
+    extractFieldRules(configData)
+  }
+
+  // 如果有 pluginRule 数组，使用它覆盖或补充验证规则
+  if (pluginRules) {
+    const newRules = JSON.parse(pluginRules)
+    newRules.forEach((rule) => {
+      if (rule.prop) {
+        rules[rule.prop] = [
+          {
+            required: true,
+            message:
+              rule.message ||
+              `请${rule.type === 'select' ? '选择' : '输入'}${rule.label || rule.prop}`,
+            trigger: rule.trigger || (rule.type === 'select' ? 'change' : 'blur')
+          }
+        ]
+      }
+    })
+  }
+
+  dynamicRules.value = rules
+  console.log('生成的验证规则:', rules)
+  return rules
+}
 
 // 步骤配置
 const currentStep = ref(0)
-const steps = computed(() => {
-  if (!props.configData || props.configData.length === 0) {
-    return []
-  }
-  return props.configData.map((config, index) => ({
-    label: config.label || `步骤${index + 1}`,
-    key: config.prop
-  }))
-})
 
 // 表单数据
 const formData = ref<Record<string, any>>({})
@@ -166,23 +236,74 @@ const updateFormData = (data: Record<string, any>) => {
   formData.value = { ...formData.value, ...data }
 }
 
+// 处理字段更新
+const handleFieldUpdate = (data: { prop: string; value: any }) => {
+  console.log('字段更新:', data)
+  formData.value[data.prop] = data.value
+  console.log('当前表单数据:', formData.value)
+
+  // 强制触发视图更新
+  formData.value = { ...formData.value }
+}
+const initFormNostep = (activeLabel) => {
+  formData.value = { ...formData.value, ...JSON.parse(activeLabel.defaultKeyValue) }
+}
+
+// 初始化表单默认值(有分步的)
+const initFormData = (configData: any[]) => {
+  if (!configData || !configData.length) return
+
+  // 遍历配置数据，设置默认值
+  configData.forEach((config) => {
+    if (config.dataDefault) {
+      formData.value[config.prop] = { ...config.dataDefault }
+    }
+  })
+}
+
+const cancel = () => {
+  baseForm.value = {
+    pluginName: '',
+    pluginUID: ''
+  }
+  formActiveSmall.value = []
+  formJustInput.value = []
+  formHavecollapse.value = []
+
+  visible.value = false
+}
+
 // 提交处理
 const handleSubmit = async () => {
   try {
     // 验证基础表单
     await baseFormRef.value?.validate()
 
-    // 合并所有表单数据
-    const submitData = {
-      ...baseForm.value,
-      ...formData.value,
-      configSteps: steps.value.map((step) => step.key)
+    // 验证动态表单（如果有验证规则）
+    if (Object.keys(dynamicRules.value).length > 0) {
+      await dynamicFormRef.value?.validate()
     }
-
-    emit('save', submitData)
-    ElMessage.success('任务配置保存成功')
-    visible.value = false
+    const { pluginName } = baseForm.value
+    console.log('表单数据准备提交:', baseForm.value)
+    const { configVersion, pluginUid } = props.taskPurposeOptions.find(
+      (item) => item.pluginUid === baseForm.value.pluginUID
+    )
+    const { message, isSuccess } = await createpluginservicemap({
+      configVersion,
+      pluginUID: pluginUid,
+      pluginConfigKeyValue: JSON.stringify({ ...formData.value, pluginName }),
+      pluginName: pluginName,
+      serviceUID: props.serviceUID
+    })
+    if (isSuccess) {
+      ElMessage.success(message || '操作成功')
+      visible.value = false
+    } else {
+      ElMessage.error(message || '操作失败')
+    }
+    // emit('save', submitData)
   } catch (error) {
+    console.error('表单验证失败:', error)
     ElMessage.error('请完善必填信息')
   }
 }
@@ -195,6 +316,51 @@ const handleStepClick = (index: number) => {
   console.log(formActiveSmall.value, 'formActiveSmall')
 }
 
+const processFormActiveSmall = computed(() => {
+  // 安全检查：确保数据存在
+  if (
+    !formActiveSmall.value ||
+    !formActiveSmall.value.length ||
+    !formActiveSmall.value[0] ||
+    !formActiveSmall.value[0].fiedlInfos ||
+    !formActiveSmall.value[0].fiedlInfos[0]
+  ) {
+    return { fiedlInfos: [] }
+  }
+
+  const currentModule = formActiveSmall.value[0]
+  const isNeedProcess = currentModule.prop === 'GetTaskModule'
+  const isfileSaveType = currentModule.prop === 'SaveFileModule'
+
+  // 安全获取选项数据
+  const firstField = currentModule.fiedlInfos[0]
+  const originalOptions = firstField.defaultOpt?.length
+    ? firstField.defaultOpt
+    : firstField.opt || []
+
+  // 确保选项是数组
+  if (!Array.isArray(originalOptions)) {
+    console.warn('选项数据不是数组:', originalOptions)
+    return currentModule
+  }
+
+  // 根据模块类型过滤选项
+  let filteredOptions = originalOptions
+  if (isNeedProcess && originalOptions.length > 4) {
+    filteredOptions = originalOptions.slice(0, 4)
+  } else if (isfileSaveType && originalOptions.length > 1) {
+    filteredOptions = originalOptions.slice(0, 1)
+  }
+
+  // 创建新的对象避免直接修改原数据
+  const newOptions = JSON.parse(JSON.stringify(formActiveSmall.value))
+  if (newOptions[0] && newOptions[0].fiedlInfos && newOptions[0].fiedlInfos[0]) {
+    newOptions[0].fiedlInfos[0].defaultOpt = filteredOptions
+    newOptions[0].fiedlInfos[0].opt = filteredOptions
+  }
+
+  return newOptions[0]
+})
 // 获取步骤状态
 const getStepStatus = (index: number) => {
   if (index < stepActive.value) {
@@ -209,12 +375,6 @@ const getStepStatus = (index: number) => {
 const changePlugin = (val) => {
   if (val) {
     const activeLable = props.taskPurposeOptions.find((item) => item.pluginUid === val)
-    const formRules = activeLable.pluginRule.map((item) => {
-      return {
-        [item.prop]: [{ required: true, message: `请填写${item.label}`, trigger: 'blur' }]
-      }
-    })
-    Object.assign(baseRules.value, formRules) // 重置表单rules
     if (activeLable && activeLable.pluginConfigs) {
       try {
         // 处理字符串格式的JSON数据
@@ -233,28 +393,51 @@ const changePlugin = (val) => {
           // 解析JSON字符串
           configData = JSON.parse(configData)
         }
-
         // 确保是数组格式
         formJustInput.value = []
         formActiveSmall.value = []
         formHavecollapse.value = []
         formActive.value = []
-        formActive.value = []
         if (activeLable.pluginName.includes('文件采集')) {
           formActive.value = Array.isArray(configData) ? configData : [configData]
+          console.log('原始文件采集数据:', JSON.stringify(formActive.value, null, 2))
           formActiveSmall.value = [formActive.value[0]]
-          console.log('formActiveSmall', formActiveSmall.value)
           stepActive.value = 1
+          // 初始化表单默认值
+          initFormData(formActive.value)
+          console.log('初始化表单默认值:', formData.value)
+          // 设置formData默认值 - 文件采集类型从formActiveSmall的dataDefault获取
+          const defaultFormData: Record<string, any> = {}
+          if (
+            formActiveSmall.value &&
+            formActiveSmall.value[0] &&
+            formActiveSmall.value[0].fiedlInfos
+          ) {
+            formActiveSmall.value[0].fiedlInfos.forEach((field) => {
+              if (field.prop && field.dataDefault !== undefined) {
+                defaultFormData[field.prop] = field.dataDefault
+              }
+            })
+          }
+          formData.value = { ...formData.value, ...defaultFormData }
+          console.log('文件采集类型默认值:', defaultFormData)
+
+          methodChangeData(formActive.value)
+          // 生成验证规则
+          generateValidationRules(formActive.value, activeLable.pluginRule)
         } else {
-          const datas = Array.isArray(configData) ? configData : [configData]
-          if (datas[0]['opt']) {
+          let datas: any = Array.isArray(configData) ? configData : [configData]
+          datas = methodChangeData(datas)
+          if (datas && datas[0]['opt']) {
             formHavecollapse.value = datas
           } else {
             formJustInput.value = datas
           }
-          console.log('datas', datas)
           formActive.value = []
           stepActive.value = 0
+          // 初始化表单默认值
+          initFormNostep(activeLable)
+          generateValidationRules(datas, activeLable.pluginRule)
         }
       } catch (error) {
         console.error('解析pluginConfigs失败:', error)
@@ -270,6 +453,87 @@ const changePlugin = (val) => {
     formActive.value = []
     stepActive.value = 0
   }
+}
+
+const methodChangeData = (data) => {
+  // 递归处理数据，将 linkPd 塞到 opt 的是选项里重命名为 fiedlInfos
+  const processDataRecursively = (items) => {
+    if (!Array.isArray(items)) return items
+
+    return items.map((item) => {
+      const processedItem = { ...item }
+
+      // 如果有 fiedlInfos，递归处理子字段
+      if (processedItem.fiedlInfos && Array.isArray(processedItem.fiedlInfos)) {
+        processedItem.fiedlInfos = processDataRecursively(processedItem.fiedlInfos)
+      }
+
+      // 如果有 opt 选项数组，需要处理每个选项
+      if (processedItem.opt && Array.isArray(processedItem.opt)) {
+        processedItem.opt = processedItem.opt.map((option) => {
+          const processedOption = { ...option }
+
+          // 查找"是"选项，将 linkPd 数据添加到其中
+          // 支持多种"是"的表示方式：'是', 'true', true
+          const isYesOption =
+            option.label === '是' ||
+            option.prop === '是' ||
+            option.prop === 'true' ||
+            option.prop === true ||
+            option.value === 'true' ||
+            option.value === true ||
+            option.prop === 'expansion'
+
+          if (isYesOption && processedItem.linkPd && Array.isArray(processedItem.linkPd)) {
+            // 将 linkPd 重命名为 fiedlInfos 并递归处理
+            processedOption.fiedlInfos = processDataRecursively(processedItem.linkPd)
+            console.log('找到"是"选项，添加 linkPd 数据:', processedOption)
+          }
+
+          return processedOption
+        })
+
+        // 处理完成后，删除原始的 linkPd
+        delete processedItem.linkPd
+      }
+
+      return processedItem
+    })
+  }
+
+  const processedData = processDataRecursively(data)
+  console.log('递归处理后的数据:', processedData)
+
+  // 安全检查：确保 processedData 存在且不为空
+  if (!processedData || !Array.isArray(processedData) || processedData.length === 0) {
+    console.warn('processedData 为空或无效:', processedData)
+    typeForm.value = 'justinput'
+    formJustInput.value = []
+    return data
+  }
+
+  // type: 'step' | 'collapse' | 'justinput'
+  if (processedData[0].type === 'modelSelect') {
+    if (processedData[0].opt) {
+      typeForm.value = 'collapse'
+    } else {
+      typeForm.value = 'step'
+    }
+  } else {
+    typeForm.value = 'justinput'
+  }
+
+  // 更新处理后的数据
+  if (typeForm.value === 'step') {
+    formActive.value = processedData
+    formActiveSmall.value = [processedData[0]]
+  } else if (typeForm.value === 'collapse') {
+    formHavecollapse.value = processedData
+  } else {
+    formJustInput.value = processedData
+  }
+
+  return processedData
 }
 // 监听弹窗打开，重置数据
 watch(

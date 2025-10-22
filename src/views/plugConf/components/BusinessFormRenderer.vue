@@ -11,6 +11,7 @@
           :key="field.prop || index"
           :field="field"
           :model="formData"
+          :rules="rules"
           @update:model="handleFieldUpdate"
         />
       </el-collapse-item>
@@ -37,6 +38,7 @@ interface BusinessModule {
 interface Props {
   config: BusinessModule[]
   modelValue: Record<string, any>
+  rules?: Record<string, any>
 }
 
 const props = defineProps<Props>()

@@ -87,21 +87,33 @@
         </span>
       </div>
 
-      <el-table :data="taskList" v-loading="taskLoading" border class="mt8">
-        <el-table-column prop="uid" label="任务UID" min-width="160" />
-        <el-table-column prop="name" label="任务名称" min-width="200" />
-        <el-table-column prop="interval" label="触发间隔" min-width="120" />
-        <el-table-column prop="times" label="触发次数" min-width="120" />
-        <el-table-column prop="byTime" label="是否根据时间触发" min-width="150" />
-        <el-table-column prop="startTime" label="触发开始时间" min-width="140" />
-        <el-table-column prop="endTime" label="触发结束时间" min-width="140" />
-        <el-table-column prop="byDate" label="是否根据日期触发" min-width="150" />
-        <el-table-column prop="startDate" label="触发开始日期" min-width="160" />
-        <el-table-column prop="state" label="状态" width="100" />
+      <el-table :data="taskList" v-load ing="taskLoading" border class="mt8">
+        <el-table-column prop="pluginUID" label="任务UID" min-width="300" />
+        <el-table-column prop="pluginName" label="任务名称" min-width="200" />
+        <el-table-column prop="triggerInternal" label="触发间隔" min-width="120" />
+        <el-table-column prop="triggerTimes" label="触发次数" min-width="120" />
+        <el-table-column prop="ifTriggerByDate" label="是否根据时间触发" min-width="150" />
+        <el-table-column prop="triggerBeginTime" label="触发开始时间" min-width="140" />
+        <el-table-column prop="triggerEndTime" label="触发结束时间" min-width="140" />
+        <el-table-column prop="ifTriggerByDate" label="是否根据日期触发" min-width="150" />
+        <el-table-column prop="triggerBeginDate" label="触发开始日期" min-width="160" />
+        <el-table-column prop="triggerEndDate" label="触发结束日期" min-width="160" />
+
+        <el-table-column prop="ifEnable" label="状态" width="150" fixed="right">
+          <template #default="{ row }">
+            <el-switch
+              @change="changeSwitch(row)"
+              size="small"
+              v-model="row.ifEnable"
+              active-text="启用"
+              inactive-text="停用"
+            />
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click.stop="ElMessage.info(row)">编辑</el-button>
-            <el-button link type="danger" @click.stop="ElMessage.info('删除任务')">删除</el-button>
+            <el-button link type="danger" @click.stop="deletepluginservice(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -133,6 +145,7 @@
     </el-dialog>
     <TaskConfigDialog
       v-model="showTaskDlg"
+      :serviceUID="activeService?.serviceUID || ''"
       :title="dlgTitle"
       :taskPurposeOptions="taskPurposeOptions"
       :model="editTask || undefined"
@@ -166,28 +179,19 @@ import ServiceConfigDialog from './components/ServiceConfigDialog.vue'
 import {
   createpluginService,
   deletepluginService,
+  deletepluginservicemap,
+  disablepluginservicemap,
   disableService,
   editpluginService,
   getallpluginlist,
+  getpluginservicemaplist,
   getservicelist,
-  ServiceConfig
+  ServiceConfig,
+  Servicemaplist
 } from '@/api/plugConf'
 import { getpreset, PresetList } from '@/api/authConf'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import TaskConfigDialog from './components/newTaskconfigDialog.vue'
-
-type TaskItem = {
-  uid: string
-  name: string
-  interval?: string
-  times?: number
-  byTime?: string
-  startTime?: string
-  endTime?: string
-  byDate?: string
-  startDate?: string
-  state?: string
-}
+import TaskConfigDialog from './components/TaskConfigDialog.vue'
 
 // 查询与状态
 const svcLoading = ref(false)
@@ -197,7 +201,7 @@ const serviceTotal = ref(0)
 const servicePage = ref(1)
 const serviceSize = ref(10)
 const activeService = ref<ServiceConfig | null>(null)
-const taskList = ref<TaskItem[]>([])
+const taskList = ref<Servicemaplist[]>([])
 const showServiceModal = ref(false)
 const serviceModal = ref<ServiceConfig>({
   serviceName: '',
@@ -218,25 +222,16 @@ const rules = {
   ifEnable: [{ required: true, message: '请选择服务状态', trigger: 'change' }]
 }
 
-async function apiFetchTasks() {
-  await new Promise((r) => setTimeout(r, 200))
-  // 不分页，直接返回全量
-  return [
-    {
-      uid: 'task-001',
-      name: '同步检查单',
-      interval: '5m',
-      times: 0,
-      byTime: '是',
-      startTime: '08:00',
-      endTime: '18:00',
-      byDate: '否',
-      startDate: '',
-      state: '启用'
-    }
-  ] as TaskItem[]
-}
 const modalList = ref<PresetList[]>([])
+const changeSwitch = async (row: Servicemaplist) => {
+  const { isSuccess, message } = await disablepluginservicemap(row)
+  if (isSuccess) {
+    loadTasks()
+    ElMessage.success(message || '操作成功')
+  } else {
+    ElMessage.warning(message || '操作失败')
+  }
+}
 // 上表：加载服务（有分页）
 async function loadServices() {
   svcLoading.value = true
@@ -252,12 +247,27 @@ async function loadServices() {
   }
 }
 
+const deletepluginservice = async (row: Servicemaplist) => {
+  const { isSuccess, message } = await deletepluginservicemap(row)
+  if (isSuccess) {
+    loadTasks()
+    ElMessage.success(message || '操作成功')
+  } else {
+    ElMessage.warning(message || '操作失败')
+  }
+}
 // 下表：加载任务（不分页）
 async function loadTasks() {
   if (!activeService.value) return
+  const { ifEnable, serviceName, serviceUID } = activeService.value
   taskLoading.value = true
   try {
-    taskList.value = await apiFetchTasks()
+    const { data } = await getpluginservicemaplist({
+      ifEnable,
+      serviceName,
+      serviceUID
+    })
+    taskList.value = data || []
   } finally {
     taskLoading.value = false
   }

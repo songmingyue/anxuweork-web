@@ -4,7 +4,6 @@
       v-if="field.type === 'linkSelect' && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
     >
       <ElSelect
         :model-value="fieldValue"
@@ -26,7 +25,6 @@
       v-else-if="field.type === 'input' && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
     >
       <ElInput
         :model-value="fieldValue"
@@ -40,7 +38,6 @@
       v-else-if="(field.type === 'select' || field.type === 'link') && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
     >
       <ElSelect
         :model-value="fieldValue"
@@ -52,7 +49,7 @@
           v-for="option in currentOptions"
           :key="option.value || option.key"
           :label="option.label || option.name"
-          :value="option.value || option.key"
+          :value="option.value || option.key || option.prop"
         />
       </ElSelect>
     </ElFormItem>
@@ -62,7 +59,6 @@
       v-else-if="field.type === 'password' && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
     >
       <ElInput
         :model-value="fieldValue"
@@ -88,22 +84,11 @@
       />
     </ElFormItem>
 
-    <!-- 开关 -->
-    <ElFormItem
-      v-else-if="field.type === 'switch' && shouldShowField"
-      :prop="field.prop"
-      :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
-    >
-      <ElSwitch :model-value="fieldValue" @update:model-value="handleFieldChange" />
-    </ElFormItem>
-
     <!-- 文本域 -->
     <ElFormItem
       v-else-if="field.type === 'textarea' && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
     >
       <ElInput
         :model-value="fieldValue"
@@ -118,17 +103,26 @@
       v-else-if="field.type === 'time' && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
     >
-      <el-time-picker v-model="fieldValue" fieldRules placeholder="请选择时间" />
+      <el-date-picker
+        :model-value="fieldValue"
+        type="date"
+        placeholder="请选择日期"
+        @update:model-value="handleFieldChange"
+      />
+      :model-value="fieldValue" @update:model-value="handleFieldChange" placeholder="请选择时间" />
     </ElFormItem>
     <ElFormItem
       v-else-if="field.type === 'date' && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
-      :rules="fieldRules"
     >
-      <el-date-picker v-model="fieldValue" type="date" placeholder="请选择日期" />
+      <ElDatePicker
+        :model-value="fieldValue"
+        type="date"
+        placeholder="请选择日期"
+        @update:model-value="handleFieldChange"
+      />
     </ElFormItem>
 
     <!-- 嵌套字段组 -->
@@ -139,6 +133,7 @@
           :key="childField.prop"
           :field="childField"
           :model="model"
+          :rules="props.rules"
           :parent-value="fieldValue"
           @update:model="handleChildFieldUpdate"
         />
@@ -149,16 +144,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import {
-  ElFormItem,
-  ElSelect,
-  ElOption,
-  ElInput,
-  ElInputNumber,
-  ElSwitch,
-  ElTimePicker,
-  ElDatePicker
-} from 'element-plus'
+import { ElFormItem, ElSelect, ElOption, ElInput, ElInputNumber } from 'element-plus'
 
 interface FieldConfig {
   type: string
@@ -188,6 +174,7 @@ interface Props {
   field: FieldConfig
   model: Record<string, any>
   parentValue?: any
+  rules?: Record<string, any>
 }
 const changeField = ref<any[]>([])
 const props = defineProps<Props>()
@@ -217,17 +204,12 @@ const fieldValue = computed(() => {
 
 // 字段验证规则
 const fieldRules = computed(() => {
-  const rules: any[] = []
-
-  if (props.field.required) {
-    rules.push({
-      required: true,
-      message: `请输入${props.field.fieldLabel || props.field.label}`,
-      trigger: 'blur'
-    })
+  // 优先使用传入的rules
+  if (props.rules && props.rules[props.field.prop]) {
+    return props.rules[props.field.prop]
   }
 
-  return rules
+  return props.rules
 })
 
 // 当前可用选项

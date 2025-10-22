@@ -15,6 +15,7 @@
             :key="field.prop || index"
             :field="field"
             :model="formModel"
+            :rules="dynamicRules"
             :parent-value="getParentValue(field)"
             @update:model="updateModel"
           />

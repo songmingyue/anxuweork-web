@@ -38,7 +38,7 @@ export interface PresetModal {
 export interface Checkpluginservicemap {
   configVersion: string
   pluginConfigKeyValue: string
-  pluginConfigValues: string
+  pluginConfigValues?: string
   pluginName: string
   pluginUID: string
   serviceUID: string
@@ -107,7 +107,7 @@ export const deletepluginService = (data: ServiceConfig): Promise<IResponse<null
 
 export const getpluginservicemaplist = (
   data: ServiceConfig
-): Promise<IResponse<Servicemaplist>> => {
+): Promise<IResponse<Servicemaplist[]>> => {
   return request.post({
     url: 'plugin/getpluginservicemaplist',
     data,
@@ -188,6 +188,18 @@ export const deletepluginservicemap = (data: Checkpluginservicemap): Promise<IRe
   return request.post({
     data,
     url: 'plugin/deletepluginservicemap',
+    requestTem: {
+      requestTem: 'PluginServiceMapProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+// 创建
+export const createpluginservicemap = (data: Checkpluginservicemap): Promise<IResponse<[]>> => {
+  return request.post({
+    data,
+    url: 'plugin/createpluginservicemap',
     requestTem: {
       requestTem: 'PluginServiceMapProto',
       responseTem: 'whitelist'

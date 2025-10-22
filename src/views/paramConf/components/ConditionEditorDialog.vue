@@ -167,7 +167,7 @@ async function onConfirm() {
   console.log('保存条件:', JSON.stringify(newDate).replace(/"/g, '\\"'))
   const data = await updateCondition({
     id: props.id || '',
-    condition: JSON.stringify(newDate).replace(/"/g, '\\"')
+    condition: JSON.stringify(newDate)
   })
   if (data.isSuccess) {
     emit('save')

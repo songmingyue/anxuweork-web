@@ -5,7 +5,6 @@ import { ElMessage } from 'element-plus'
 import { REQUEST_TIMEOUT } from '@/constants'
 import { nowTimestamp } from '@/utils/timeDate'
 import { decodeProtoMsg, encodeProtoMsg } from '@/utils/encrypt'
-
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
 const abortControllerMap: Map<string, AbortController> = new Map()
@@ -103,6 +102,10 @@ const service = {
           resolve(res)
         })
         .catch((err: any) => {
+          if (err.status === '401' || err.status === 401) {
+            location.href = '/login'
+            localStorage.clear()
+          }
           reject(err)
         })
     })

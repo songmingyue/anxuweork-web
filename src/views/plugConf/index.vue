@@ -80,7 +80,7 @@
 
     <!-- 下：任务（不分页） -->
     <el-card shadow="never">
-      <div class="flex">
+      <div class="flex" v-if="activeService?.serviceUID">
         <el-button type="primary" @click="onCreateTask">新增任务</el-button>
         <span style="margin-left: 12px; color: #909399" v-if="activeService">
           当前服务：{{ activeService.serviceName }}（{{ activeService.serviceUID }}）
@@ -113,8 +113,7 @@
       v-model="showModalDialog"
       :title="modalDialogTitle"
       :model="editModal || undefined"
-      @save="onServiceSave"
-    />
+      @save="onServiceSave" />
     <el-dialog v-model="showServiceModal" :title="serviceDlgTitle" width="600px">
       <el-form :rules="rules" v-model="serviceModal">
         <el-form-item label="任务组名" label-width="80px" required>
@@ -132,7 +131,13 @@
         <el-button type="primary" @click="saveService">确 定</el-button>
       </template>
     </el-dialog>
-  </div>
+    <TaskConfigDialog
+      v-model="showTaskDlg"
+      :title="dlgTitle"
+      :taskPurposeOptions="taskPurposeOptions"
+      :model="editTask || undefined"
+      @save="onTaskSave"
+  /></div>
 </template>
 
 <script setup lang="ts">
@@ -163,11 +168,13 @@ import {
   deletepluginService,
   disableService,
   editpluginService,
+  getallpluginlist,
   getservicelist,
   ServiceConfig
 } from '@/api/plugConf'
 import { getpreset, PresetList } from '@/api/authConf'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import TaskConfigDialog from './components/newTaskconfigDialog.vue'
 
 type TaskItem = {
   uid: string
@@ -196,6 +203,10 @@ const serviceModal = ref<ServiceConfig>({
   serviceName: '',
   ifEnable: false
 })
+const taskPurposeOptions = ref<any[]>([])
+const dlgTitle = ref('新增任务')
+const editTask = ref({})
+const showTaskDlg = ref(false)
 // 服务对话框状态
 const showModalDialog = ref(false)
 const serviceDlgTitle = ref('新增服务信息')
@@ -206,6 +217,7 @@ const rules = {
   serviceName: [{ required: true, message: '服务名称不能为空', trigger: 'blur' }],
   ifEnable: [{ required: true, message: '请选择服务状态', trigger: 'change' }]
 }
+
 async function apiFetchTasks() {
   await new Promise((r) => setTimeout(r, 200))
   // 不分页，直接返回全量
@@ -298,8 +310,9 @@ async function onDeleteService(row: ServiceConfig) {
 }
 
 function onCreateTask() {
-  if (!activeService.value) return ElMessage.warning('请先选择服务')
-  ElMessage.info(`为服务 ${activeService.value.serviceName} 新增任务`)
+  dlgTitle.value = '新增任务'
+  editTask.value = {}
+  showTaskDlg.value = true
 }
 // 切换状态
 const changeStatus = async (row: ServiceConfig) => {
@@ -349,9 +362,19 @@ const editModalMed = (item: PresetList) => {
   editModal.value = { ...item }
   showModalDialog.value = true
 }
+
+const onTaskSave = () => {
+  ElMessage.success('任务配置保存成功')
+}
+
+const getPluginlist = async () => {
+  const { data } = await getallpluginlist()
+  taskPurposeOptions.value = data || []
+}
 onMounted(() => {
   loadServices()
   getModelList()
+  getPluginlist()
 })
 </script>
 

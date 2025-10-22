@@ -70,6 +70,7 @@
       v-model="showConditionDlg"
       :title="`编辑条件 - ${editConditionTask?.taskName || ''}`"
       :model="conditionFormData"
+      :id="editConditionTask?.id || ''"
       @save="onConditionSave"
     />
   </div>

@@ -35,6 +35,15 @@ export interface PresetModal {
   publicFlag?: string
 }
 
+export interface Checkpluginservicemap {
+  configVersion: string
+  pluginConfigKeyValue: string
+  pluginConfigValues: string
+  pluginName: string
+  pluginUID: string
+  serviceUID: string
+}
+
 // 获取服务
 export const getservicelist = (data: PageType): Promise<IResponse<ServiceConfig[]>> => {
   return request.post({
@@ -136,6 +145,51 @@ export const updateplugindefault = (data: PresetModal): Promise<IResponse<[]>> =
     url: 'plugin/updateplugindefault',
     requestTem: {
       requestTem: 'UserQuerySetMstDtoProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+// 自检
+export const checkpluginservicemap = (data: Checkpluginservicemap): Promise<IResponse<[]>> => {
+  return request.post({
+    data,
+    url: 'plugin/checkpluginservicemap',
+    requestTem: {
+      requestTem: 'PluginServiceMapProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+// 停用启用
+export const disablepluginservicemap = (data: Checkpluginservicemap): Promise<IResponse<[]>> => {
+  return request.post({
+    data,
+    url: 'plugin/disablepluginservicemap',
+    requestTem: {
+      requestTem: 'PluginServiceMapProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+// 停用启用
+export const editpluginservicemap = (data: Checkpluginservicemap): Promise<IResponse<[]>> => {
+  return request.post({
+    data,
+    url: 'plugin/editpluginservicemap',
+    requestTem: {
+      requestTem: 'PluginServiceMapProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+// 删除
+export const deletepluginservicemap = (data: Checkpluginservicemap): Promise<IResponse<[]>> => {
+  return request.post({
+    data,
+    url: 'plugin/deletepluginservicemap',
+    requestTem: {
+      requestTem: 'PluginServiceMapProto',
       responseTem: 'whitelist'
     }
   })

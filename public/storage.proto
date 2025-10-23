@@ -672,3 +672,48 @@ message UserQuerySetMstDtoProto {
   string public_flag = 8;       // 公开标志
   UserOrgInfoProto user_info = 9; // 用户组织信息
 }
+message ScriptMstProto {
+  int32 script_id = 1;
+  string script = 2;
+  string script_type = 3;
+  string create_date = 4;
+  string last_edit_date = 5;
+  string creator = 6;
+  string last_editor = 7;
+  string script_description = 8;
+  string script_memo = 9;
+  string program_version = 10;
+  string script_content = 11;
+}
+
+message DBConfigDtoProto {
+  string dbType = 1;
+  string lsSlave = 2;
+  string dataSource = 3;
+  string initialCatalog = 4;
+  string userId = 5;
+  string password = 6;
+  string hostPort = 7;
+  string dbInstallType = 8;
+}
+
+message ScriptMstBatchProto {
+  string scriptIDs= 1;
+}
+
+message ParamAppenderProto {
+  string file = 1;
+  string maxSizeRollBackups = 2;
+  string appendToFile = 3;
+  string maximumFileSize = 4;
+  string layoutPattern = 5;
+  string rollingStyle = 6;
+  string datePattern = 7;
+  string level = 8;
+}
+
+message TokenInfoProto {
+  string tokenServer = 1;
+  string accessToken = 2;
+  string organizationID = 3;
+}

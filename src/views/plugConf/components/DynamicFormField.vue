@@ -104,13 +104,12 @@
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
     >
-      <el-date-picker
+      <el-time-picker
         :model-value="fieldValue"
         type="date"
         placeholder="请选择日期"
         @update:model-value="handleFieldChange"
       />
-      :model-value="fieldValue" @update:model-value="handleFieldChange" placeholder="请选择时间" />
     </ElFormItem>
     <ElFormItem
       v-else-if="field.type === 'date' && shouldShowField"
@@ -144,7 +143,15 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { ElFormItem, ElSelect, ElOption, ElInput, ElInputNumber } from 'element-plus'
+import {
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElInput,
+  ElInputNumber,
+  ElTimePicker,
+  ElDatePicker
+} from 'element-plus'
 
 interface FieldConfig {
   type: string
@@ -227,12 +234,6 @@ const currentOptions = computed(() => {
   }
 
   const options = props.field.opt?.length ? props.field.opt : props.field.defaultOpt
-
-  // 添加调试日志
-  console.log('DynamicFormField - 字段:', props.field.prop, '类型:', props.field.type)
-  console.log('DynamicFormField - 选项数据:', options)
-  console.log('DynamicFormField - 当前值:', props.model[props.field.prop])
-
   // 默认选项
   return options || []
 })
@@ -249,9 +250,6 @@ const shouldShowField = computed(() => {
 
 // 处理字段值变化
 const handleFieldChange = (value: any) => {
-  console.log('字段值变化:', value)
-  console.log('当前字段:', props.field)
-
   // 查找选中选项的子字段
   const selectedOption = props.field?.opt?.find(
     (item) => item.prop === value || item.value === value

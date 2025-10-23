@@ -17,11 +17,18 @@
             </ElFormItem>
           </ElCol>
           <ElCol :span="24">
-            <ElFormItem prop="pluginUID" label="任务用途" required>
+            <ElFormItem prop="pluginUID" label="任务用途" required v-if="!pluginServiceMapUID">
               <ElSelect
                 v-model="baseForm.pluginUID"
                 placeholder="请选择任务用途"
                 style="width: 100%"
+                @change="
+                  () => {
+                    baseForm.pluginName =
+                      taskPurposeOptions.find((opt) => opt.pluginUid === baseForm.pluginUID)
+                        ?.pluginName || ''
+                  }
+                "
               >
                 <ElOption
                   v-for="opt in taskPurposeOptions"
@@ -106,7 +113,7 @@ import {
 } from 'element-plus'
 import DynamicFormField from './DynamicFormField.vue'
 import BusinessFormRenderer from './BusinessFormRenderer.vue'
-import { createpluginservicemap } from '@/api/plugConf'
+import { createpluginservicemap, editpluginservicemap } from '@/api/plugConf'
 
 interface Props {
   modelValue: boolean
@@ -114,6 +121,11 @@ interface Props {
   configData?: any[]
   serviceUID: string
   taskPurposeOptions: any[]
+  // 编辑模式下由父组件传入，用于区分新增/编辑
+  pluginServiceMapUID?: string
+  pluginConfigKeyValue?: string // 编辑数据
+  // 可选：编辑时传入原始数据（当前未使用，仅占位避免透传告警）
+  model?: Record<string, any>
 }
 
 const formActive = ref<any[]>([])
@@ -231,6 +243,56 @@ const currentStep = ref(0)
 // 表单数据
 const formData = ref<Record<string, any>>({})
 
+// 解析编辑时传入的 pluginConfigKeyValue（可能包含转义/换行）
+const parsePluginConfigKV = (raw?: string): Record<string, any> => {
+  if (!raw || typeof raw !== 'string') return {}
+  try {
+    let text = raw
+    // 兼容可能存在的换行/制表符
+    text = text.replace(/\r\n|\r|\n|\t/g, '')
+    // 一次 JSON.parse 通常即可（后端返回已被转义）
+    return JSON.parse(text)
+  } catch (e1) {
+    try {
+      // 如果是多重转义（字符串中还有引号转义），再尝试一次
+      return JSON.parse(JSON.parse(raw))
+    } catch (e2) {
+      console.warn('parsePluginConfigKV 解析失败:', e2)
+      return {}
+    }
+  }
+}
+
+// 将编辑值合并到 formData
+const applyEditValuesToForm = (editObj: Record<string, any>) => {
+  if (!editObj || typeof editObj !== 'object') return
+
+  // step 类型：保持模块分组（formData[module] = {...}）
+  if (typeForm.value === 'step') {
+    Object.keys(editObj).forEach((k) => {
+      const v = (editObj as any)[k]
+      if (v && typeof v === 'object') {
+        formData.value[k] = { ...(formData.value[k] || {}), ...v }
+      } else {
+        formData.value[k] = v
+      }
+    })
+  } else {
+    // collapse/justinput：将每个模块的子项拍平到顶层（字段 prop 通常是子项）
+    Object.keys(editObj).forEach((k) => {
+      const v = (editObj as any)[k]
+      if (v && typeof v === 'object' && !Array.isArray(v)) {
+        Object.assign(formData.value, v)
+      } else {
+        formData.value[k] = v
+      }
+    })
+  }
+
+  // 触发视图更新
+  formData.value = { ...formData.value }
+}
+
 // 更新表单数据
 const updateFormData = (data: Record<string, any>) => {
   formData.value = { ...formData.value, ...data }
@@ -288,16 +350,26 @@ const handleSubmit = async () => {
     const { configVersion, pluginUid } = props.taskPurposeOptions.find(
       (item) => item.pluginUid === baseForm.value.pluginUID
     )
-    const { message, isSuccess } = await createpluginservicemap({
+
+    const payload: any = {
       configVersion,
       pluginUID: pluginUid,
       pluginConfigKeyValue: JSON.stringify({ ...formData.value, pluginName }),
       pluginName: pluginName,
       serviceUID: props.serviceUID
-    })
+    }
+
+    // 若存在 pluginServiceMapUID，则认为是编辑
+    if (props.pluginServiceMapUID) {
+      payload.pluginServiceMapUID = props.pluginServiceMapUID
+    }
+
+    const { message, isSuccess } = props.pluginServiceMapUID
+      ? await editpluginservicemap(payload)
+      : await createpluginservicemap(payload)
     if (isSuccess) {
       ElMessage.success(message || '操作成功')
-      visible.value = false
+      cancel()
     } else {
       ElMessage.error(message || '操作失败')
     }
@@ -541,9 +613,17 @@ watch(
   (val) => {
     if (val) {
       currentStep.value = 0
-      baseForm.value = {
-        pluginName: '',
-        pluginUID: ''
+      // 如果有编辑数据，优先回填基础信息（会触发 changePlugin）
+      if (props.model) {
+        baseForm.value = {
+          pluginName: (props.model as any).pluginName || '',
+          pluginUID: (props.model as any).pluginUID || ''
+        }
+      } else {
+        baseForm.value = {
+          pluginName: '',
+          pluginUID: ''
+        }
       }
       formData.value = {}
     }
@@ -553,6 +633,28 @@ watch(
   () => baseForm.value.pluginUID,
   (val) => {
     changePlugin(val)
+  }
+)
+
+// 当类型结构生成后，把编辑值合并进来
+watch(
+  () => typeForm.value,
+  () => {
+    if (!visible.value) return
+    if (!props.pluginConfigKeyValue) return
+    const editObj = parsePluginConfigKV(props.pluginConfigKeyValue)
+    applyEditValuesToForm(editObj)
+  }
+)
+
+// 若编辑值后续发生变化，也同步一次
+watch(
+  () => props.pluginConfigKeyValue,
+  (nv) => {
+    if (!visible.value) return
+    if (!nv) return
+    const editObj = parsePluginConfigKV(nv)
+    applyEditValuesToForm(editObj)
   }
 )
 </script>

@@ -112,7 +112,7 @@
         </el-table-column>
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click.stop="ElMessage.info(row)">编辑</el-button>
+            <el-button link type="primary" @click.stop="editPlugin(row)">编辑</el-button>
             <el-button link type="danger" @click.stop="deletepluginservice(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -147,6 +147,8 @@
       v-model="showTaskDlg"
       :serviceUID="activeService?.serviceUID || ''"
       :title="dlgTitle"
+      :pluginServiceMapUID="pluginServiceMapUID"
+      :pluginConfigKeyValue="pluginConfigKeyValue"
       :taskPurposeOptions="taskPurposeOptions"
       :model="editTask || undefined"
       @save="onTaskSave"
@@ -192,7 +194,8 @@ import {
 import { getpreset, PresetList } from '@/api/authConf'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import TaskConfigDialog from './components/TaskConfigDialog.vue'
-
+const pluginServiceMapUID = ref('')
+const pluginConfigKeyValue = ref('')
 // 查询与状态
 const svcLoading = ref(false)
 const taskLoading = ref(false)
@@ -380,6 +383,18 @@ const onTaskSave = () => {
 const getPluginlist = async () => {
   const { data } = await getallpluginlist()
   taskPurposeOptions.value = data || []
+}
+const editPlugin = (row: Servicemaplist) => {
+  // 透传用于编辑的关键信息
+  pluginServiceMapUID.value = row.pluginServiceMapUID
+  pluginConfigKeyValue.value = row.pluginConfigKeyValue
+  // 给 TaskConfigDialog 的基础表单回填（名称/用途）
+  editTask.value = {
+    pluginName: row.pluginName,
+    pluginUID: row.pluginUID
+  }
+  dlgTitle.value = '编辑任务'
+  showTaskDlg.value = true
 }
 onMounted(() => {
   loadServices()

@@ -26,7 +26,7 @@ export const decodeProtoMsg = (buffer: Uint8Array, protoType: string): any => {
     return {}
   } else {
     if (protoType === 'whitelist') {
-      if (message.pageBase.token) {
+      if (message?.pageBase?.token) {
         userStore.setToken(message.pageBase.token)
       }
       return message || {}
@@ -40,9 +40,9 @@ export const decodeProtoMsg = (buffer: Uint8Array, protoType: string): any => {
       } else {
         message.data = dataType.decode(message.data.value)
       }
-      if (message.pageBase) {
+      if (message?.pageBase) {
         message.data = { pageBase: message.pageBase, data: message.data }
-        if (message.pageBase.token) {
+        if (message?.pageBase?.token) {
           userStore.setToken(message.pageBase.token)
         }
       }

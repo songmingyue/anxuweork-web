@@ -24,7 +24,13 @@ const filderUrl = [
   '/task/UpdateConfig',
   '/task/UpdateCondition',
   '/task/UpdateStatus',
-  '/task/DeleteConfig'
+  '/task/DeleteConfig',
+  '/Data/GetServiceAddressInfoList',
+  'api/Data/AddOrEditServiceAddress',
+  'api/Data/DeleteServiceAddress',
+  'api/Data/GetDicomScpInfoList',
+  'api/Data/AddOrUpdateDicomScpInfo',
+  'api/Data/DeleteDicomScpInfo'
 ] // 加密白名单
 axiosInstance.interceptors.request.use((res: any) => {
   // axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
@@ -60,7 +66,13 @@ const listUnProto = [
   'api/task/AddConfig',
   'api/task/UpdateConfig',
   'api/task/UpdateCondition',
-  'api/task/UpdateStatus'
+  'api/task/UpdateStatus',
+  'api/Data/GetServiceAddressInfoList',
+  'api/Data/AddOrEditServiceAddress',
+  'api/Data/DeleteServiceAddress',
+  'api/Data/GetDicomScpInfoList',
+  'api/Data/AddOrUpdateDicomScpInfo',
+  'api/Data/DeleteDicomScpInfo'
 ] // 列表不解密白名单aaaaa又一种逻辑
 
 axiosInstance.interceptors.response.use(
@@ -78,7 +90,11 @@ axiosInstance.interceptors.response.use(
       if (res.isSuccess) {
         ElMessage.success('请求成功')
       } else {
-        ElMessage.error(res.message || '请求失败')
+        if (res.code !== 200) {
+          ElMessage.error(res.message || '请求失败')
+        } else {
+          ElMessage.success('请求成功')
+        }
       }
     }
     return res

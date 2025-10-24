@@ -1,4 +1,5 @@
 import request from '@/axios'
+import { PageBase } from '../type'
 
 export interface ServiceConfig {
   dataSource?: string
@@ -42,6 +43,42 @@ export interface TokenConfig {
   accessToken?: string
 }
 
+export interface GetServiceInfo extends PageBase {
+  retrieveAETitle?: string
+  serviceAddress?: string
+}
+
+export interface ServiceAddress {
+  aeTitleOrgName?: string
+  retrieveAETitle?: string
+  weight?: string
+  serviceAddress?: string
+  status?: number
+  actions?: string
+}
+
+export interface CreateAddress {
+  retrieveAETitle: string
+  serviceAddress: string
+  weight: number
+  aeTitleOrgName?: string
+  organizationID?: string
+  status?: number
+}
+
+export interface DicomScpInfo {
+  orgCode?: string
+  host?: string
+  port?: string
+  calledAE?: string
+  callingAE?: string
+  isDefault?: boolean
+  id?: string
+}
+
+export interface DicomScpInfoResponse extends PageBase {
+  orgCode?: string
+}
 // 数据库配置
 export const getservicelist = (): Promise<IResponse<ServiceConfig[]>> => {
   return request.post({
@@ -130,5 +167,74 @@ export const editTokenConfig = (data: TokenConfig): Promise<IResponse<void>> => 
       responseTem: 'TokenInfoProto'
     },
     data
+  })
+}
+
+export const getServiceAddressInfo = (data: TokenConfig): Promise<IResponse<void>> => {
+  return request.post({
+    url: 'Data/GetServiceAddressInfoList',
+    requestTem: {
+      requestTem: 'TokenInfoProto',
+      responseTem: 'TokenInfoProto'
+    },
+    data
+  })
+}
+// wado管理列表
+
+export const GetServiceAddressInfoList = (
+  data: GetServiceInfo
+): Promise<IResponse<ServiceAddress[]>> => {
+  return request.post({
+    url: 'Data/GetServiceAddressInfoList',
+    data,
+    responseType: 'json'
+  })
+}
+// 新增/编辑 wado 服务器地址
+export const addOrEditServiceAddress = (
+  data: CreateAddress
+): Promise<IResponse<{ time1: boolean }>> => {
+  return request.post({
+    url: 'Data/AddOrEditServiceAddress',
+    data,
+    responseType: 'json'
+  })
+}
+
+export const deleteServiceAddress = (data: ServiceAddress) => {
+  return request.post({
+    url: 'Data/DeleteServiceAddress',
+    data,
+    responseType: 'json'
+  })
+}
+
+// scp设备管理
+export const GetDicomScpInfoList = (
+  data: DicomScpInfoResponse
+): Promise<IResponse<DicomScpInfo[]>> => {
+  return request.post({
+    url: 'Data/GetDicomScpInfoList',
+    data,
+    responseType: 'json'
+  })
+}
+
+// 新建编辑scp设备
+export const addOrUpdateDicomScpInfo = (data: DicomScpInfo): Promise<IResponse<[]>> => {
+  return request.post({
+    url: 'Data/AddOrUpdateDicomScpInfo',
+    data,
+    responseType: 'json'
+  })
+}
+
+// 删除scp设备
+export const deleteDicomScpInfo = (id: string): Promise<IResponse<void>> => {
+  return request.post({
+    url: 'Data/DeleteDicomScpInfo',
+    data: { id },
+    responseType: 'json'
   })
 }

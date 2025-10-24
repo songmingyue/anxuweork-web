@@ -59,6 +59,7 @@ declare global {
     pageBase?: PageBase
     isSuccess?: boolean
     message?: string
+    msg?: string
   }
 
   declare interface ThemeTypes {

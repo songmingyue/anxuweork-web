@@ -54,7 +54,13 @@ export const useRenderLayout = () => {
               style="transition: all var(--transition-time-02);"
             ></Logo>
           ) : undefined}
-          <Menu class={['rl-menu', { 'has-logo': logo.value }]}></Menu>
+          <Menu
+            class={[
+              'rl-menu',
+              { 'has-logo': logo.value },
+              { shouqi: collapse.value, zhankai: !collapse.value }
+            ]}
+          ></Menu>
         </div>
         <div
           class={[

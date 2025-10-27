@@ -213,17 +213,6 @@ const clear = () => {
         @change="setMenuTheme"
       />
     </div>
-
-    <!-- 界面显示 -->
-    <!-- <ElDivider>{{ t('setting.interfaceDisplay') }}</ElDivider>
-    <InterfaceDisplay /> -->
-
-    <!-- <ElDivider />
-    <div>
-      <BaseButton type="primary" class="w-full" @click="copyConfig">{{
-        t('setting.copy')
-      }}</BaseButton>
-    </div> -->
     <div class="setting-footer">
       <BaseButton type="danger" class="full-width" @click="clear"> 清除缓存并且重置 </BaseButton>
     </div>

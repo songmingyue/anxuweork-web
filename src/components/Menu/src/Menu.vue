@@ -109,7 +109,7 @@ function renderMenu(list: any[]) {
         { index: item.url, key: item.url },
         {
           title: () =>
-            h('span', { class: `${prefixCls}__title` }, [
+            h('div', { class: `${prefixCls}__title` }, [
               iconName
                 ? h(Icon as any, {
                     icon: iconName,
@@ -117,7 +117,7 @@ function renderMenu(list: any[]) {
                     color: isAct
                       ? 'var(--menu-icon-active-color, var(--left-menu-text-active-color))'
                       : 'var(--left-menu-text-color)',
-                    style: 'margin-right:6px;'
+                    style: `${collapse.value ? 'margin-right:20px;' : 'margin-right:6px;'}`
                   })
                 : null,
               item.meta?.title || item.url
@@ -130,7 +130,7 @@ function renderMenu(list: any[]) {
       const iconName = getMenuIcon(item.url)
       const isAct = isActiveUrl(item.url)
       return h(ElMenuItem, { index: item.url, key: item.url }, () =>
-        h('span', { class: `${prefixCls}__title` }, [
+        h('div', { class: `${prefixCls}__title` }, [
           iconName
             ? h(Icon as any, {
                 icon: iconName,
@@ -138,7 +138,7 @@ function renderMenu(list: any[]) {
                 color: isAct
                   ? 'var(--menu-icon-active-color, var(--left-menu-text-active-color))'
                   : 'var(--left-menu-text-color)',
-                style: 'margin-right:6px;'
+                style: `${collapse.value ? 'margin-right:20px;' : 'margin-right:6px;'}`
               })
             : null,
           item.meta?.title || item.url

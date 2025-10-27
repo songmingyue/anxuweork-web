@@ -24,6 +24,12 @@
 .rl-menu.has-logo {
   height: calc(100% - var(--logo-height));
 }
+.shouqi {
+  width: var(--left-menu-min-width);
+}
+.zhankai {
+  width: var(--left-menu-max-width);
+}
 .rl-content {
   position: absolute;
   top: 0;

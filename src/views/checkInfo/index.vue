@@ -3,29 +3,75 @@
     <!-- 顶部搜索条 -->
     <div class="toolbar">
       <el-form :inline="true" :model="q">
-        <el-form-item label="检查号">
-          <el-input v-model="q.examNo" placeholder="请输入" style="width: 180px" />
+        <el-form-item label="">
+          <div style="display: flex; gap: 8px; align-items: center">
+            <el-dropdown @command="onExamKeyChange">
+              <span class="el-dropdown-link">
+                {{ selectedExamLabel }}
+                <el-icon class="el-icon--right">
+                  <arrow-down />
+                </el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="item in alternative"
+                    :key="item.prop"
+                    :command="item.prop"
+                    >{{ item.label }}</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+            <el-input
+              size="small"
+              v-model="q.examValue"
+              placeholder="请输入"
+              style="width: 180px"
+            />
+          </div>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input v-model="q.name" placeholder="请输入" style="width: 160px" />
+          <el-input v-model="q.name" size="small" placeholder="请输入" style="width: 160px" />
         </el-form-item>
-        <el-form-item label="检查时间">
-          <el-date-picker
-            v-model="q.start"
-            type="datetime"
-            placeholder="开始时间"
-            style="width: 190px"
-          />
-          <span class="sep">至</span>
-          <el-date-picker
-            v-model="q.end"
-            type="datetime"
-            placeholder="结束时间"
-            style="width: 190px"
-          />
+        <el-form-item label="">
+          <div style="display: flex; gap: 8px; align-items: center">
+            <el-dropdown @command="onTimeKeyChange">
+              <span class="el-dropdown-link">
+                {{ selectTimeOption }}
+                <el-icon class="el-icon--right">
+                  <arrow-down />
+                </el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="item in timeAlternative"
+                    :key="item.prop"
+                    :command="item.prop"
+                    >{{ item.label }}</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+            <el-date-picker
+              v-model="q.start"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              size="small"
+            />
+          </div>
         </el-form-item>
         <el-form-item label="检查科室">
-          <el-select v-model="q.dept" placeholder="请选择" style="width: 160px" clearable>
+          <el-select
+            size="small"
+            v-model="q.dept"
+            placeholder="请选择"
+            style="width: 160px"
+            clearable
+          >
             <el-option label="急诊科" value="ER" />
             <el-option label="内科" value="IM" />
           </el-select>
@@ -35,7 +81,13 @@
           <el-button>筛查</el-button>
           <el-button>导出</el-button>
           <el-button>存为方案</el-button>
-          <el-button text type="primary" @click="showAdvance = true">展开</el-button>
+          <el-button text type="primary" @click="showAdvance = !showAdvance">
+            {{ showAdvance ? '收起' : '展开' }}
+            <el-icon style="margin-left: 6px">
+              <arrow-up v-if="showAdvance" />
+              <arrow-down v-else />
+            </el-icon>
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -131,6 +183,34 @@
           <el-button size="small">打印</el-button>
           <el-button size="small">导出</el-button>
           <el-button size="small">批量</el-button>
+          <el-dropdown :hide-on-click="false">
+            <span class="el-dropdown-link">
+              列表字段
+              <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>
+                  <div style="width: 550px; height: 300px">
+                    <el-checkbox-group
+                      v-model="checkedColumns"
+                      style="display: flex; flex-flow: column wrap; height: 100%"
+                    >
+                      <el-checkbox
+                        v-for="value in checkBoxList"
+                        :key="value.prop"
+                        :label="value.label"
+                        :value="value.prop"
+                        >{{ value.label }}</el-checkbox
+                      >
+                    </el-checkbox-group>
+                  </div>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
 
         <el-table
@@ -141,13 +221,13 @@
           highlight-current-row
         >
           <el-table-column type="selection" width="48" />
-          <el-table-column label="类型" prop="type" width="80" />
-          <el-table-column label="检查部位" prop="item" min-width="160" show-overflow-tooltip />
-          <el-table-column label="姓名" prop="name" width="100" />
-          <el-table-column label="性别" prop="sex" width="80" />
-          <el-table-column label="年龄" prop="age" width="100" />
-          <el-table-column label="检查号" prop="examNo" width="120" />
-          <el-table-column label="申请科室" prop="dept" width="140" />
+          <el-table-column
+            v-for="item in tableList"
+            :key="item.prop"
+            :min-width="item.width"
+            :label="item.label"
+            :prop="item.prop"
+          />
         </el-table>
 
         <div class="pager">
@@ -187,7 +267,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, computed } from 'vue'
 import {
   ElForm,
   ElFormItem,
@@ -199,12 +279,30 @@ import {
   ElTable,
   ElTableColumn,
   ElPagination,
-  ElCard
+  ElCard,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElIcon,
+  ElCheckbox,
+  ElCheckboxGroup
 } from 'element-plus'
-
+import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
+import { CheckInfoRow, getcheckinfolist } from '@/api/checkInfo'
+import { useUserStoreWithOut } from '@/store/modules/user'
+import { getOrg } from '@/api/paramConf'
+import { alternative, timeAlternative, checkBoxList, examOptions } from './index'
+const checkedColumns = ref<string[]>([])
 // 顶部简单搜索
+
+const tableList = computed(() => {
+  return checkBoxList.filter((item) => checkedColumns.value.includes(item.prop))
+})
+
 const q = reactive({
-  examNo: '',
+  examKey: 'examNo',
+  timeLabel: 'examTime',
+  examValue: '',
   name: '',
   start: '',
   end: '',
@@ -212,6 +310,22 @@ const q = reactive({
   dept: ''
 })
 
+const selectedExamLabel = computed(() => {
+  const opt = examOptions.find((o) => o.value === q.examKey)
+  return opt ? opt.label : '检查号'
+})
+const selectTimeOption = computed(() => {
+  const opt = timeAlternative.find((o) => o.prop === q.start)
+  return opt ? opt.label : '检查时间'
+})
+
+function onExamKeyChange(key: string) {
+  q.examKey = key
+}
+
+function onTimeKeyChange(key: string) {
+  q.start = key
+}
 // 展开筛选
 const showAdvance = ref(false)
 const advance = reactive({
@@ -234,22 +348,8 @@ const advance = reactive({
   period: ''
 })
 
-// 表格 + 分页
-type Row = {
-  type: string
-  item: string
-  name: string
-  sex: string
-  age: string
-  phone?: string
-  birthday?: string
-  idNo?: string
-  examNo: string
-  source?: string
-  dept?: string
-}
 const loading = ref(false)
-const list = ref<Row[]>([])
+const list = ref<CheckInfoRow[]>([])
 const total = ref(114)
 const page = ref(1)
 const size = ref(20)
@@ -258,21 +358,23 @@ const size = ref(20)
 const previewUrl = ref('https://picsum.photos/900/1200?grayscale')
 
 // 查询
-function onSearch() {
-  loading.value = true
-  // TODO: 调用接口，用 q + advance
-  setTimeout(() => {
-    list.value = Array.from({ length: size.value }).map((_, i) => ({
-      type: 'CT',
-      item: i === 0 ? '40排CT平扫颅脑' : '腹部平扫',
-      name: i === 0 ? '孙秀波' : '王立国',
-      sex: i % 2 ? '男' : '女',
-      age: `${48 + (i % 10)}岁`,
-      examNo: (5300 + i).toString(),
-      dept: i % 2 ? '急诊科' : '内科'
-    }))
+async function onSearch() {
+  try {
+    const userStore = useUserStoreWithOut()
+    loading.value = true
+    const query = {
+      pagesize: size.value,
+      currentPage: page.value,
+      userInfo: Array.isArray(userStore.getUserInfo)
+        ? userStore.getUserInfo[0]
+        : userStore.getUserInfo,
+      token: userStore.getToken
+    }
+    const data = await getcheckinfolist(query)
+    list.value = data.data
+  } finally {
     loading.value = false
-  }, 250)
+  }
 }
 function onResetAdvance() {
   Object.keys(advance).forEach((k) => ((advance as any)[k] = ''))
@@ -306,9 +408,14 @@ function stopDrag() {
   dragging = false
   document.body.style.userSelect = ''
 }
+const getTorg = async () => {
+  const { data } = await getOrg()
+  console.log(data)
+}
 onMounted(() => {
   window.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', stopDrag)
+  getTorg()
   onSearch()
 })
 onBeforeUnmount(() => {
@@ -465,5 +572,12 @@ onBeforeUnmount(() => {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.example-showcase .el-dropdown-link {
+  display: flex;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  align-items: center;
 }
 </style>

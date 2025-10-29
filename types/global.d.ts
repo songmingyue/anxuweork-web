@@ -60,6 +60,8 @@ declare global {
     isSuccess?: boolean
     message?: string
     msg?: string
+    newToken?: string
+    resultValue?: T extends any ? T : T & any
   }
 
   declare interface ThemeTypes {

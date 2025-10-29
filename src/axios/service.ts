@@ -30,7 +30,8 @@ const filderUrl = [
   'api/Data/DeleteServiceAddress',
   'api/Data/GetDicomScpInfoList',
   'api/Data/AddOrUpdateDicomScpInfo',
-  'api/Data/DeleteDicomScpInfo'
+  'api/Data/DeleteDicomScpInfo',
+  'api/doc/GetPushStatus'
 ] // 加密白名单
 axiosInstance.interceptors.request.use((res: any) => {
   // axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
@@ -72,7 +73,8 @@ const listUnProto = [
   'api/Data/DeleteServiceAddress',
   'api/Data/GetDicomScpInfoList',
   'api/Data/AddOrUpdateDicomScpInfo',
-  'api/Data/DeleteDicomScpInfo'
+  'api/Data/DeleteDicomScpInfo',
+  'api/doc/GetPushStatus'
 ] // 列表不解密白名单aaaaa又一种逻辑
 
 axiosInstance.interceptors.response.use(

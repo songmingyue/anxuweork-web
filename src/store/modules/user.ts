@@ -5,6 +5,7 @@ import { ElMessageBox } from 'element-plus'
 import { loginOutApi } from '@/api/login'
 import { useTagsViewStore } from './tagsView'
 import router from '@/router'
+import { DictItemRow } from '@/api/authConf'
 
 interface UserState {
   userInfo?: UserType
@@ -13,8 +14,20 @@ interface UserState {
   roleRouters?: string[] | MenuList[]
   rememberMe: boolean
   loginInfo?: UserLoginType
+  dicmisList: MedicalRecordDicItem[]
+  dicitemlists: DictItemRow[]
 }
-
+type Flag = '0' | '1'
+export interface MedicalRecordDicItem {
+  typeCode: string
+  itemCode: string
+  organizationID: string
+  itemName: string
+  // 后端当前返回为字符串，若需要数值排序可在使用处转 number
+  sortNO: string
+  defaultFlag: Flag
+  deleteFlag: Flag
+}
 export const useUserStore = defineStore('user', {
   state: (): UserState => {
     return {
@@ -24,7 +37,9 @@ export const useUserStore = defineStore('user', {
       roleRouters: undefined,
       // 记住我
       rememberMe: true,
-      loginInfo: undefined
+      loginInfo: undefined,
+      dicmisList: [],
+      dicitemlists: []
     }
   },
   getters: {
@@ -52,6 +67,12 @@ export const useUserStore = defineStore('user', {
     },
     getLoginInfo(): UserLoginType | undefined {
       return this.loginInfo
+    },
+    getDicmsList(): MedicalRecordDicItem[] {
+      return this.dicmisList
+    },
+    getDicitemlists(): DictItemRow[] {
+      return this.dicitemlists
     }
   },
   actions: {
@@ -97,6 +118,12 @@ export const useUserStore = defineStore('user', {
     },
     setLoginInfo(loginInfo: UserLoginType | undefined) {
       this.loginInfo = loginInfo
+    },
+    setDicmsList(dicmisList: any[]) {
+      this.dicmisList = dicmisList
+    },
+    setDicitemlists(dicitemlists: DictItemRow[]) {
+      this.dicitemlists = dicitemlists
     }
   },
   persist: true

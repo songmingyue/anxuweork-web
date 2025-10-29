@@ -470,6 +470,16 @@ message DeptMstInfoProto {
   string examClassName = 13;      // 检查分类名称
 }
 
+message DeptInfoProto {
+  string name = 1;
+  string value = 2;
+  string organizationID = 3;
+  string organizationName = 4;
+  string deptName = 5;
+  string deptID = 6;
+  string deptType = 7;
+}
+
 message OrganizationMstProto {
   string searchOrganizationID = 1;     // 搜索用组织ID
   string organizationName = 2;        // 组织名称
@@ -876,4 +886,82 @@ message CheckInfoDtoProto {
   string relatedExamURL = 78;
   string examEquipment = 79;
   string lockReason = 80;
+}
+message DocumentInputProto {
+  string examUID = 1;
+  string typeCode = 2;
+  string classCode = 3;
+  string businessType = 4;
+  string access_Token = 5;
+  string shareAddress = 6;
+  string shareUserName = 7;
+  string sharePassWord = 8;
+  int32 pageSize = 9;
+  int32 currentPage = 10;
+  string token = 11;
+  string isInteragency = 12;
+  string isInteragencyExam = 13;
+  string isInteragencyClinic = 14;
+  string isInteragencyStatistic = 15;
+  UserOrgInfoProto userInfo = 16;
+  string isInteragencyData = 17;
+  string applyMethod = 18;
+  string isInterconnectData = 19;
+  string accessionNumber = 20;
+  string organizationID = 21;
+  string examToken = 22;
+}
+
+
+message DocStatusProto {
+  bool examResultStatus = 1;
+  bool examWrittenStatus = 2;
+  bool examFilmStatus = 3;
+  bool examImgStatus = 4;
+}
+message WrittenInputProto {
+  string examUID = 1;
+  int32 pageSize = 2;
+  int32 currentPage = 3;
+  string token = 4;
+  string isInteragency = 5;
+  string isInteragencyExam = 6;
+  string isInteragencyClinic = 7;
+  string isInteragencyStatistic = 8;
+  UserOrgInfoProto userInfo = 9;
+  string isInteragencyData = 10;
+  // 11 和 12 未定义，保留编号以兼容旧版，如需补充我可帮填
+  string applyMethod = 13;
+  string isInterconnectData = 14;
+}
+
+
+message WrittenReportProto {
+  string patientName = 1;
+  string gender = 2;
+  int32 age = 3;
+  string ageUnit = 4;
+  string patientID = 5;
+  string medRecNO = 6;
+  string alternateVisitID = 7;
+  string outPatientID = 8;
+  string requestDept = 9;
+  string pointOfCareID = 10;
+  string pointOfCare = 11;
+  string bed = 12;
+  string serviceSectID = 13;
+  string examItem = 14;
+  string examTime = 15;
+  string clinicDiagnosis = 16;
+  string checkArea = 17;
+  string observationMethod = 18;
+  string dicomView = 19;
+  string dicomConsultation = 20;
+  string resultAssistantName = 21;
+  string resultPrincipalName = 22;
+  string resultDate = 23;
+  string resultReviseName = 24;
+  string reviseDate = 25;
+  string auditDate = 26;
+  string organizationName = 27;
 }

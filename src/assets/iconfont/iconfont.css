@@ -2,9 +2,9 @@
   font-family: 'iconfont'; /* Project id 5039005 */
   /* Color fonts */
   src:
-    url('iconfont.woff2?t=1761541033539') format('woff2'),
-    url('iconfont.woff?t=1761541033539') format('woff'),
-    url('iconfont.ttf?t=1761541033539') format('truetype');
+    url('iconfont.woff2?t=1761702685779') format('woff2'),
+    url('iconfont.woff?t=1761702685779') format('woff'),
+    url('iconfont.ttf?t=1761702685779') format('truetype');
 }
 
 .iconfont {
@@ -13,6 +13,66 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-yingxiangjizhongzhenduan:before {
+  content: '\e636';
+}
+
+.icon-suoxiao:before {
+  content: '\e616';
+}
+
+.icon-feiji:before {
+  content: '\e6ae';
+}
+
+.icon-baogao:before {
+  content: '\e630';
+}
+
+.icon-fangshe:before {
+  content: '\e6cd';
+}
+
+.icon-wenjian:before {
+  content: '\e629';
+}
+
+.icon-shoudong:before {
+  content: '\e729';
+}
+
+.icon-fangda:before {
+  content: '\e666';
+}
+
+.icon-xinxi:before {
+  content: '\e78f';
+}
+
+.icon-shenqingdan:before {
+  content: '\e60e';
+}
+
+.icon-cloud-upload:before {
+  content: '\e98a';
+}
+
+.icon-film:before {
+  content: '\e98f';
+}
+
+.icon-tingzhenqi:before {
+  content: '\e7a9';
+}
+
+.icon-a-5fangshezhenliaoshebeiguanli-shebeixitong:before {
+  content: '\e655';
+}
+
+.icon-baogaoshangchuan:before {
+  content: '\e799';
 }
 
 .icon-zhenliao:before {

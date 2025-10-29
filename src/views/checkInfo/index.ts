@@ -1,26 +1,51 @@
 export const alternative = [
-  { label: '病历号', prop: 'mrn' },
-  { label: '检查号', prop: 'examNo' },
-  { label: '就诊号', prop: 'visitNo' },
-  { label: '门诊号', prop: 'outpatientNo' },
-  { label: '住院号', prop: 'inpatientNo' },
+  { label: '病历号', prop: 'medRecNO' },
+  { label: '检查号', prop: 'accessionNumber' },
+  { label: '就诊号', prop: 'visitID' },
+  { label: '门诊号', prop: 'outPatientNO' },
+  { label: '住院号', prop: 'inPatientNO' },
   { label: '患者编号', prop: 'patientId' },
-  { label: '身份证号', prop: 'idNo' },
-  { label: '手机号', prop: 'mobile' },
-  { label: '医保卡号', prop: 'insNo' },
-  { label: '申请单号', prop: 'applyNo' }
+  { label: '身份证号', prop: 'iDCardNo' },
+  { label: '手机号', prop: 'contactPhoneNO' },
+  { label: '医保卡号', prop: 'insuranceID' },
+  { label: '申请单号', prop: 'placerOrderNO' }
 ]
-export const timeAlternative = [
-  { label: '检查时间', prop: 'examTime' },
-  { label: '登记时间', prop: 'registerTime' },
-  { label: '报告时间', prop: 'resultDate' },
-  { label: '申请时间', prop: 'requestTime' },
-  { label: '审核时间', prop: 'auditDate' },
-  { label: '更新时间', prop: 'lastUpdateDate1' }
+export const timeAlternative: any = [
+  { label: '检查时间', propStart: 'examStartTime', propEndTime: 'examEndTime', prop: 'examTime' },
+  {
+    label: '登记时间',
+    propStart: 'registerStartTime',
+    propEndTime: 'registerEndTime',
+    prop: 'registerTime'
+  },
+  {
+    label: '报告时间',
+    propStart: 'resultStartDate',
+    propEndTime: 'resultEndDate',
+    prop: 'resultTime'
+  },
+  {
+    label: '申请时间',
+    propStart: 'requestStartTime',
+    propEndTime: 'requestEndTime',
+    prop: 'requestTime'
+  },
+  {
+    label: '审核时间',
+    propStart: 'auditStartDate',
+    propEndTime: 'auditEndDate',
+    prop: 'auditTime'
+  },
+  {
+    label: '更新时间',
+    propStart: 'lastUpdateStartDate1',
+    propEndTime: 'lastUpdateEndDate2',
+    prop: 'lastUpdateTime'
+  }
 ]
 
 export const examOptions = [
-  { label: '病历号', value: 'mrn' },
+  { label: '病历号', value: 'medRecNO' },
   { label: '检查号', value: 'examNo' },
   { label: '就诊号', value: 'visitNo' },
   { label: '门诊号', value: 'outpatientNo' },
@@ -32,17 +57,21 @@ export const examOptions = [
   { label: '申请单号', value: 'applyNo' }
 ]
 
-export const checkBoxList = [
-  { prop: 'serviceSectID', label: '类型', sort: !0, width: 120 },
-  { prop: 'checkArea', label: '检查部位', sort: !0, width: 120 },
-  { prop: 'patientName', label: '姓名', sort: !0, width: 120 },
-  { prop: 'gender', label: '性别', sort: !0, width: 120 },
-  { prop: 'displayAge', label: '年龄', sort: !0, width: 120 },
-  { prop: 'contactPhoneNO', label: '电话', sort: !0, width: 120 },
-  { prop: 'birthDay', label: '生日', sort: !0, width: 120 },
-  { prop: 'iDCardNo', label: '身份证', sort: !0, width: 120 },
-  { prop: 'examItem', label: '检查项目', sort: !0, width: 120 },
-  { prop: 'medRecNO', label: '病历号', sort: !0, width: 120 },
+export const defaultStart: any = [
+  { prop: 'serviceSectID', label: '类型', sort: !0, width: 120, disabled: true },
+  { prop: 'checkArea', label: '检查部位', sort: !0, width: 120, disabled: true },
+  { prop: 'patientName', label: '姓名', sort: !0, width: 120, disabled: true },
+  { prop: 'gender', label: '性别', sort: !0, width: 120, disabled: true },
+  { prop: 'displayAge', label: '年龄', sort: !0, width: 120, disabled: true },
+  { prop: 'contactPhoneNO', label: '电话', sort: !0, width: 120, disabled: true },
+  { prop: 'birthDay', label: '生日', sort: !0, width: 120, disabled: true },
+  { prop: 'iDCardNo', label: '身份证', sort: !0, width: 120, disabled: true },
+  { prop: 'examItem', label: '检查项目', sort: !0, width: 120, disabled: true },
+  { prop: 'medRecNO', label: '病历号', sort: !0, width: 120, disabled: true }
+]
+
+export const checkBoxList: any = [
+  ...defaultStart,
   {
     prop: 'patientClass',
     label: '就诊类型',
@@ -107,5 +136,17 @@ export const checkBoxList = [
     label: '检查设备',
     sort: !0,
     width: 120
+  }
+]
+
+export const medicalVisit = [
+  {
+    label: '检查设备',
+    type: 'select',
+    prop: 'examEquipment',
+    width: '180px',
+    loadOptFcn: 'loadExamEquipment',
+    filterable: !0,
+    opt: []
   }
 ]

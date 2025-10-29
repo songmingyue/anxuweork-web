@@ -6,6 +6,111 @@
   "description": "全网云前端icon",
   "glyphs": [
     {
+      "icon_id": "13474746",
+      "name": "影像集中诊断",
+      "font_class": "yingxiangjizhongzhenduan",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "579386",
+      "name": "缩小",
+      "font_class": "suoxiao",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "841850",
+      "name": "飞机",
+      "font_class": "feiji",
+      "unicode": "e6ae",
+      "unicode_decimal": 59054
+    },
+    {
+      "icon_id": "4662757",
+      "name": "报告",
+      "font_class": "baogao",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "5791019",
+      "name": "放射",
+      "font_class": "fangshe",
+      "unicode": "e6cd",
+      "unicode_decimal": 59085
+    },
+    {
+      "icon_id": "6582320",
+      "name": "文件",
+      "font_class": "wenjian",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "8791338",
+      "name": "手动",
+      "font_class": "shoudong",
+      "unicode": "e729",
+      "unicode_decimal": 59177
+    },
+    {
+      "icon_id": "9273208",
+      "name": "放大",
+      "font_class": "fangda",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
+      "icon_id": "10232782",
+      "name": "信息",
+      "font_class": "xinxi",
+      "unicode": "e78f",
+      "unicode_decimal": 59279
+    },
+    {
+      "icon_id": "11019854",
+      "name": "申请单",
+      "font_class": "shenqingdan",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "18170215",
+      "name": "云端,上传",
+      "font_class": "cloud-upload",
+      "unicode": "e98a",
+      "unicode_decimal": 59786
+    },
+    {
+      "icon_id": "18170230",
+      "name": "电影,胶片,影片",
+      "font_class": "film",
+      "unicode": "e98f",
+      "unicode_decimal": 59791
+    },
+    {
+      "icon_id": "18211336",
+      "name": "听诊器",
+      "font_class": "tingzhenqi",
+      "unicode": "e7a9",
+      "unicode_decimal": 59305
+    },
+    {
+      "icon_id": "34927814",
+      "name": "5放射诊疗设备管理-设备系统",
+      "font_class": "a-5fangshezhenliaoshebeiguanli-shebeixitong",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "41801029",
+      "name": "报告上传",
+      "font_class": "baogaoshangchuan",
+      "unicode": "e799",
+      "unicode_decimal": 59289
+    },
+    {
       "icon_id": "2320948",
       "name": "诊疗信息",
       "font_class": "zhenliao",

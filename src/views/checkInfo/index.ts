@@ -58,8 +58,8 @@ export const examOptions = [
 ]
 
 export const defaultStart: any = [
-  { prop: 'serviceSectID', label: '类型', sort: !0, width: 120, disabled: true },
-  { prop: 'checkArea', label: '检查部位', sort: !0, width: 120, disabled: true },
+  { prop: 'serviceSectID', label: '类型', sort: !0, width: 60, disabled: true },
+  { prop: 'checkArea', label: '检查部位', sort: !0, width: 90, disabled: true },
   { prop: 'patientName', label: '姓名', sort: !0, width: 120, disabled: true },
   { prop: 'gender', label: '性别', sort: !0, width: 120, disabled: true },
   { prop: 'displayAge', label: '年龄', sort: !0, width: 120, disabled: true },

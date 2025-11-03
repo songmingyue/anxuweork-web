@@ -965,3 +965,142 @@ message WrittenReportProto {
   string auditDate = 26;
   string organizationName = 27;
 }
+
+message DocumentListProto {
+ repeated DocumentProto document = 1;
+}
+
+message DocumentProto {
+  repeated DocumentDtoProto documentDtos = 1;
+}
+
+message DocumentDtoProto {
+  string businessType = 1;         // 业务类型
+  string businessTime = 2;         // 业务时间
+  string classCode = 3;            // 类别代码
+  string typeCode = 4;             // 类型代码
+  string mimeType = 5;             // MIME 类型
+  string fileSize = 6;             // 文件大小
+  string fileCreateTime = 7;       // 文件创建时间
+  string fileCreateUserID = 8;     // 文件创建用户 ID
+  string fileCreateUserName = 9;   // 文件创建用户名称
+  string originalFileName = 10;    // 原始文件名
+  string title = 11;                // 标题
+  string uploadTime = 12;           // 上传时间
+  string dicomInfo = 13;           // DICOM 信息
+  string fileRelativePath = 14;     // 文件相对路径
+  string mediaName = 15;            // 媒体名称
+  string pathType = 16;             // 路径类型
+  string mediaHost = 17;            // 媒体主机
+  string path = 18;                 // 路径
+  bytes base64url = 19;             // Base64 URL（以字节形式存储）
+  string subDir = 20;               // 子目录
+  string patientID = 21;            // 病人 ID
+  string accessionNumber = 22;      // 记录号
+  string serviceSectID = 23;        // 服务部门 ID
+  string studyInstanceUID = 24;     // 学习实例 UID
+  string organizationID = 25;       // 机构 ID
+  string imgUrl = 26;               // 图片 URL
+  string access_Token = 27;         // 访问令牌
+  string examUID = 28;              // 考试 UID
+  string resultSeq = 29;            // 结果顺序
+  string imagingFinding = 30;       // 影像发现
+  string imagingDiagnosis = 31;      // 影像诊断
+  string resultStatusCode = 32;     // 结果状态代码
+  string fileUID = 33;              // 文件 UID
+}
+
+message ResetBusinessStatusProto {
+  string accessionNumber = 1;
+  string examUID = 2;
+  int32 fileType = 3;
+}
+
+message RequestReportDtoProto {
+  string placerOrderNO = 1;
+  string patientName = 2;
+  string gender = 3;
+  int32 age = 4;
+  string ageUnit = 5;
+  string contactPhoneNO = 6;
+  string medRecNO = 7;
+  string patientClass = 8;
+  string outPatientID = 9;
+  string checkArea = 10;
+  string examItem = 11;
+  string alternateVisitID = 12;
+  string bed = 13;
+  string symptom = 14;
+  string clinicDiagnosis = 15;
+  string otherClinicalInfo = 16;
+  string reason = 17;
+  string attention = 18;
+  string requestDocName = 19;
+  string requestDept = 20;
+  string requestTime = 21;
+  string displayAge = 22;
+}
+
+message PrintInputProto {
+  string examUID = 1;
+  string accessionNumber = 2;
+}
+
+message PersonalCheckRcdInputProto {
+  string patientMasterID = 1;
+  string personExamUID = 2;
+  int32 pageSize = 3;
+  int32 currentPage = 4;
+  string token = 5;
+  string isInteragency = 6;
+  string isInteragencyExam = 7;
+  string isInteragencyClinic = 8;
+  string isInteragencyStatistic = 9;
+  UserOrgInfoProto userInfo = 10;
+  string isInteragencyData = 11;
+  string examUID = 12;
+  string applyMethod = 13;
+  string isInterconnectData = 14;
+  string examToken = 15;
+  string accessionNumber = 16;
+  string organizationID = 17;
+  string iDCardNo = 18;
+  string insuranceID = 19;
+}
+
+
+message PersonalCheckRcdDtoProto {
+  string patientName = 1;
+  string gender = 2;
+  string serviceSectID = 3;
+  string examItem = 4;
+  string checkArea = 5;
+  string medRecNO = 6;
+  string pointOfCare = 7;
+  string patientClass = 8;
+  string visitID = 9;
+  string pointOfCareID = 10;
+  string bed = 11;
+  string organizationName = 12;
+  string requestOrgName = 13;
+  string requestDept = 14;
+  string requestDocName = 15;
+  string requestTime = 16;
+  string regTime = 17;
+  string examTime = 18;
+  string patientID = 19;
+  string accessionNumber = 20;
+  string abnormalFlags = 21;
+  string criticalValue = 22;
+  string resultStatus = 23;
+  string ifHasImage = 24;
+  string examStatus = 25;
+  string examCode = 26;
+  string patientMasterID = 27;
+  string examUID = 28;
+  string outPatientID = 29;
+  string alternateVisitID = 30;
+  string applyMethod = 31;
+  string displayAge = 32;
+  string organizationID = 33;
+}

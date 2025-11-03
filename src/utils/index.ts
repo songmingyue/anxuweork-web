@@ -134,3 +134,25 @@ export function objToFormData(obj: Recordable) {
   })
   return formData
 }
+
+export function detectIEVersionAndArch() {
+  const ua = navigator.userAgent
+
+  // 判断是否是IE（包括IE11）
+  const isIE = /MSIE|Trident/.test(ua)
+  if (!isIE) return { browser: '非 IE', arch: '未知' }
+
+  let version = '未知'
+  if (/MSIE (\d+\.\d+)/.test(ua)) {
+    version = 'IE ' + RegExp.$1
+  } else if (/rv:(\d+\.\d+)/.test(ua)) {
+    version = 'IE ' + RegExp.$1 // IE11+
+  }
+
+  let arch = '32位'
+  if (ua.includes('WOW64') || ua.includes('Win64') || ua.includes('x64')) {
+    arch = '64位'
+  }
+
+  return { browser: version, arch }
+}

@@ -14,25 +14,29 @@ const axiosInstance: AxiosInstance = axios.create({
   baseURL: PATH_URL,
   withCredentials: true
 })
-
-const filderUrl = [
-  '/system/version',
-  '/key',
-  '/task/GetConfigs',
-  '/task/GetCondition',
-  '/task/AddConfig',
-  '/task/UpdateConfig',
-  '/task/UpdateCondition',
-  '/task/UpdateStatus',
-  '/task/DeleteConfig',
-  '/Data/GetServiceAddressInfoList',
+const listUnProto = [
+  'api/task/GetConfigs',
+  'api/task/DeleteConfig',
+  'api/task/GetCondition',
+  'api/task/AddConfig',
+  'api/task/UpdateConfig',
+  'api/task/UpdateCondition',
+  'api/task/UpdateStatus',
+  'api/Data/GetServiceAddressInfoList',
   'api/Data/AddOrEditServiceAddress',
   'api/Data/DeleteServiceAddress',
   'api/Data/GetDicomScpInfoList',
   'api/Data/AddOrUpdateDicomScpInfo',
   'api/Data/DeleteDicomScpInfo',
-  'api/doc/GetPushStatus'
-] // 加密白名单
+  'api/doc/GetPushStatus',
+  'api/CommonData/UpdatePatientInfo',
+  'api/doc/RePrintStatus',
+  'api/doc/upload',
+  'api/CommonData/ResetConsultationFlag',
+  'api/plugin/batchResetBusinessStatus'
+] // 列表不解密白名单aaaaa又一种逻辑
+
+const filderUrl = ['/system/version', '/key', listUnProto].flat(Infinity) // 加密白名单
 axiosInstance.interceptors.request.use((res: any) => {
   // axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
   const controller = new AbortController()
@@ -60,23 +64,6 @@ axiosInstance.interceptors.request.use((res: any) => {
   return res
 })
 
-const listUnProto = [
-  'api/task/GetConfigs',
-  'api/task/DeleteConfig',
-  'api/task/GetCondition',
-  'api/task/AddConfig',
-  'api/task/UpdateConfig',
-  'api/task/UpdateCondition',
-  'api/task/UpdateStatus',
-  'api/Data/GetServiceAddressInfoList',
-  'api/Data/AddOrEditServiceAddress',
-  'api/Data/DeleteServiceAddress',
-  'api/Data/GetDicomScpInfoList',
-  'api/Data/AddOrUpdateDicomScpInfo',
-  'api/Data/DeleteDicomScpInfo',
-  'api/doc/GetPushStatus'
-] // 列表不解密白名单aaaaa又一种逻辑
-
 axiosInstance.interceptors.response.use(
   (res: any) => {
     // (res: AxiosResponse) => {
@@ -90,10 +77,14 @@ axiosInstance.interceptors.response.use(
     } else if (listUnProto.includes(config.url)) {
       res = res.data
       if (res.isSuccess) {
-        ElMessage.success('请求成功')
+        ElMessage.success(res.message || res.msg || '请求成功')
       } else {
         if (res.code !== 200) {
-          ElMessage.error(res.message || '请求失败')
+          if (config.url?.includes('doc/GetPushStatus')) {
+            ElMessage.success('请求成功')
+          } else {
+            ElMessage.error(res.message || res.msg || '请求失败')
+          }
         } else {
           ElMessage.success('请求成功')
         }

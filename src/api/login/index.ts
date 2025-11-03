@@ -15,6 +15,17 @@ export const loginApi = (data: any): Promise<IResponse<UserType>> => {
   })
 }
 
+export const userLogout = (data: any): Promise<IResponse<UserType>> => {
+  return request.post({
+    url: 'login/userlogout',
+    data,
+    requestTem: {
+      requestTem: 'AdminLoginInputProto',
+      responseTem: 'AdminLoginUserInfoProto'
+    }
+  })
+}
+
 export const loginOutApi = (): Promise<IResponse> => {
   return request.get({ url: '/mock/user/loginOut' })
 }

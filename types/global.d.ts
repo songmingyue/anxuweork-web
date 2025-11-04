@@ -62,6 +62,17 @@ declare global {
     msg?: string
     newToken?: string
     resultValue?: T extends any ? T : T & any
+    pageBaseJson?: PageBase
+  }
+
+  declare interface IResponseNoProto<T = any> {
+    pageBase?: PageBase
+    isSuccess?: boolean
+    message?: string
+    msg?: string
+    newToken?: string
+    resultValue?: T extends any ? T : T & any
+    pageBaseJson?: PageBase
   }
 
   declare interface ThemeTypes {

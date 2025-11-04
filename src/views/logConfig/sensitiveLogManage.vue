@@ -1,37 +1,35 @@
 <template>
   <div class="page">
-    <!-- 顶部查询 -->
+    <!-- 顶部查询（按截图） -->
     <el-card shadow="never" body-style="{padding:'12px 16px'}">
       <el-form :inline="true" :model="query" label-width="80px">
-        <el-form-item label="操作者">
-          <el-input v-model="query.operator" placeholder="请输入" clearable style="width: 220px" />
-        </el-form-item>
-
-        <el-form-item label="操作日期">
-          <el-date-picker
-            v-model="query.start"
-            type="date"
-            placeholder="开始日期"
-            style="width: 160px"
-          />
-          <span class="sep">至</span>
-          <el-date-picker
-            v-model="query.end"
-            type="date"
-            placeholder="结束日期"
-            style="width: 160px"
+        <el-form-item label="操作类型">
+          <el-input
+            v-model="query.operationType"
+            placeholder="请输入"
+            clearable
+            style="width: 220px"
           />
         </el-form-item>
-
-        <el-form-item label="机构">
-          <el-select v-model="query.org" placeholder="请选择" clearable style="width: 180px">
-            <el-option label="全部" value="" />
-            <el-option label="方正县人民医院" value="fz" />
-          </el-select>
+        <el-form-item label="操作环节">
+          <el-input
+            v-model="query.operationLink"
+            placeholder="请输入"
+            clearable
+            style="width: 220px"
+          />
         </el-form-item>
-
+        <el-form-item label="操作内容">
+          <el-input
+            v-model="query.operationContent"
+            placeholder="请输入"
+            clearable
+            style="width: 220px"
+          />
+        </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">检索</el-button>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="handleReset">清空</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -39,12 +37,31 @@
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
       <el-table :data="rows" v-loading="loading" border style="width: 100%">
-        <el-table-column prop="source" label="来源" min-width="120" />
-        <el-table-column prop="operator" label="操作者" min-width="120" />
-        <el-table-column prop="ip" label="请求设备IP" min-width="140" />
-        <el-table-column prop="patient" label="病人姓名" min-width="120" />
-        <el-table-column prop="orgName" label="医院名称" min-width="200" />
-        <el-table-column prop="time" label="操作时间" min-width="180" />
+        <el-table-column prop="operationType" label="操作类型" min-width="120" sortable />
+        <el-table-column prop="operationLink" label="操作环节" min-width="180" sortable />
+        <el-table-column label="操作内容" min-width="160">
+          <template #default="{ row }">
+            <el-tag
+              type="success"
+              size="small"
+              class="clickable"
+              @click="openDetail(row.operationContent)"
+            >
+              {{ row.operationContent }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="operationIP" label="操作用户IP地址" min-width="150" />
+        <el-table-column label="操作用户UID" min-width="220" show-overflow-tooltip>
+          <template #default="{ row }">
+            <el-tag size="small" class="clickable" @click="openDetail(row.operationUserUID)">{{
+              row.operationUserUID
+            }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="operationAccount" label="操作用户账户" min-width="140" />
+        <el-table-column prop="createTime" label="创建时间" min-width="160" sortable />
+        <el-table-column prop="lastUpdateTime" label="最后更新时间" min-width="160" sortable />
       </el-table>
 
       <div class="pager">
@@ -61,77 +78,93 @@
         />
       </div>
     </el-card>
+
+    <!-- 详情弹窗 -->
+    <el-dialog v-model="detailVisible" width="640" :close-on-click-modal="false">
+      <template #header>
+        <div style=" font-size: 16px; font-weight: 600;text-align: center">详细信息</div>
+      </template>
+      <div style=" line-height: 1.8; color: #303133;white-space: pre-wrap">{{ detailText }}</div>
+      <template #footer>
+        <el-button @click="detailVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { getSensitiveLogList, type InputSensitiveLog, type SensitiveLogOnce } from '@/api/logConfig'
 import {
   ElTable,
-  ElTableColumn,
+  ElTag,
+  ElInput,
   ElCard,
+  ElTableColumn,
   ElForm,
   ElFormItem,
-  ElSelect,
-  ElOption
+  ElButton,
+  ElPagination,
+  ElDialog
 } from 'element-plus'
-
-type Row = {
-  source: string
-  operator: string
-  ip: string
-  patient: string
-  orgName: string
-  time: string
-}
-
 const query = reactive({
-  operator: '',
-  start: '',
-  end: '',
-  org: ''
+  operationType: '',
+  operationLink: '',
+  operationContent: ''
 })
 
 const loading = ref(false)
-const rows = ref<Row[]>([])
+const rows = ref<SensitiveLogOnce[]>([])
 const total = ref(0)
 const pageSize = ref(20)
 const currentPage = ref(1)
 
-function mockFetch() {
+const detailVisible = ref(false)
+const detailText = ref('')
+
+async function fetch() {
   loading.value = true
-  setTimeout(() => {
-    const list: Row[] = [
-      {
-        source: '报告打印',
-        operator: 'admin',
-        ip: '10.0.0.12',
-        patient: '赵春香',
-        orgName: '方正县人民医院',
-        time: '2024-09-12 22:03:58'
-      }
-    ]
-    rows.value = currentPage.value === 1 ? list : []
-    total.value = list.length
+  try {
+    const payload: InputSensitiveLog = {
+      currentPage: currentPage.value,
+      pageSize: pageSize.value,
+      ...query
+    }
+    const { resultValue, pageBaseJson } = await getSensitiveLogList(payload)
+    rows.value = (resultValue as unknown as SensitiveLogOnce[]) || []
+    total.value = pageBaseJson?.totalRecords || 0
+  } finally {
     loading.value = false
-  }, 300)
+  }
 }
 
 function handleSearch() {
   currentPage.value = 1
-  mockFetch()
+  fetch()
+}
+function handleReset() {
+  query.operationType = ''
+  query.operationLink = ''
+  query.operationContent = ''
+  currentPage.value = 1
+  fetch()
 }
 function onPageChange(p: number) {
   currentPage.value = p
-  mockFetch()
+  fetch()
 }
 function onSizeChange(s: number) {
   pageSize.value = s
   currentPage.value = 1
-  mockFetch()
+  fetch()
 }
 
-mockFetch()
+function openDetail(text: string) {
+  detailText.value = text || '—'
+  detailVisible.value = true
+}
+
+onMounted(() => fetch())
 </script>
 
 <style scoped>
@@ -158,5 +191,9 @@ mockFetch()
 
 .total {
   color: #909399;
+}
+
+.clickable {
+  cursor: pointer;
 }
 </style>

@@ -4,13 +4,19 @@
     <el-card shadow="never" body-style="{padding:'12px 16px'}">
       <el-form :inline="true" :model="query" label-width="80px">
         <el-form-item label="检查号">
-          <el-input v-model="query.operator" placeholder="请输入" clearable style="width: 220px" />
+          <el-input
+            v-model="query.accessionNumber"
+            placeholder="请输入"
+            clearable
+            style="width: 220px"
+          />
         </el-form-item>
 
         <el-form-item label="操作日期">
           <el-date-picker
             v-model="query.start"
             type="date"
+            value-format="YYYY-MM-DD"
             placeholder="开始日期"
             style="width: 160px"
           />
@@ -18,6 +24,7 @@
           <el-date-picker
             v-model="query.end"
             type="date"
+            value-format="YYYY-MM-DD"
             placeholder="结束日期"
             style="width: 160px"
           />
@@ -25,6 +32,7 @@
 
         <el-form-item>
           <el-button type="primary" @click="handleSearch">检索</el-button>
+          <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -32,12 +40,9 @@
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
       <el-table :data="rows" v-loading="loading" border style="width: 100%">
-        <el-table-column prop="source" label="来源" min-width="120" />
-        <el-table-column prop="operator" label="操作者" min-width="120" />
-        <el-table-column prop="ip" label="请求设备IP" min-width="140" />
-        <el-table-column prop="patient" label="病人姓名" min-width="120" />
-        <el-table-column prop="orgName" label="医院名称" min-width="200" />
-        <el-table-column prop="time" label="操作时间" min-width="180" />
+        <el-table-column prop="accessionNumber" label="检查号" min-width="120" sortable />
+        <el-table-column prop="examDate" label="检查时间" min-width="120" sortable />
+        <el-table-column prop="typeCode" label="类型" min-width="140" sortable />
       </el-table>
 
       <div class="pager">
@@ -58,65 +63,69 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { ElTable, ElTableColumn, ElCard, ElForm, ElFormItem } from 'element-plus'
-
-type Row = {
-  source: string
-  operator: string
-  ip: string
-  patient: string
-  orgName: string
-  time: string
-}
+import { ref, reactive, onMounted } from 'vue'
+import {
+  ElTable,
+  ElTableColumn,
+  ElCard,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElButton,
+  ElDatePicker,
+  ElPagination
+} from 'element-plus'
+import { getUploadFailList, UploadFailList, UploadFailOnce } from '@/api/logConfig'
 
 const query = reactive({
-  operator: '',
+  accessionNumber: '',
   start: '',
-  end: '',
-  org: ''
+  end: ''
 })
 
 const loading = ref(false)
-const rows = ref<Row[]>([])
+const rows = ref<UploadFailOnce[]>([])
 const total = ref(0)
 const pageSize = ref(20)
 const currentPage = ref(1)
+async function fetch() {
+  const request: UploadFailList = {
+    currentPage: currentPage.value,
+    pageSize: pageSize.value,
+    examTimeRange: `${query.start},${query.end}`,
+    accessionNumber: query.accessionNumber
+  }
+  const { resultValue, pageBaseJson } = await getUploadFailList(request)
+  rows.value = resultValue || []
+  total.value = pageBaseJson?.totalRecords || 0
+}
 
-function mockFetch() {
-  loading.value = true
-  setTimeout(() => {
-    const list: Row[] = [
-      {
-        source: '报告打印',
-        operator: 'admin',
-        ip: '10.0.0.12',
-        patient: '赵春香',
-        orgName: '方正县人民医院',
-        time: '2024-09-12 22:03:58'
-      }
-    ]
-    rows.value = currentPage.value === 1 ? list : []
-    total.value = list.length
-    loading.value = false
-  }, 300)
+const handleReset = () => {
+  query.accessionNumber = ''
+  query.start = ''
+  query.end = ''
+  currentPage.value = 1
+  fetch()
 }
 
 function handleSearch() {
   currentPage.value = 1
-  mockFetch()
+
+  fetch()
 }
 function onPageChange(p: number) {
   currentPage.value = p
-  mockFetch()
+  fetch()
 }
 function onSizeChange(s: number) {
   pageSize.value = s
   currentPage.value = 1
-  mockFetch()
+  fetch()
 }
 
-mockFetch()
+onMounted(() => {
+  fetch()
+})
 </script>
 
 <style scoped>

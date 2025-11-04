@@ -360,7 +360,7 @@
       :close-on-click-modal="false"
     >
       <template #header>
-        <div style=" font-size: 18px; font-weight: 600;text-align: center">{{
+        <div style="font-size: 18px; font-weight: 600; text-align: center">{{
           clodopUpgradeNeeded ? '打印控件需要升级' : '打印控件未安装'
         }}</div>
       </template>

@@ -1104,3 +1104,58 @@ message PersonalCheckRcdDtoProto {
   string displayAge = 32;
   string organizationID = 33;
 }
+
+message PrintLogInputProto {
+  string organizationID = 1;
+  string oprerator = 2;
+  string operateTime = 3;
+  int32 pageSize = 4;
+  int32 currentPage = 5;
+}
+
+
+message PrintLogRequestDtoProto {
+  string patientID = 1;
+  string sourceType = 2;
+  string organizationID = 3;
+  string oprerator = 4;       
+  string requestIP = 5;
+  string examUID = 6;
+  string patientName = 7;
+  string organizationName = 8;
+  string operateTime = 9;
+}
+
+
+message GetGainRecordListInputProto {
+  int32 currentPage = 1;
+  int32 pageSize = 2;
+  string date = 3;
+  int32 type = 4;
+  string organizationID = 5;
+}
+
+
+message GetGainRecordListOutProto {
+  string gainRecordUID = 1;
+  int32 type = 2;
+  string createTime = 3;
+  string organizationName = 4;
+  string typeName = 5;
+}
+
+
+message GetOperateRecordListInputProto {
+  string organizationID = 1;
+  int32 currentPage = 2;
+  int32 pageSize = 3;
+  string date = 4;
+}
+
+message GetOperateRecordListOutputProto {
+  string operateRecordUID = 1;
+  string organizationID = 2;
+  string requestURL = 3;
+  string createTime = 4;
+  string organizationName = 5;
+}

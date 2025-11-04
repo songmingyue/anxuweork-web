@@ -33,7 +33,12 @@ const listUnProto = [
   'api/doc/RePrintStatus',
   'api/doc/upload',
   'api/CommonData/ResetConsultationFlag',
-  'api/plugin/batchResetBusinessStatus'
+  'api/plugin/batchResetBusinessStatus',
+  'api/doc/GetUploadFailList',
+  'api/doc/GetFailTaskList',
+  'api/doc/GetFailTaskPluginName',
+  'api/doc/GetFailTaskPluginName',
+  'api/doc/GetSensitiveLogList'
 ] // 列表不解密白名单aaaaa又一种逻辑
 
 const filderUrl = ['/system/version', '/key', listUnProto].flat(Infinity) // 加密白名单

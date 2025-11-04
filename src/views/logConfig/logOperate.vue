@@ -4,7 +4,7 @@
     <el-card shadow="never" body-style="{padding:'12px 16px'}">
       <el-form :inline="true" :model="query" label-width="80px">
         <el-form-item label="操作者">
-          <el-input v-model="query.operator" placeholder="请输入" clearable style="width: 220px" />
+          <el-input v-model="query.oprerator" placeholder="请输入" clearable style="width: 220px" />
         </el-form-item>
 
         <el-form-item label="操作日期">
@@ -24,9 +24,18 @@
         </el-form-item>
 
         <el-form-item label="机构">
-          <el-select v-model="query.org" placeholder="请选择" clearable style="width: 180px">
-            <el-option label="全部" value="" />
-            <el-option label="方正县人民医院" value="fz" />
+          <el-select
+            v-model="query.organizationID"
+            placeholder="请选择"
+            clearable
+            style="width: 180px"
+          >
+            <el-option
+              v-for="opt in orgOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
           </el-select>
         </el-form-item>
 
@@ -39,12 +48,12 @@
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
       <el-table :data="rows" v-loading="loading" border style="width: 100%">
-        <el-table-column prop="source" label="来源" min-width="120" />
-        <el-table-column prop="operator" label="操作者" min-width="120" />
-        <el-table-column prop="ip" label="请求设备IP" min-width="140" />
-        <el-table-column prop="patient" label="病人姓名" min-width="120" />
-        <el-table-column prop="orgName" label="医院名称" min-width="200" />
-        <el-table-column prop="time" label="操作时间" min-width="180" />
+        <el-table-column prop="sourceType" label="来源" min-width="120" sortable />
+        <el-table-column prop="oprerator" label="操作者" min-width="120" sortable />
+        <el-table-column prop="requestIP" label="请求设备IP" min-width="140" sortable />
+        <el-table-column prop="patientName" label="病人姓名" min-width="120" sortable />
+        <el-table-column prop="organizationName" label="医院名称" min-width="200" sortable />
+        <el-table-column prop="operateTime" label="操作时间" min-width="180" sortable />
       </el-table>
 
       <div class="pager">
@@ -65,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import {
   ElTable,
   ElTableColumn,
@@ -73,65 +82,72 @@ import {
   ElForm,
   ElFormItem,
   ElSelect,
-  ElOption
+  ElOption,
+  ElInput,
+  ElButton,
+  ElDatePicker,
+  ElPagination
 } from 'element-plus'
-
-type Row = {
-  source: string
-  operator: string
-  ip: string
-  patient: string
-  orgName: string
-  time: string
-}
+import { DataPrintLog, getprintlog } from '@/api/logConfig'
 
 const query = reactive({
-  operator: '',
+  oprerator: '',
   start: '',
   end: '',
-  org: ''
+  organizationID: ''
 })
 
 const loading = ref(false)
-const rows = ref<Row[]>([])
+const rows = ref<DataPrintLog[]>([])
 const total = ref(0)
 const pageSize = ref(20)
 const currentPage = ref(1)
+const orgOptions = ref<{ label: string; value: string }[]>([])
 
-function mockFetch() {
-  loading.value = true
-  setTimeout(() => {
-    const list: Row[] = [
-      {
-        source: '报告打印',
-        operator: 'admin',
-        ip: '10.0.0.12',
-        patient: '赵春香',
-        orgName: '方正县人民医院',
-        time: '2024-09-12 22:03:58'
-      }
-    ]
-    rows.value = currentPage.value === 1 ? list : []
-    total.value = list.length
-    loading.value = false
-  }, 300)
+function loadOrgOptions() {
+  try {
+    const raw = localStorage.getItem('org')
+    const list = raw ? JSON.parse(raw) : []
+    if (Array.isArray(list.value)) {
+      orgOptions.value = list.value
+    } else {
+      orgOptions.value = []
+    }
+  } catch (_) {
+    orgOptions.value = []
+  }
+}
+
+async function fetch() {
+  const request = {
+    currentPage: currentPage.value,
+    pageSize: pageSize.value,
+    operateTime: `${query.start},${query.end}`,
+    oprerator: query.oprerator,
+    organizationID: query.organizationID
+  }
+  const { data, pageBase } = await getprintlog(request)
+  rows.value = data
+  total.value = pageBase?.totalRecords || 0
 }
 
 function handleSearch() {
   currentPage.value = 1
-  mockFetch()
+  fetch()
 }
 function onPageChange(p: number) {
   currentPage.value = p
-  mockFetch()
+  fetch()
 }
 function onSizeChange(s: number) {
   pageSize.value = s
   currentPage.value = 1
-  mockFetch()
+  fetch()
 }
-
-mockFetch()
+onMounted(() => {
+  loadOrgOptions()
+  fetch()
+})
 </script>
 
 <style scoped>

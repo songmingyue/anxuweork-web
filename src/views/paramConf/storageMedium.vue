@@ -121,13 +121,18 @@ async function onConfirmStorage() {
         </el-col>
         <el-col :span="12">
           <el-button type="primary" @click="onSearch">查 询</el-button>
-          <el-button type="success" @click="onAdd">新建存储媒介</el-button>
+          <el-button type="success" @click="onAdd">新增存储媒介</el-button>
         </el-col>
       </el-row>
     </el-card>
 
     <el-card shadow="never">
-      <el-table :data="tableData" border style="width: 100%">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%; margin-bottom: 10px"
+        height="calc(100vh - 220px)"
+      >
         <el-table-column
           fixed="left"
           prop="mediaUID"

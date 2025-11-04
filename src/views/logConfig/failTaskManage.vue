@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <!-- 顶部查询（按截图布局） -->
-    <el-card shadow="never" body-style="{padding:'12px 16px'}">
+    <el-card shadow="never" body-style="{padding:'12px 16px'}" ref="searchCard">
       <el-form :inline="true" :model="query" label-width="80px">
         <!-- 第一行：检查号、模态码、检查类型、检查类型（操作类型）及操作员 -->
         <el-form-item label="检查号">
@@ -73,10 +73,16 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" border style="width: 100%">
+      <el-table
+        :data="rows"
+        v-loading="loading"
+        border
+        style="width: 100%"
+        :max-height="tableMaxHeight"
+      >
         <el-table-column prop="accessionNumber" label="检查号" min-width="110" sortable />
         <el-table-column prop="examDate" label="检查时间" min-width="160" sortable />
-        <el-table-column prop="serviceSectID" label="检查类型" min-width="100" sortable />
+        <el-table-column prop="serviceSectID" label="检查类型" min-width="120" sortable />
         <el-table-column label="失败原因" min-width="150">
           <template #default="{ row }">
             <el-tag type="info" size="small" class="clickable" @click="openDetail('reason', row)">
@@ -114,7 +120,7 @@
         <el-table-column prop="lastUpdateTime" label="最后更新时间" min-width="160" sortable />
       </el-table>
 
-      <div class="pager">
+      <div class="pager" ref="pagerWrap">
         <div class="total">共 {{ total }} 条</div>
         <el-pagination
           background
@@ -132,7 +138,7 @@
     <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" width="640" :close-on-click-modal="false">
       <template #header>
-        <div style=" font-size: 16px; font-weight: 600;text-align: center">详细信息</div>
+        <div style="font-size: 16px; font-weight: 600; text-align: center">详细信息</div>
       </template>
       <div v-html="detailText" style="height: 200px; overflow-y: auto"></div>
       <template #footer>
@@ -201,6 +207,20 @@ const total = ref(0)
 const pageSize = ref(20)
 const currentPage = ref(1)
 
+// 表格内部滚动，确保筛选和分页始终可见
+const tableMaxHeight = ref<string | number>('480px')
+const searchCard = ref<HTMLElement | null>(null)
+const pagerWrap = ref<HTMLElement | null>(null)
+
+function computeTableMaxHeight() {
+  const topH = searchCard.value?.offsetHeight ?? 0
+  const pagerH = pagerWrap.value?.offsetHeight ?? 0
+  const extra = 120 // 预留边距/卡片间距
+  const vh = window.innerHeight
+  const h = Math.max(240, vh - topH - pagerH - extra)
+  tableMaxHeight.value = `${h}px`
+}
+
 const detailVisible = ref(false)
 const detailText = ref('')
 
@@ -256,7 +276,15 @@ const getOptionList = async () => {
 onMounted(() => {
   getOptionList()
   fetch()
+  // 初次渲染后计算表格可视高度，并在窗口尺寸变化时更新
+  setTimeout(() => computeTableMaxHeight(), 0)
+  window.addEventListener('resize', computeTableMaxHeight)
 })
+
+// 可根据路由卸载时清理事件（如果页面为缓存路由，可保留）
+// onBeforeUnmount(() => {
+//   window.removeEventListener('resize', computeTableMaxHeight)
+// })
 
 function openDetail(type: 'reason' | 'task' | 'abnormal', row: AnyRow) {
   let text = ''
@@ -275,10 +303,6 @@ function openDetail(type: 'reason' | 'task' | 'abnormal', row: AnyRow) {
 </script>
 
 <style scoped>
-.page {
-  padding: 8px;
-}
-
 .mt8 {
   margin-top: 8px;
 }

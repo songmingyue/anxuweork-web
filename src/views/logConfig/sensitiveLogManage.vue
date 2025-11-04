@@ -82,9 +82,9 @@
     <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" width="640" :close-on-click-modal="false">
       <template #header>
-        <div style=" font-size: 16px; font-weight: 600;text-align: center">详细信息</div>
+        <div style="font-size: 16px; font-weight: 600; text-align: center">详细信息</div>
       </template>
-      <div style=" line-height: 1.8; color: #303133;white-space: pre-wrap">{{ detailText }}</div>
+      <div style="line-height: 1.8; color: #303133; white-space: pre-wrap">{{ detailText }}</div>
       <template #footer>
         <el-button @click="detailVisible = false">关闭</el-button>
       </template>
@@ -168,10 +168,6 @@ onMounted(() => fetch())
 </script>
 
 <style scoped>
-.page {
-  padding: 8px;
-}
-
 .mt8 {
   margin-top: 8px;
 }

@@ -321,10 +321,6 @@ function onItemSave() {
 </script>
 
 <style scoped>
-.page {
-  padding: 8px;
-}
-
 .mt8 {
   margin-top: 8px;
 }

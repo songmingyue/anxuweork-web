@@ -264,10 +264,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.page {
-  padding: 8px;
-}
-
 .toolbar {
   margin-bottom: 8px;
 }

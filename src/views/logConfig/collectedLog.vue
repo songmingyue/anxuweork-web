@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <!-- 顶部查询 -->
-    <el-card shadow="never" body-style="{padding:'12px 16px'}">
+    <el-card shadow="never" body-style="{padding:'12px 16px'}" ref="searchCard">
       <el-form :inline="true" :model="query" label-width="80px">
         <el-form-item label="类型">
           <el-select v-model="query.type" placeholder="请选择" clearable style="width: 180px">
@@ -54,7 +54,13 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" border style="width: 100%">
+      <el-table
+        :data="rows"
+        v-loading="loading"
+        border
+        style="width: 100%"
+        :max-height="tableMaxHeight"
+      >
         <el-table-column prop="typeName" label="类型" min-width="120" sortable />
         <el-table-column
           prop="gainRecordUID"
@@ -67,7 +73,7 @@
         <el-table-column prop="organizationName" label="机构名称" min-width="120" sortable />
       </el-table>
 
-      <div class="pager">
+      <div class="pager" ref="pagerWrap">
         <div class="total">共 {{ total }} 条</div>
         <el-pagination
           background
@@ -85,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import {
   ElTable,
   ElTableColumn,
@@ -118,6 +124,20 @@ const total = ref(0)
 const pageSize = ref(20)
 const currentPage = ref(1)
 const orgOptions = ref<{ label: string; value: string }[]>([])
+
+// 表格内部滚动，确保筛选和分页可见
+const tableMaxHeight = ref<string | number>('380px')
+const searchCard = ref<HTMLElement | null>(null)
+const pagerWrap = ref<HTMLElement | null>(null)
+
+function computeTableMaxHeight() {
+  const topH = searchCard.value?.offsetHeight ?? 0
+  const pagerH = pagerWrap.value?.offsetHeight ?? 0
+  const extra = 120 // 预留边距与卡片间距
+  const vh = window.innerHeight
+  const h = Math.max(240, vh - topH - pagerH - extra)
+  tableMaxHeight.value = `${h}px`
+}
 
 function loadOrgOptions() {
   try {
@@ -161,14 +181,16 @@ function onSizeChange(s: number) {
 onMounted(() => {
   loadOrgOptions()
   fetch()
+  setTimeout(() => computeTableMaxHeight(), 0)
+  window.addEventListener('resize', computeTableMaxHeight)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', computeTableMaxHeight)
 })
 </script>
 
 <style scoped>
-.page {
-  padding: 8px;
-}
-
 .mt8 {
   margin-top: 8px;
 }

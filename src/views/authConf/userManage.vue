@@ -100,6 +100,14 @@ async function handlePassword(row: UserOnce) {
   })
   const data = await resetUser(row)
   ElMessage.success(data.message || '操作成功')
+  ElMessageBox.confirm('密码已重置为初始密码TomTaw@HZ1993，', '提示', {
+    type: 'success',
+    confirmButtonText: '复制',
+    cancelButtonText: '我知道了'
+  }).then(() => {
+    navigator.clipboard.writeText('TomTaw@HZ1993')
+    ElMessage.success('已复制到剪贴板')
+  })
 }
 
 const getRoleList = async (userUID: string) => {

@@ -62,10 +62,6 @@ onMounted(fetchList)
 </script>
 
 <style scoped>
-.page {
-  padding: 8px;
-}
-
 .header {
   display: flex;
   justify-content: space-between;

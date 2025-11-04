@@ -104,7 +104,7 @@ async function loadOrgOptions() {
 
   if (props.formData) {
     Object.assign(form, props.formData)
-    form.type = typeOptions.find((it) => it.label === form.type)?.value || form.type
+    form.type = typeOptions.find((it) => it.label === form.name)?.value || form.name
   }
 }
 
@@ -155,9 +155,13 @@ function onCancel() {
   <el-dialog
     :title="(props.isEdit ? '编辑' : '新增') + '存储媒介'"
     v-model="innerVisible"
+    class="user-new-dialog"
     width="720px"
   >
     <el-form ref="formRef" :model="form" :rules="rules" label-width="130px">
+      <el-form-item v-if="isEdit" label="上传媒介UID" prop="uploadMediaUID">
+        <span>{{ form.mediaUID }}</span>
+      </el-form-item>
       <el-form-item label="媒质名称" prop="name" required>
         <el-input v-model="form.name" />
       </el-form-item>
@@ -196,10 +200,10 @@ function onCancel() {
       <el-form-item v-if="form.type === 'AmazonS3'" label="子目录" prop="subDir" required>
         <el-input v-model="form.subDir" />
       </el-form-item>
-      <el-form-item label="用户UID" prop="userUID" required>
+      <el-form-item v-if="form.type === 'AmazonS3'" label="用户UID" prop="userUID" required>
         <el-input v-model="form.userUID" />
       </el-form-item>
-      <el-form-item label="上传媒介UID" prop="uploadMediaUID">
+      <el-form-item v-if="form.type === 'AmazonS3'" label="上传媒介UID" prop="uploadMediaUID">
         <el-input v-model="form.uploadMediaUID" />
       </el-form-item>
       <el-form-item v-if="form.type === 'AmazonS3'" label="上传URL" prop="uploadURL" required>

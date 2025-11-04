@@ -4,62 +4,62 @@ import { ElDialog, ElForm, ElFormItem, ElSelect, ElOption, ElInput, ElButton } f
 
 interface SplitTaskConfig {
   /** 是否启用新配置 */
-  IsEnableNewConfig: boolean
+  IsEnableNewConfig: boolean | undefined
   /** 是否插入上传任务 */
-  IsInsertUploadTask: boolean
+  IsInsertUploadTask: boolean | undefined
   /** 是否插入推送任务 */
-  IsInsertPushTask: boolean
+  IsInsertPushTask: boolean | undefined
   /** 是否插入下载任务 */
-  IsInsertDownTask: boolean
+  IsInsertDownTask: boolean | undefined
 
   // 上传任务配置
   /** 是否插入检查上传任务 */
-  IsInsertExamUpload: boolean
+  IsInsertExamUpload: boolean | undefined
   /** 插入检查上传任务自定义过滤条件 */
   UploadExamCondition: string
   /** 是否插入报告上传任务 */
-  IsInsertReportUpload: boolean
+  IsInsertReportUpload: boolean | undefined
   /** 插入报告上传任务自定义过滤条件 */
   UploadReportCondition: string
   /** 是否插入胶片上传任务 */
-  IsInsertFilmUpload: boolean
+  IsInsertFilmUpload: boolean | undefined
   /** 插入胶片上传任务自定义过滤条件 */
   UploadFilmCondition: string
   /** 是否插入影像上传任务 */
-  IsInsertImageUpload: boolean
+  IsInsertImageUpload: boolean | undefined
   /** 插入影像上传任务自定义过滤条件 */
   UploadImageCondition: string
 
   // 推送任务配置
   /** 是否插入检查推送任务 */
-  IsInsertExamPush: boolean
+  IsInsertExamPush: boolean | undefined
   /** 插入检查推送任务自定义过滤条件 */
   PushExamCondition: string
   /** 是否插入报告推送任务 */
-  IsInsertReportPush: boolean
+  IsInsertReportPush: boolean | undefined
   /** 是否插入报告推送任务 */
   PushReportCondition: string
   /** 是否插入胶片推送任务 */
-  IsInsertFilmPush: boolean
+  IsInsertFilmPush: boolean | undefined
   /** 插入胶片推送任务自定义过滤条件 */
   PushFilmCondition: string
   /** 是否插入影像推送任务 */
-  IsInsertImagePush: boolean
+  IsInsertImagePush: boolean | undefined
   /** 插入影像推送任务自定义过滤条件 */
   PushImageCondition: string
 
   // 下载任务配置
   /** 是否插入报告下载任务 */
-  IsInsertReportDown: boolean
+  IsInsertReportDown: boolean | undefined
   /** 插入报告下载任务自定义过滤条件 */
   DownReportCondition: string
   /** 是否插入胶片下载任务 */
-  IsInsertFilmDown: boolean
+  IsInsertFilmDown: boolean | undefined
   /** 插入胶片下载任务自定义过滤条件 */
   DownFilmCondition: string
   /** 是否插入影像下载任务 */
-  IsInsertImageDown: boolean
-  /** 是否插入影像下载任务 */
+  IsInsertImageDown: boolean | undefined
+  /** 插入影像下载任务自定义过滤条件 */
   DownImageCondition: string
 }
 
@@ -80,39 +80,39 @@ const visible = computed<boolean>({
 
 const form = reactive<SplitTaskConfig>({
   // 全局开关
-  IsEnableNewConfig: false,
+  IsEnableNewConfig: undefined,
 
   // 顶层任务开关
-  IsInsertUploadTask: true,
-  IsInsertPushTask: false,
-  IsInsertDownTask: true,
+  IsInsertUploadTask: undefined,
+  IsInsertPushTask: undefined,
+  IsInsertDownTask: undefined,
 
   // 上传任务配置
-  IsInsertExamUpload: true,
+  IsInsertExamUpload: undefined,
   UploadExamCondition: '',
-  IsInsertReportUpload: true,
+  IsInsertReportUpload: undefined,
   UploadReportCondition: '',
-  IsInsertFilmUpload: false,
+  IsInsertFilmUpload: undefined,
   UploadFilmCondition: '',
-  IsInsertImageUpload: false,
+  IsInsertImageUpload: undefined,
   UploadImageCondition: '',
 
   // 推送任务配置
-  IsInsertExamPush: false,
+  IsInsertExamPush: undefined,
   PushExamCondition: '',
-  IsInsertReportPush: false,
+  IsInsertReportPush: undefined,
   PushReportCondition: '',
-  IsInsertFilmPush: false,
+  IsInsertFilmPush: undefined,
   PushFilmCondition: '',
-  IsInsertImagePush: false,
+  IsInsertImagePush: undefined,
   PushImageCondition: '',
 
   // 下载任务配置
-  IsInsertReportDown: false,
+  IsInsertReportDown: undefined,
   DownReportCondition: '',
-  IsInsertFilmDown: false,
+  IsInsertFilmDown: undefined,
   DownFilmCondition: '',
-  IsInsertImageDown: false,
+  IsInsertImageDown: undefined,
   DownImageCondition: ''
 })
 

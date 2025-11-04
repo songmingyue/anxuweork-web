@@ -3,7 +3,7 @@ import { getDicmsg } from '@/api/paramConf'
 import { useUserStoreWithOut } from '@/store/modules/user'
 const userStore = useUserStoreWithOut()
 
-const userInfo = Array.isArray(userStore.getUserInfo)
+export const userInfo = Array.isArray(userStore.getUserInfo)
   ? userStore.getUserInfo[0]
   : userStore.getUserInfo
 

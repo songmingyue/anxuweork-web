@@ -31,8 +31,9 @@ export interface PresetModal {
   name: string
   queryCondition: string
   sortNO?: string
-  defaultFlag: string // 1star 0 unstar
+  defaultFlag?: string // 1star 0 unstar
   publicFlag?: string
+  userInfo?: any
 }
 
 export interface Checkpluginservicemap {

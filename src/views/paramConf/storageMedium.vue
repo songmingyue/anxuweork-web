@@ -128,12 +128,14 @@ async function onConfirmStorage() {
 
     <el-card shadow="never">
       <el-table
+        align="center"
         :data="tableData"
         border
         style="width: 100%; margin-bottom: 10px"
         height="calc(100vh - 220px)"
       >
         <el-table-column
+          align="center"
           fixed="left"
           prop="mediaUID"
           sortable
@@ -142,6 +144,7 @@ async function onConfirmStorage() {
           show-overflow-tooltip
         />
         <el-table-column
+          align="center"
           prop="name"
           sortable
           label="媒质名称"
@@ -149,6 +152,7 @@ async function onConfirmStorage() {
           show-overflow-tooltip
         />
         <el-table-column
+          align="center"
           prop="type"
           sortable
           label="路径类型"
@@ -156,6 +160,7 @@ async function onConfirmStorage() {
           show-overflow-tooltip
         />
         <el-table-column
+          align="center"
           prop="path"
           min-width="120"
           sortable
@@ -163,6 +168,7 @@ async function onConfirmStorage() {
           show-overflow-tooltip
         />
         <el-table-column
+          align="center"
           prop="accessID"
           min-width="120"
           sortable
@@ -170,6 +176,7 @@ async function onConfirmStorage() {
           show-overflow-tooltip
         />
         <el-table-column
+          align="center"
           prop="organizationName"
           min-width="120"
           sortable
@@ -177,6 +184,7 @@ async function onConfirmStorage() {
           show-overflow-tooltip
         />
         <el-table-column
+          align="center"
           prop="description"
           min-width="120"
           sortable
@@ -196,7 +204,7 @@ async function onConfirmStorage() {
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right">
+        <el-table-column label="操作" width="120" fixed="right" align="center">
           <template #default="{ row }">
             <el-button link type="primary" size="small" @click="onEdit(row)">编辑</el-button>
             <el-button link type="danger" size="small" @click="onDelete(row)">删除</el-button>

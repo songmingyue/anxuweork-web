@@ -49,6 +49,7 @@ axiosInstance.interceptors.request.use((res: any) => {
   res.headers['Content-Type'] = 'application/json;charset=UTF-8'
   // 只对非白名单接口做protobuf序列化
   if (!filderUrl.find((item) => url.includes(item))) {
+    console.log(res.data)
     if (res.data) {
       if (res.proto && res.proto.requestTem) {
         const buffer = encodeProtoMsg(res.data, res.proto.requestTem)

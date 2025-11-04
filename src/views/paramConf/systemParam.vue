@@ -1,7 +1,7 @@
 <template>
   <div class="sys-param">
     <el-collapse v-model="activeNames">
-      <el-collapse-item v-for="g in groups" :key="g.key" :name="g.key" class="group">
+      <el-collapse-item v-for="g in groups" :key="g.key" :name="g.key" class="group-systemparam">
         <template #title>
           <div class="collapse-title">
             <svg class="hdr-icon" aria-hidden="true">
@@ -279,6 +279,7 @@ async function onConfig(item: CfgItem) {
   editData.value = data[0]
   dialogMsg.value = (data as any)?.[0]?.value ?? ''
   if (item.key === 'InsertTaskInfo') {
+    splitTaskModel.value = JSON.parse((data as any)?.[0]?.value)
     showSplitTaskDlg.value = true
     return
   }
@@ -473,6 +474,7 @@ function onZJSave(v: any) {
 
 <style scoped lang="less">
 .sys-param {
+  height: calc(100vh - 60px);
   padding: 12px 16px;
   background: #fff;
 }
@@ -493,7 +495,6 @@ function onZJSave(v: any) {
 
 .title {
   font-size: 18px;
-  font-weight: 600;
   color: #303133;
 }
 

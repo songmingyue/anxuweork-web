@@ -59,6 +59,7 @@ export default defineComponent({
               color="var(--top-header-text-color)"
             ></LocaleDropdown>
           ) : undefined}
+          <span>主题</span>
           <UserInfo></UserInfo>
         </div>
       </div>

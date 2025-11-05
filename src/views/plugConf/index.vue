@@ -19,9 +19,16 @@
               <div class="icon-drop">
                 <span>{{ item.name }}</span>
                 <div>
-                  <el-icon class="icon-hover"><CloseBold /></el-icon>
-                  <el-icon class="icon-hover" v-if="item.defaultFlag === '0'"><Star /></el-icon>
-                  <el-icon v-else><StarFilled color="#fbc02d" /></el-icon>
+                  <el-icon @click.stop="closeModel(item)" class="icon-hover"><CloseBold /></el-icon>
+                  <el-icon
+                    @click.stop="starModal(item, 'unstar')"
+                    class="icon-hover"
+                    v-if="item.defaultFlag === '0'"
+                    ><Star
+                  /></el-icon>
+                  <el-icon @click="starModal(item, 'star')" v-else
+                    ><StarFilled color="#fbc02d"
+                  /></el-icon>
                 </div>
               </div>
             </el-dropdown-item>
@@ -41,7 +48,7 @@
         height="273"
         class="mt8"
       >
-        <el-table-column prop="serviceUID" label="服务UID" min-width="200" />
+        <el-table-column prop="serviceUID" label="服务UID" min-width="200" show-overflow-tooltip />
         <el-table-column prop="serviceName" label="任务组名" min-width="200" />
         <el-table-column prop="ifEnable" label="运行状态" min-width="130">
           <template #default="{ row }">
@@ -182,6 +189,7 @@ import {
   createpluginService,
   deletepluginService,
   deletepluginservicemap,
+  deletepreset,
   disablepluginservicemap,
   disableService,
   editpluginService,
@@ -189,7 +197,8 @@ import {
   getpluginservicemaplist,
   getservicelist,
   ServiceConfig,
-  Servicemaplist
+  Servicemaplist,
+  updateplugindefault
 } from '@/api/plugConf'
 import { getpreset, PresetList } from '@/api/authConf'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -300,7 +309,8 @@ function onCreateService() {
 function onServiceSave(formData: any) {
   console.log('保存服务配置:', formData)
   ElMessage.success('服务配置保存成功')
-  loadServices()
+  getModelList()
+  // loadServices()
 }
 
 function onEditService(row: ServiceConfig) {
@@ -325,6 +335,8 @@ async function onDeleteService(row: ServiceConfig) {
 function onCreateTask() {
   dlgTitle.value = '新增任务'
   editTask.value = {}
+  pluginServiceMapUID.value = ''
+  pluginConfigKeyValue.value = ''
   showTaskDlg.value = true
 }
 // 切换状态
@@ -377,7 +389,7 @@ const editModalMed = (item: PresetList) => {
 }
 
 const onTaskSave = () => {
-  ElMessage.success('任务配置保存成功')
+  loadTasks()
 }
 
 const getPluginlist = async () => {
@@ -395,6 +407,31 @@ const editPlugin = (row: Servicemaplist) => {
   }
   dlgTitle.value = '编辑任务'
   showTaskDlg.value = true
+}
+// 删除
+const closeModel = async (item: PresetList) => {
+  const { isSuccess, message } = await deletepreset({
+    querySeq: item.querySeq
+  })
+  if (isSuccess) {
+    ElMessage.success(message || '操作成功')
+    await getModelList()
+  } else {
+    ElMessage.error(message || '操作失败')
+  }
+}
+
+const starModal = async (item: PresetList, type: 'star' | 'unstar') => {
+  const { isSuccess, message } = await updateplugindefault({
+    ...item,
+    defaultFlag: type === 'star' ? '0' : '1'
+  })
+  if (isSuccess) {
+    ElMessage.success(message || '操作成功')
+    await getModelList()
+  } else {
+    ElMessage.error(message || '操作失败')
+  }
 }
 onMounted(() => {
   loadServices()

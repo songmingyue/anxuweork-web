@@ -98,7 +98,7 @@
         <el-form-item>
           <el-button type="primary" @click="onSearch">搜索</el-button>
           <el-button @click="onReset">重置</el-button>
-          <el-button>导出</el-button>
+          <el-button @click="upLoad">导出</el-button>
           <el-button @click="onSaveAdvance">存为预设</el-button>
           <el-button text type="primary" @click="showAdvance = !showAdvance">
             {{ showAdvance ? '收起' : '展开' }}
@@ -462,7 +462,8 @@ import {
   getdocstatus,
   getPushStatus,
   getValidPrintlist,
-  getwrittenreport
+  getwrittenreport,
+  upDownload
 } from '@/api/checkInfo'
 import RightDetailCard from './components/RightDetailCard.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -633,6 +634,34 @@ const onSaveAdvance = () => {
   }
   // 暂存本次高级筛选为预设
   advanceList.value.push(query)
+}
+
+async function upLoad() {
+  const data: any = await upDownload({
+    ...formFirst.value,
+    ...advance.value
+  })
+  const timeName =
+    new Date().getFullYear() +
+    '_' +
+    (new Date().getMonth() + 1) +
+    '_' +
+    new Date().getDate() +
+    ',' +
+    new Date().getHours() +
+    '_' +
+    new Date().getMinutes() +
+    '_' +
+    new Date().getSeconds()
+  const blobs = new Blob([data], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  })
+  const url = window.URL.createObjectURL(blobs)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${timeName}导出数据.xlsx`
+  a.click()
+  window.URL.revokeObjectURL(url)
 }
 
 // 查询

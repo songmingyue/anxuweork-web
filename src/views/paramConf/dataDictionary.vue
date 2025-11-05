@@ -48,6 +48,7 @@
         border
         highlight-current-row
         @row-click="onTopRowClick"
+        height="calc(50vh - 207px)"
         style="width: 100%"
       >
         <el-table-column prop="typeClass" label="字典分类" min-width="140" />
@@ -114,6 +115,7 @@
         :data="bottomList"
         v-loading="bottomLoading"
         border
+        height="calc(50vh - 207px)"
         style="width: 100%"
         :empty-text="selectedType ? '暂无数据' : '请先在上方选择一个类型'"
       >

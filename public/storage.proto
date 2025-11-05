@@ -1159,3 +1159,7 @@ message GetOperateRecordListOutputProto {
   string createTime = 4;
   string organizationName = 5;
 }
+
+message  DeletePreSetInputProto {
+  int32 querySeq = 1;
+}

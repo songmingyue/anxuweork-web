@@ -74,7 +74,10 @@ watch(
   () => [props.modelValue, props.model],
   () => {
     if (!props.modelValue) return
-    const queryCondition = JSON.parse(props.model?.queryCondition || '')
+    let queryCondition: any = {}
+    if (props.model?.queryCondition) {
+      queryCondition = JSON.parse(props.model?.queryCondition || '')
+    }
     form.value = {
       dataSource: queryCondition.dataSource || '',
       initialCatalog: queryCondition.initialCatalog || '',
@@ -109,9 +112,9 @@ function onConfirm() {
     }
     // 合并两个表单的数据
     await commitMsg()
-
     visible.value = false
     visibleName.value = false
+    emit('save', form.value)
   })
 }
 

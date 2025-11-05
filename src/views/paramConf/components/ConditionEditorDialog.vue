@@ -79,7 +79,7 @@ function createEmptyCondition(): ConditionItem {
     id: `condition_${Date.now()}_${Math.random()}`,
     field: '',
     operator: '',
-    compareType: 'String',
+    compareType: 'add',
     timeType: 'now',
     value: '10',
     unit: 's',
@@ -293,6 +293,7 @@ function onCancel() {
                     format="YYYY-MM-DD"
                     value-format="YYYY-MM-DD"
                   />
+                  <span style="margin-top: 5px">(固定时)</span>
                 </template>
               </template>
               <template v-else>

@@ -376,3 +376,11 @@ export const apiGetrecordexam = (
     }
   })
 }
+
+export const upDownload = (data: any) => {
+  return request.post({
+    url: 'doc/ExportExamHZRMYY',
+    data,
+    responseType: 'arraybuffer'
+  })
+}

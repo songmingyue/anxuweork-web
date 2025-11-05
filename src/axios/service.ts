@@ -38,7 +38,8 @@ const listUnProto = [
   'api/doc/GetFailTaskList',
   'api/doc/GetFailTaskPluginName',
   'api/doc/GetFailTaskPluginName',
-  'api/doc/GetSensitiveLogList'
+  'api/doc/GetSensitiveLogList',
+  'api/doc/ExportExamHZRMYY'
 ] // 列表不解密白名单aaaaa又一种逻辑
 
 const filderUrl = ['/system/version', '/key', listUnProto].flat(Infinity) // 加密白名单
@@ -79,20 +80,19 @@ axiosInstance.interceptors.response.use(
       console.log('解密后的数据', buffer)
 
       res.data = buffer
+
       res = res.data
     } else if (listUnProto.includes(config.url)) {
       res = res.data
       if (res.isSuccess) {
-        ElMessage.success(res.message || res.msg || '请求成功')
+        // ElMessage.success(res.message || res.msg || '请求成功')
       } else {
-        if (res.code !== 200) {
+        if (res.code !== 200 && res.code) {
           if (config.url?.includes('doc/GetPushStatus')) {
-            ElMessage.success('请求成功')
+            // ElMessage.success('请求成功')
           } else {
-            ElMessage.error(res.message || res.msg || '请求失败')
+            // ElMessage.error(res.message || res.msg || '请求失败')
           }
-        } else {
-          ElMessage.success('请求成功')
         }
       }
     }

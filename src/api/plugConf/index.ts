@@ -207,3 +207,16 @@ export const createpluginservicemap = (data: Checkpluginservicemap): Promise<IRe
     }
   })
 }
+
+// 删除模板
+
+export const deletepreset = (data: { querySeq: number }): Promise<IResponse<[]>> => {
+  return request.post({
+    url: 'check/deletepreset',
+    data,
+    requestTem: {
+      requestTem: 'DeletePreSetInputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}

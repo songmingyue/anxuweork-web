@@ -6,9 +6,6 @@ import { ref, computed } from 'vue'
 import LockPage from './components/LockPage.vue'
 import { useLockStore } from '@/store/modules/lock'
 import { useUserStore } from '@/store/modules/user'
-import { useRouter } from 'vue-router'
-
-const { push } = useRouter()
 
 const userStore = useUserStore()
 
@@ -24,11 +21,14 @@ const loginOut = () => {
   userStore.logoutConfirm()
 }
 
+const modalPerson = () => {
+  dialogVisible.value = true
+}
 const dialogVisible = ref<boolean>(false)
 
-const toPage = (path: string) => {
-  push(path)
-}
+// const toPage = (path: string) => {
+//   push(path)
+// }
 </script>
 
 <template>
@@ -40,7 +40,7 @@ const toPage = (path: string) => {
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem>
-          <div @click="toPage('/personal/personal-center')"> 个人中心 </div>
+          <div @click="modalPerson"> 个人中心 </div>
         </ElDropdownItem>
         <ElDropdownItem>
           <div @click="loginOut">退出登录</div>

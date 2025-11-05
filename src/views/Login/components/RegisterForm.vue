@@ -34,7 +34,7 @@ const schema = reactive<FormSchema[]>([
     colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => <h2 class="text-2xl font-bold text-center w-[100%]">注册账号</h2>
+        default: () => <h2 class="form-title">注册账号</h2>
       }
     }
   },
@@ -79,12 +79,12 @@ const schema = reactive<FormSchema[]>([
     formItemProps: {
       slots: {
         default: (formData) => (
-          <div class="w-[100%] flex">
+          <div class="code-row">
             <ElInput v-model={formData.code} placeholder="请输入验证码" />
             <BaseButton
               type="primary"
               disabled={unref(getCodeLoading)}
-              class="ml-10px"
+              class="ml-10"
               onClick={getCode}
             >
               获取验证码{unref(getCodeLoading) ? `(${unref(getCodeTime)})` : ''}
@@ -128,18 +128,18 @@ const schema = reactive<FormSchema[]>([
       slots: {
         default: () => (
           <>
-            <div class="w-[100%]">
+            <div class="full-width">
               <BaseButton
                 type="primary"
-                class="w-[100%]"
+                class="full-width"
                 loading={loading.value}
                 onClick={loginRegister}
               >
                 注册
               </BaseButton>
             </div>
-            <div class="w-[100%] mt-15px">
-              <BaseButton class="w-[100%]" onClick={toLogin}>
+            <div class="full-width mt-15">
+              <BaseButton class="full-width" onClick={toLogin}>
                 已有账号？去登录
               </BaseButton>
             </div>
@@ -186,7 +186,41 @@ const loginRegister = async () => {
     label-position="top"
     hide-required-asterisk
     size="large"
-    class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
+    class="themed-border"
     @register="formRegister"
   />
 </template>
+
+<style scoped>
+.form-title {
+  width: 100%;
+  font-size: var(--el-font-size-extra-large);
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  text-align: center;
+}
+
+.code-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mt-15 {
+  margin-top: 15px;
+}
+
+.themed-border {
+  /* 使用 Element Plus 变量以跟随主题变化 */
+  border: 1px solid var(--el-border-color);
+  border-radius: var(--el-border-radius-base);
+}
+</style>

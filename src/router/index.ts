@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
 import { Layout } from '@/utils/routerHelper'
@@ -139,7 +139,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   strict: true,
   routes: [...constantRouterMap, ...asyncRouterMap] as RouteRecordRaw[],
   scrollBehavior: () => ({ left: 0, top: 0 })

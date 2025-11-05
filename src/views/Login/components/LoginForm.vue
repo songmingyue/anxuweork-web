@@ -46,7 +46,7 @@ const schema = reactive<FormSchema[]>([
     colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => <h2 class="text-2xl font-bold text-center w-[100%]">登录</h2>
+        default: () => <h2 class="form-title">登录</h2>
       }
     }
   },
@@ -100,7 +100,7 @@ const schema = reactive<FormSchema[]>([
     formItemProps: {
       slots: {
         default: () => (
-          <div class="flex justify-between items-center w-[100%]">
+          <div class="tool-row">
             <ElCheckbox v-model={remember.value} label="记住我" size="small" />
           </div>
         )
@@ -114,13 +114,18 @@ const schema = reactive<FormSchema[]>([
       slots: {
         default: () => (
           <>
-            <div class="w-[100%]">
-              <BaseButton loading={loading.value} type="primary" class="w-[100%]" onClick={signIn}>
+            <div class="full-width">
+              <BaseButton
+                loading={loading.value}
+                type="primary"
+                class="full-width"
+                onClick={signIn}
+              >
                 登录
               </BaseButton>
             </div>
-            <div class="w-[100%] mt-15px">
-              <BaseButton class="w-[100%]" onClick={toRegister}>
+            <div class="full-width mt-15">
+              <BaseButton class="full-width" onClick={toRegister}>
                 注册
               </BaseButton>
             </div>
@@ -241,7 +246,37 @@ const toRegister = () => {
     label-position="top"
     hide-required-asterisk
     size="large"
-    class="dark:(border-1 border-[var(--el-border-color)] border-solid)"
+    class="themed-border"
     @register="formRegister"
   />
 </template>
+
+<style scoped>
+.form-title {
+  width: 100%;
+  font-size: var(--el-font-size-extra-large);
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  text-align: center;
+}
+
+.tool-row {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mt-15 {
+  margin-top: 15px;
+}
+
+.themed-border {
+  border: 1px solid var(--el-border-color);
+  border-radius: var(--el-border-radius-base);
+}
+</style>

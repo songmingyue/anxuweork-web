@@ -94,11 +94,11 @@ export const selectOption = {
 }
 export const timeOptionsType = [
   {
-    label: '加',
+    label: '加（当前时）',
     value: 'add'
   },
   {
-    label: '减',
+    label: '减（当前时）',
     value: 'minus'
   }
 ]

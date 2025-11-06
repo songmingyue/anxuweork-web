@@ -2,7 +2,8 @@
   <ElDialog
     v-model="visible"
     :title="title || '新增任务'"
-    width="80%"
+    width="800px"
+    @close="cancel"
     destroy-on-close
     append-to-body
     class="task-config-dialog"
@@ -24,9 +25,12 @@
                 style="width: 100%"
                 @change="
                   () => {
-                    baseForm.pluginName =
-                      taskPurposeOptions.find((opt) => opt.pluginUid === baseForm.pluginUID)
-                        ?.pluginName || ''
+                    const filterName = taskPurposeOptions.find(
+                      (item) => item.pluginUid === baseForm.pluginUID
+                    )
+                    if (!filterName.pluginName.includes('文件采集')) {
+                      baseForm.pluginName = filterName.pluginName || ''
+                    }
                   }
                 "
               >
@@ -158,8 +162,8 @@ const baseForm = ref({
 })
 
 const baseRules = {
-  pluginName: [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
-  pluginUID: [{ required: true, message: '请选择任务用途', trigger: 'change' }]
+  pluginName: [{ required: true, message: '请输入任务名称', trigger: ['change', 'blur'] }],
+  pluginUID: [{ required: true, message: '请选择任务用途', trigger: ['change', 'blur'] }]
 }
 
 // 动态表单验证规则
@@ -181,7 +185,7 @@ const generateValidationRules = (configData: any[], pluginRules?: any) => {
           {
             required: true,
             message: `请${field.type === 'select' ? '选择' : '输入'}${field.label || field.fieldLabel || field.prop}`,
-            trigger: field.type === 'select' ? 'change' : 'blur'
+            trigger: ['change', 'blur']
           }
         ]
       }
@@ -205,8 +209,17 @@ const generateValidationRules = (configData: any[], pluginRules?: any) => {
   if (typeForm.value === 'step') {
     // 对于 step 形式，使用 pluginConfigs 下每个数组的 required 字段
     configData.forEach((config) => {
-      if (config.fiedlInfos && Array.isArray(config.fiedlInfos)) {
-        extractFieldRules(config.fiedlInfos)
+      if (config.required) {
+        const propFather = config.prop || ''
+        for (const i in config.required) {
+          rules[`${propFather}.${i}`] = [
+            {
+              required: true,
+              message: `请${'输入'}${config.required[i]}`,
+              trigger: ['change', 'blur']
+            }
+          ]
+        }
       }
     })
   } else if (typeForm.value === 'collapse' || typeForm.value === 'justinput') {
@@ -225,7 +238,7 @@ const generateValidationRules = (configData: any[], pluginRules?: any) => {
             message:
               rule.message ||
               `请${rule.type === 'select' ? '选择' : '输入'}${rule.label || rule.prop}`,
-            trigger: rule.trigger || (rule.type === 'select' ? 'change' : 'blur')
+            trigger: rule.trigger || ['change', 'blur']
           }
         ]
       }
@@ -301,7 +314,11 @@ const updateFormData = (data: Record<string, any>) => {
 // 处理字段更新
 const handleFieldUpdate = (data: { prop: string; value: any }) => {
   console.log('字段更新:', data)
-  formData.value[data.prop] = data.value
+  if (typeForm.value !== 'step') {
+    formData.value[data.prop] = data.value
+  } else {
+    formData.value[processFormActiveSmall.value.prop][data.prop] = data.value
+  }
   console.log('当前表单数据:', formData.value)
 
   // 强制触发视图更新
@@ -328,6 +345,8 @@ const cancel = () => {
     pluginName: '',
     pluginUID: ''
   }
+  formData.value = {}
+  dynamicRules.value = {}
   formActiveSmall.value = []
   formJustInput.value = []
   formHavecollapse.value = []
@@ -446,6 +465,9 @@ const getStepStatus = (index: number) => {
 
 const changePlugin = (val) => {
   if (val) {
+    // 清空表单数据和验证规则
+    formData.value = {}
+    dynamicRules.value = {}
     const activeLable = props.taskPurposeOptions.find((item) => item.pluginUid === val)
     if (activeLable && activeLable.pluginConfigs) {
       try {
@@ -499,6 +521,7 @@ const changePlugin = (val) => {
           generateValidationRules(formActive.value, activeLable.pluginRule)
         } else {
           let datas: any = Array.isArray(configData) ? configData : [configData]
+          console.log('原始数据:', JSON.stringify(datas, null, 2))
           datas = methodChangeData(datas)
           if (datas && datas[0]['opt']) {
             formHavecollapse.value = datas

@@ -1,7 +1,10 @@
 <template>
   <div class="dynamic-form-field">
     <ElFormItem
-      v-if="field.type === 'linkSelect' && shouldShowField"
+      v-if="
+        (field.type === 'select' || field.type === 'link' || field.type === 'linkSelect') &&
+        shouldShowField
+      "
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
     >
@@ -10,6 +13,7 @@
         :placeholder="`请选择${field.fieldLabel || field.label}`"
         :clearable="true"
         @update:model-value="handleFieldChange"
+        style="width: 450px"
       >
         <ElOption
           v-for="option in currentOptions"
@@ -18,40 +22,22 @@
           :value="option.value || option.key || option.prop"
         />
       </ElSelect>
+      <TipsConfig :type="field.itemType" :fieldDescription="field.fieldDescription" />
     </ElFormItem>
 
     <!-- 普通 input 输入框 -->
     <ElFormItem
       v-else-if="field.type === 'input' && shouldShowField"
       :prop="field.prop"
-      :label="field.fieldLabel || field.label"
+      :label="field.label || field.fieldLabel"
     >
       <ElInput
         :model-value="fieldValue"
         :placeholder="`请输入${field.fieldLabel || field.label}`"
+        style="width: 450px"
         @update:model-value="handleFieldChange"
       />
-    </ElFormItem>
-
-    <!-- select 选择器 -->
-    <ElFormItem
-      v-else-if="(field.type === 'select' || field.type === 'link') && shouldShowField"
-      :prop="field.prop"
-      :label="field.fieldLabel || field.label"
-    >
-      <ElSelect
-        :model-value="fieldValue"
-        :placeholder="`请选择${field.fieldLabel || field.label}`"
-        :clearable="true"
-        @update:model-value="handleFieldChange"
-      >
-        <ElOption
-          v-for="option in currentOptions"
-          :key="option.value || option.key"
-          :label="option.label || option.name"
-          :value="option.value || option.key || option.prop"
-        />
-      </ElSelect>
+      <TipsConfig :type="field.itemType" :fieldDescription="field.fieldDescription" />
     </ElFormItem>
 
     <!-- password 密码框 -->
@@ -65,8 +51,10 @@
         type="password"
         :placeholder="`请输入${field.fieldLabel || field.label}`"
         show-password
+        style="width: 450px"
         @update:model-value="handleFieldChange"
       />
+      <TipsConfig :type="field.itemType" :fieldDescription="field.fieldDescription" />
     </ElFormItem>
 
     <!-- 数字输入 -->
@@ -79,9 +67,10 @@
       <ElInputNumber
         :model-value="fieldValue"
         :placeholder="`请输入${field.fieldLabel || field.label}`"
-        style="width: 100%"
+        style="width: 450px"
         @update:model-value="handleFieldChange"
       />
+      <TipsConfig :type="field.itemType" :fieldDescription="field.fieldDescription" />
     </ElFormItem>
 
     <!-- 文本域 -->
@@ -97,19 +86,22 @@
         :placeholder="`请输入${field.fieldLabel || field.label}`"
         @update:model-value="handleFieldChange"
       />
+      <TipsConfig :type="field.itemType" :fieldDescription="field.fieldDescription" />
     </ElFormItem>
-    <!-- 文本域 -->
+    <!-- 时间选择器 -->
     <ElFormItem
       v-else-if="field.type === 'time' && shouldShowField"
       :prop="field.prop"
       :label="field.fieldLabel || field.label"
     >
-      <el-time-picker
+      <ElTimePicker
+        value-format="HH:mm:ss"
+        format="HH:mm:ss"
         :model-value="fieldValue"
-        type="date"
-        placeholder="请选择日期"
+        placeholder="请选择时间"
         @update:model-value="handleFieldChange"
       />
+      <TipsConfig :type="field.itemType" :fieldDescription="field.fieldDescription" />
     </ElFormItem>
     <ElFormItem
       v-else-if="field.type === 'date' && shouldShowField"
@@ -122,6 +114,7 @@
         placeholder="请选择日期"
         @update:model-value="handleFieldChange"
       />
+      <TipsConfig :type="field.itemType" :fieldDescription="field.fieldDescription" />
     </ElFormItem>
 
     <!-- 嵌套字段组 -->
@@ -152,6 +145,7 @@ import {
   ElTimePicker,
   ElDatePicker
 } from 'element-plus'
+import TipsConfig from './TipsConfig.vue'
 
 interface FieldConfig {
   type: string
@@ -206,6 +200,16 @@ const fieldValue = computed(() => {
     }
   }
 
+  // 时间类型的特殊处理
+  if (props.field.type === 'time') {
+    // 如果值为空或无效，返回 undefined 让时间选择器显示占位符
+    if (value === undefined || value === null || value === '') {
+      return undefined
+    }
+    // 确保返回的时间值格式正确
+    return value
+  }
+
   return value
 })
 
@@ -250,15 +254,23 @@ const shouldShowField = computed(() => {
 
 // 处理字段值变化
 const handleFieldChange = (value: any) => {
-  // 查找选中选项的子字段
-  const selectedOption = props.field?.opt?.find(
-    (item) => item.prop === value || item.value === value
-  )
-  console.log('选中的选项:', selectedOption)
+  // 对于 select 类型，查找选中选项的子字段
+  if (
+    props.field.type === 'select' ||
+    props.field.type === 'linkSelect' ||
+    props.field.type === 'link'
+  ) {
+    const selectedOption = props.field?.opt?.find(
+      (item) => item.prop === value || item.value === value
+    )
+    console.log('选中的选项:', selectedOption)
 
-  changeField.value = selectedOption?.fiedlInfos || []
-  console.log('子字段:', changeField.value)
+    changeField.value = selectedOption?.fiedlInfos || []
+    console.log('子字段:', changeField.value)
+  }
 
+  // 对于时间类型，直接传递值
+  console.log('字段值变化:', props.field.prop, '新值:', value)
   emit('update:model', { prop: props.field.prop, value })
 
   // 如果当前字段变化，清空依赖此字段的子字段

@@ -1,6 +1,9 @@
 <template>
   <div class="checkinfo-page">
-    <div class="header-right-modal">
+    <div
+      v-if="permissionsMsd('displayStyleRightInfo', 'ServiceSectIDs')"
+      class="header-right-modal"
+    >
       <el-dropdown size="small" type="primary">
         <el-button type="primary" size="small">
           模板<el-icon><ArrowDownBold /></el-icon>
@@ -30,7 +33,7 @@
       </el-dropdown>
     </div>
     <!-- 顶部搜索条 -->
-    <div class="toolbar">
+    <div class="toolbar" v-if="permissionsMsd('displayStyleRightInfo', 'ServiceSectIDs')">
       <el-form :inline="true" :model="formFirst">
         <el-form-item label="">
           <div style="display: flex; gap: 8px; align-items: center">
@@ -108,7 +111,7 @@
             />
           </div>
         </el-form-item>
-        <el-form-item label="检查机构">
+        <el-form-item v-if="permissionsMsd('', '')" label="检查机构">
           <el-select
             size="small"
             v-model="formFirst.organizationID"
@@ -158,7 +161,7 @@
         <!-- 工具条（打印、导出等） -->
         <div class="left-tools">
           <div class="tools-flex">
-            <el-dropdown>
+            <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'printPageVisible')">
               <img class="icon-img" src="@/assets/imgs/info/printer_normal.png" />
               <template #dropdown>
                 <el-dropdown-menu>
@@ -167,7 +170,10 @@
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
-            <el-tooltip content="文件重采">
+            <el-tooltip
+              content="文件重采"
+              v-if="permissionsMsd('displayStyleRightInfo', 'reGainLeftFileVisible')"
+            >
               <el-icon :size="20" color="#606266" @click="fileNewUploadDialog = true"
                 ><FolderAdd
               /></el-icon>
@@ -286,7 +292,10 @@
                     />
                   </div>
                 </el-tooltip>
-                <div class="lock-icon">
+                <div
+                  class="lock-icon"
+                  v-if="permissionsMsd('displayStyleRightInfo', 'manualLockVisible')"
+                >
                   <el-tooltip
                     v-if="row.lockFlag === '否'"
                     effect="dark"
@@ -503,6 +512,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, computed } from 'vue'
+import { permissionsMsd } from '@/utils/permission'
 import {
   ElForm,
   ElFormItem,

@@ -18,6 +18,7 @@
               />
               <el-select
                 v-else-if="sub.type === 'select'"
+                :disabled="sub.vIf"
                 :model-value="modelValue[sub.prop]"
                 @update:model-value="updateValue(sub.prop, $event)"
                 :style="{ width: sub.width || '100px' }"
@@ -62,6 +63,7 @@
             @update:model-value="updateValue(item.prop, $event)"
             :style="{ width: item.width || '180px' }"
             :filterable="!!item.filterable"
+            :disabled="item.vIf"
             clearable
           >
             <el-option
@@ -79,6 +81,7 @@
             multiple
             :style="{ width: item.width || '180px' }"
             :filterable="!!item.filterable"
+            :disabled="item.vIf"
             clearable
           >
             <el-option

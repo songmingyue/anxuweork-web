@@ -1,6 +1,6 @@
 import { DeptType, getdeptname } from '@/api/checkInfo'
 import { useUserStoreWithOut } from '@/store/modules/user'
-
+import { permissionsMsd } from '@/utils/permission'
 const userStore = useUserStoreWithOut()
 const userInfo = Array.isArray(userStore.getUserInfo)
   ? userStore.getUserInfo[0]
@@ -107,6 +107,7 @@ export const getSearchFormList = () => ({
       label: '申请科室',
       type: 'muliSelect',
       multiple: !0,
+      vIf: permissionsMsd('examInfo', 'departmentVisible', 'False'),
       prop: 'requestDeptID',
       width: '180px',
       fcn: 'deptSelected',
@@ -128,6 +129,7 @@ export const getSearchFormList = () => ({
       label: '申请医生',
       type: 'select',
       prop: 'requestDocName',
+      vIf: permissionsMsd('examInfo', 'doctorVisible', 'False'),
       width: '180px',
       loadOptFcn: 'loadApplyDoc',
       filterable: !0,

@@ -135,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import {
   ElFormItem,
   ElSelect,
@@ -187,7 +187,28 @@ const emit = defineEmits<{
 // 控制 modelSelect 的展开收起状态
 // 字段当前值
 const fieldValue = computed(() => {
-  const value = props.model[props.field.prop] ?? props.field.dataDefault
+  // 安全检查：确保 props.model 存在
+  if (!props.model || typeof props.model !== 'object') {
+    return props.field.dataDefault
+  }
+
+  // 处理 step 模式下的带前缀字段名
+  let value
+  if (props.field.prop.includes('.')) {
+    // step 模式：字段名格式为 "ModuleName.FieldName"
+    const [, fieldName] = props.field.prop.split('.')
+    value = props.model[fieldName] ?? props.field.dataDefault
+  } else {
+    // 普通模式
+    value = props.model[props.field.prop] ?? props.field.dataDefault
+  }
+
+  console.log('fieldValue computed:', {
+    fieldProp: props.field.prop,
+    model: props.model,
+    value,
+    dataDefault: props.field.dataDefault
+  })
 
   // 如果是 select 类型且没有值，尝试使用第一个选项作为默认值
   if (props.field.type === 'select' && (value === undefined || value === null || value === '')) {
@@ -303,13 +324,55 @@ const clearDependentFields = (parentProp: string) => {
   // 实际使用时可能需要通过事件向上传递来处理
 }
 
-// 组件挂载时初始化默认值
+// 初始化子字段显示
+const initializeChildFields = () => {
+  if (
+    props.field.type === 'select' ||
+    props.field.type === 'linkSelect' ||
+    props.field.type === 'link'
+  ) {
+    // 获取当前值，兼容 step 模式
+    let currentValue
+    if (props.field.prop.includes('.')) {
+      // step 模式：字段名格式为 "ModuleName.FieldName"
+      const [, fieldName] = props.field.prop.split('.')
+      currentValue = props.model[fieldName] ?? props.field.dataDefault
+    } else {
+      // 普通模式
+      currentValue = props.model[props.field.prop] ?? props.field.dataDefault
+    }
+
+    console.log('初始化子字段 - 当前值:', currentValue, '字段:', props.field.prop)
+
+    if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
+      const selectedOption = props.field?.opt?.find(
+        (item) => item.prop === currentValue || item.value === currentValue
+      )
+      if (selectedOption) {
+        changeField.value = selectedOption?.fiedlInfos || []
+        console.log('初始化子字段成功:', changeField.value, '基于值:', currentValue)
+      }
+    }
+  }
+}
+
+// 组件挂载时初始化默认值和子字段
 onMounted(() => {
   // 延迟执行以确保父组件已经初始化
   setTimeout(() => {
     // 如果是select类型且没有值，设置默认值
     if (props.field.type === 'select') {
-      const currentValue = props.model[props.field.prop]
+      // 获取当前值，兼容 step 模式
+      let currentValue
+      if (props.field.prop.includes('.')) {
+        // step 模式：字段名格式为 "ModuleName.FieldName"
+        const [, fieldName] = props.field.prop.split('.')
+        currentValue = props.model[fieldName]
+      } else {
+        // 普通模式
+        currentValue = props.model[props.field.prop]
+      }
+
       if (currentValue === undefined || currentValue === null || currentValue === '') {
         const options = props.field.opt?.length ? props.field.opt : props.field.defaultOpt
         if (options && options.length > 0) {
@@ -322,8 +385,46 @@ onMounted(() => {
         }
       }
     }
+
+    // 初始化子字段显示
+    initializeChildFields()
   }, 100)
 })
+
+// 监听字段值变化，自动显示/隐藏子字段
+watch(
+  () => {
+    // 兼容 step 模式和普通模式的字段值监听
+    if (props.field.prop.includes('.')) {
+      // step 模式：字段名格式为 "ModuleName.FieldName"
+      const [, fieldName] = props.field.prop.split('.')
+      return props.model[fieldName]
+    } else {
+      // 普通模式
+      return props.model[props.field.prop]
+    }
+  },
+  (newValue) => {
+    console.log('监听到字段值变化:', newValue, '字段:', props.field.prop)
+
+    if (
+      props.field.type === 'select' ||
+      props.field.type === 'linkSelect' ||
+      props.field.type === 'link'
+    ) {
+      if (newValue !== undefined && newValue !== null && newValue !== '') {
+        const selectedOption = props.field?.opt?.find(
+          (item) => item.prop === newValue || item.value === newValue
+        )
+        changeField.value = selectedOption?.fiedlInfos || []
+        console.log('值变化触发子字段更新:', changeField.value, '新值:', newValue)
+      } else {
+        changeField.value = []
+      }
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>

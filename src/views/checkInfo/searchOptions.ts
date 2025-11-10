@@ -22,12 +22,15 @@ const lockStatus = [
   { itemName: '已锁定', prop: 'true' },
   { itemName: '未锁定', prop: 'false' }
 ]
+
+let listDephname: any = []
 // 申请科室权限过滤
-const permiseListSearch = async () => {
+export const permiseListSearch = async () => {
   if (examInfo.departmentVisible === 'False') return
   const { data: datas } = await getdeptname({
     deptType: DeptType.ClinicDept
   })
+  listDephname = datas
   return datas
 }
 
@@ -44,32 +47,6 @@ const getdicitemlists = (codeType: string) => {
   const getCommonList = userStore.getDicitemlists
   const typeList = getCommonList.filter((item: any) => item.typeCode === codeType)
   return typeList
-}
-
-export const optionsList = {
-  patientClassList: getDicmsgList('PatientClass'), //就诊类别
-  requestDeptIDList: permiseListSearch(), // 申请科室
-  requestDocNameList: getdicitemlists('RequestDocName'), // 申请医生
-  resultPrincipalNameList: getdicitemlists('ResultPrincipalName'), // 审核医生
-  examEquipmentList: getdicitemlists('ExamEquipment'), //检查设备
-  serviceSectIDList: getDicmsgList('ExamType'), // 检查类型
-  resultAssistantNameList: getdicitemlists('ResultAssistantName'), // 报告医生
-  examStatusList: getDicmsgList('ResultAssistantName'), // 检查状态
-  ifHasImageList: commonOptionList, //影像状态
-  ifHasReportList: commonOptionList, //报告状态
-  ifHasFilmList: commonOptionList, //胶片状态
-  resultPrintCountList: contStatus, // 报告打印状态
-  lockFlagList: lockStatus, // 报告锁定状态
-  statisticTypeList: [{ label: '影像创建时间', prop: 'ImageCreateTime' }], // 统计标识
-  criticalValueList: [
-    { label: '有', prop: 'true' },
-    { label: '无', prop: 'false' }
-  ], // 危机报告
-  abnormalFlagsList: [
-    { label: '阴性', prop: '阴性' },
-    { label: '阳性', prop: '阳性' },
-    { label: '其他', prop: '其他' }
-  ]
 }
 
 // 使用函数形式，确保每次调用时都能获取到最新的缓存数据
@@ -128,14 +105,24 @@ export const getSearchFormList = () => ({
     },
     {
       label: '申请科室',
-      type: 'virtualSelect',
+      type: 'muliSelect',
       multiple: !0,
       prop: 'requestDeptID',
       width: '180px',
       fcn: 'deptSelected',
       tipShow: !0,
       filterable: !0,
-      opt: permiseListSearch()
+      // 使用异步函数，首次渲染时自动拉取并返回最新“申请科室”列表
+      opt: async () => {
+        try {
+          if (!Array.isArray(listDephname) || listDephname.length === 0) {
+            await permiseListSearch()
+          }
+        } catch (_) {
+          // ignore 单项失败，交给上层初始化兜底为空数组
+        }
+        return listDephname
+      }
     },
     {
       label: '申请医生',
@@ -199,8 +186,8 @@ export const getSearchFormList = () => ({
       prop: 'digitalimageneed',
       width: '180px',
       opt: [
-        { label: '有', prop: 'true' },
-        { label: '无', prop: 'false' }
+        { name: '有', value: 'true' },
+        { name: '无', value: 'false' }
       ]
     },
     {
@@ -251,7 +238,7 @@ export const getSearchFormList = () => ({
       type: 'select',
       prop: 'statisticType',
       width: '180px',
-      opt: [{ label: '影像创建时间', prop: 'ImageCreateTime' }]
+      opt: [{ name: '影像创建时间', prop: 'ImageCreateTime' }]
     }
   ],
   inspectionResults: [
@@ -261,19 +248,19 @@ export const getSearchFormList = () => ({
       prop: 'abnormalFlags',
       width: '180px',
       opt: [
-        { label: '阴性', prop: '阴性' },
-        { label: '阳性', prop: '阳性' },
-        { label: '其他', prop: '其他' }
+        { name: '阴性', prop: '阴性' },
+        { name: '阳性', prop: '阳性' },
+        { name: '其他', prop: '其他' }
       ]
     },
     {
-      label: '危急值报告',
+      label: '危机报告',
       type: 'select',
       prop: 'criticalValue',
       width: '180px',
       opt: [
-        { label: '有', prop: 'true' },
-        { label: '无', prop: 'false' }
+        { name: '有', prop: 'true' },
+        { name: '无', prop: 'false' }
       ]
     }
   ]

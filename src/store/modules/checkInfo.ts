@@ -92,7 +92,6 @@ export const useCheckInfoStore = defineStore('checkInfo', {
         requestDeptIDList: this.permiseListSearch(),
         requestDocNameList: this.getDicItemsByType('RequestDocName'),
         resultPrincipalNameList: this.getDicItemsByType('ResultPrincipalName'),
-        examEquipmentLIst: [],
         serviceSectIDList: [],
         resultAssistantNameList: [],
         examStatusList: [],

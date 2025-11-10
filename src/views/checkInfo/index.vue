@@ -1,5 +1,34 @@
 <template>
   <div class="checkinfo-page">
+    <div class="header-right-modal">
+      <el-dropdown size="small" type="primary">
+        <el-button type="primary" size="small">
+          模板<el-icon><ArrowDownBold /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item v-for="item in presetList" :key="item.sortNO" @click="setForm(item)">
+              <div class="icon-drop">
+                <span>{{ item.name }}</span>
+                <div>
+                  <el-icon @click.stop="closeModel(item)" class="icon-hover"><CloseBold /></el-icon>
+                  <el-icon
+                    @click.stop="starModal(item, 'unstar')"
+                    class="icon-hover"
+                    v-if="item.defaultFlag === '0'"
+                  >
+                    <Star />
+                  </el-icon>
+                  <el-icon @click.stop="starModal(item, 'star')" v-else>
+                    <StarFilled color="#fbc02d" />
+                  </el-icon>
+                </div>
+              </div>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
     <!-- 顶部搜索条 -->
     <div class="toolbar">
       <el-form :inline="true" :model="formFirst">
@@ -155,12 +184,7 @@
           <div class="tools-flex tools-flex-right">
             <el-dropdown :hide-on-click="false">
               <span class="el-dropdown-link">
-                <el-button size="small">
-                  列表字段
-                  <el-icon class="el-icon--right">
-                    <arrow-down />
-                  </el-icon>
-                </el-button>
+                <el-icon :size="20"><Operation /></el-icon>
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -212,46 +236,78 @@
             <template #default="{ row }">
               <div class="line-status" :style="{ backgroundColor: colorMap(row) }"></div>
               <div class="icon-disable">
-                <div v-if="row.ifHasImage === '有'" class="positions">
-                  <img
-                    v-if="selectRow.find((item) => item.examUID === row.examUID)"
-                    class="image-icon icon-margin"
-                    src="@/assets/imgs/info/img_view_added.png"
-                    alt="imgs"
-                  />
-                  <img
-                    v-else
-                    class="image-icon icon-margin"
-                    src="@/assets/imgs/info/img_view.png"
-                    alt="imgs"
-                  />
-                  <span v-if="row.ifImageUpload === '是'" class="span-icon"></span>
-                </div>
+                <!-- 影像上传状态 -->
+                <el-tooltip
+                  v-if="row.ifHasImage === '有'"
+                  effect="dark"
+                  :content="row.ifImageUpload === '是' ? '影像已上传' : '影像未上传'"
+                  placement="top"
+                >
+                  <div class="positions">
+                    <img
+                      v-if="selectRow.find((item) => item.examUID === row.examUID)"
+                      class="image-icon icon-margin"
+                      src="@/assets/imgs/info/img_view_added.png"
+                      alt="imgs"
+                    />
+                    <img
+                      v-else
+                      class="image-icon icon-margin"
+                      src="@/assets/imgs/info/img_view.png"
+                      alt="imgs"
+                    />
+                    <span v-if="row.ifImageUpload === '是'" class="span-icon"></span>
+                  </div>
+                </el-tooltip>
                 <!-- 报告 -->
-                <div v-if="row.ifHasReport === '有'" class="positions">
-                  <img class="image-icon" src="@/assets/imgs/info/w_report.png" alt="imgs" />
-                  <span v-if="row.ifReportUpload === '是'" class="span-icon"></span>
-                </div>
-                <div v-if="row.ifHasFilm === '有'">
-                  <img
-                    class="image-icon"
-                    style="width: 19px; height: 19px"
-                    src="@/assets/imgs/info/film_disable.png"
-                  />
-                </div>
+                <el-tooltip
+                  v-if="row.ifHasReport === '有'"
+                  effect="dark"
+                  :content="row.ifReportUpload === '是' ? '报告已上传' : '报告未上传'"
+                  placement="top"
+                >
+                  <div class="positions">
+                    <img class="image-icon" src="@/assets/imgs/info/w_report.png" alt="imgs" />
+                    <span v-if="row.ifReportUpload === '是'" class="span-icon"></span>
+                  </div>
+                </el-tooltip>
+                <!-- 胶片 -->
+                <el-tooltip
+                  v-if="row.ifHasFilm === '有'"
+                  effect="dark"
+                  :content="row.ifFilmUpload === '是' ? '胶片已上传' : '胶片未上传'"
+                  placement="top"
+                >
+                  <div>
+                    <img
+                      class="image-icon"
+                      style="width: 19px; height: 19px"
+                      src="@/assets/imgs/info/film_disable.png"
+                    />
+                  </div>
+                </el-tooltip>
                 <div class="lock-icon">
-                  <img
+                  <el-tooltip
                     v-if="row.lockFlag === '否'"
-                    class="image-icon"
-                    src="@/assets/imgs/info/unlock-icon.png"
-                    alt="imgs"
-                  />
-                  <img
-                    v-if="row.lockFlag === '是'"
-                    class="image-icon"
-                    src="@/assets/imgs/info/lock-icon.png"
-                    alt="imgs"
-                  />
+                    effect="dark"
+                    content="检查未锁定"
+                    placement="top"
+                  >
+                    <img
+                      @click="showLockDialog(row, true)"
+                      class="image-icon"
+                      src="@/assets/imgs/info/unlock-icon.png"
+                      alt="imgs"
+                    />
+                  </el-tooltip>
+                  <el-tooltip v-else effect="dark" content="检查已锁定" placement="top">
+                    <img
+                      @click="showLockDialog(row, false)"
+                      class="image-icon"
+                      src="@/assets/imgs/info/lock-icon.png"
+                      alt="imgs"
+                    />
+                  </el-tooltip>
                 </div>
               </div>
             </template>
@@ -290,7 +346,7 @@
                   <span class="bottom-left-text">{{ activeRow?.patientName }}</span>
                   <span class="bottom-left-text">相关检查【{{ nextList.length }}】</span>
                 </div>
-                <div class="icon-hulianhutong" @click="getrecordexam">
+                <div class="icon-hulianhutong" @click="getrecordexam('province')">
                   <el-icon><Connection /></el-icon>
                 </div>
               </template>
@@ -414,6 +470,34 @@
         <el-button @click="clodopInstallVisible = false">稍后再说</el-button>
       </template>
     </el-dialog>
+    <!-- 锁定原因 -->
+    <LockDialog
+      v-model:visible="lockDialog"
+      :model="modelValue"
+      :title="lockTitle"
+      :loading="upLoadingFileLoading"
+      @confirm="sureLock"
+    />
+    <!-- 存为预设
+     
+  @todo： 挪出去-->
+    <el-dialog
+      v-model="isShowTemplate"
+      width="600"
+      :show-close="true"
+      title="请输入预设名"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="modalTemplate" :rules="rules" ref="formRef">
+        <el-form-item label="" prop="name">
+          <el-input v-model="modalTemplate.name" placeholder="请输入预设名" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="isShowTemplate = false">取消</el-button>
+        <el-button type="primary" :loading="loading" @click="onConfirm">确认</el-button>
+      </template> </el-dialog
+    >>
   </div>
 </template>
 
@@ -443,9 +527,21 @@ import {
   ElRadio,
   ElRadioGroup,
   ElCollapse,
-  ElCollapseItem
+  ElCollapseItem,
+  ElMessageBox,
+  ElLoading
 } from 'element-plus'
-import { ArrowDown, ArrowUp, FolderAdd, Connection } from '@element-plus/icons-vue'
+import {
+  ArrowDown,
+  ArrowUp,
+  FolderAdd,
+  Connection,
+  Operation,
+  ArrowDownBold,
+  CloseBold,
+  Star,
+  StarFilled
+} from '@element-plus/icons-vue'
 import type {
   CheckReportDetail,
   DocStatusProto,
@@ -456,6 +552,7 @@ import type {
 import {
   apiGetrecordexam,
   batchResetBusinessStatus,
+  cancelPreset,
   CheckInfoRow,
   getcheckinfolist,
   getdoc,
@@ -463,19 +560,41 @@ import {
   getPushStatus,
   getValidPrintlist,
   getwrittenreport,
+  lockcheck,
+  updatepresetdefaul,
   upDownload
 } from '@/api/checkInfo'
 import RightDetailCard from './components/RightDetailCard.vue'
+import LockDialog from './components/LockDialog.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { getOrg } from '@/api/paramConf'
 import { alternative, timeAlternative, checkBoxList, examOptions, defaultStart } from './index'
-import { getSearchFormList } from './searchOptions'
-import { getpreset } from '@/api/authConf'
+import { getSearchFormList, permiseListSearch } from './searchOptions'
+import { getpreset, PresetList } from '@/api/authConf'
 import { getdicitemlists, getDicmsgList } from '@/utils/dicmsg'
 import AdvanceSearchForm from './components/AdvanceSearchForm.vue'
 import { arrayBufferToBase64 } from '@/utils/base64'
 import { ensureCLodop, printImages, detectCLodop } from '@/utils/clodop'
 import { detectIEVersionAndArch } from '@/utils'
+import { addpreset, deletepreset } from '@/api/plugConf'
+// 预设
+const modalTemplate = reactive({
+  name: ''
+})
+
+const rules = {
+  name: [{ required: true, message: '预设名不能为空', trigger: 'blur' }]
+}
+
+// 锁定
+const lockDialog = ref(false)
+const modelValue = reactive({
+  lockReason: ''
+})
+const lockTitle = ref('')
+
+// 锁定弹窗由子组件 LockDialog 管理表单与校验
+
 const nextList = ref<CheckInfoRow[]>([])
 const isBig = ref(false) //最大状态
 const checkedColumns = ref<string[]>([...defaultStart.map((item) => item.prop)])
@@ -597,13 +716,16 @@ const orgOptions = ref<{ organizationName: string; organizationID: string }[]>([
 // 右侧详情当前行：同时包含列表行字段与详细报告字段
 type CurrentDetail = Partial<CheckInfoRow & CheckReportDetail & PushStatus> &
   DocStatusProto &
-  DocumentProto
+  DocumentProto & {
+    isShowDialog: boolean
+  }
 const currentDetail = ref<CurrentDetail>({
   examResultStatus: false,
   examWrittenStatus: false,
   examFilmStatus: false,
   examImgStatus: false,
-  documentDtos: []
+  documentDtos: [],
+  isShowDialog: true
 })
 
 const setQuery = () => {
@@ -626,14 +748,9 @@ const setQuery = () => {
     ...advance.value
   }
 }
-const advanceList = ref<Record<string, any>[]>([])
-const onSaveAdvance = () => {
-  const query = {
-    ...formFirst.value,
-    ...advance.value
-  }
+const onSaveAdvance = async () => {
+  isShowTemplate.value = true
   // 暂存本次高级筛选为预设
-  advanceList.value.push(query)
 }
 
 async function upLoad() {
@@ -675,7 +792,11 @@ async function onSearch() {
       userInfo,
       token: userStore.getToken,
       ...formFirst.value,
-      ...advance.value
+      ...advance.value,
+      serviceSectID: advance.value.serviceSectID?.join(',') || '',
+      examStatus: advance.value.examStatus?.join(',') || '',
+      requestDeptID: advance.value.requestDeptID?.join(',') || '',
+      patientClass: advance.value.patientClass?.join(',') || ''
     }
     console.log(query, 'query')
     const data = await getcheckinfolist(query)
@@ -713,6 +834,7 @@ function onPageChange(p: number) {
   onSearch()
 }
 const activeRow = ref<CheckInfoRow | null>({})
+const selectLockRow = ref<CheckInfoRow | null>({})
 const getImageReport = async () => {
   const { data } = await getdoc({
     ...activeRow.value,
@@ -752,7 +874,7 @@ const batchChangeDocument = (documents: DocumentProto[]): DocumentDtoProto[] => 
       }
     })
   })
-  return newList.map((item) => item[0]) as any
+  return newList.flat(Infinity) as any
 }
 
 const getTextReport = async () => {
@@ -768,6 +890,24 @@ const getTextReport = async () => {
 
 // 行点击时更新右侧详情
 async function onRowClick(row: CheckInfoRow) {
+  // 锁定判断
+  if (row.lockFlag === '是') {
+    ElMessageBox.alert(`该检查已被锁定。锁定原因：${row.lockReason}`, '提示', {
+      confirmButtonText: '确定',
+      type: 'warning'
+    })
+    currentDetail.value = {
+      examResultStatus: false,
+      examWrittenStatus: false,
+      examFilmStatus: false,
+      examImgStatus: false,
+      documentDtos: [],
+      isShowDialog: false // 如果已经被锁定了就不展示所有的东西
+    }
+    return
+    // selectLockRow.value = row
+  }
+
   activeRow.value = row
   let detailMsg = {}
   let documents: any = {}
@@ -793,7 +933,8 @@ async function onRowClick(row: CheckInfoRow) {
     ...detailMsg,
     ...resultValue,
     ...status,
-    documentDtos: documents
+    documentDtos: documents,
+    isShowDialog: true
   }
 }
 
@@ -829,11 +970,12 @@ const getTorg = async () => {
   const { data } = await getOrg()
   orgOptions.value = data
 }
+const presetList = ref<PresetList[]>([])
 const getpresetList = async () => {
   const { data } = await getpreset({
     userInfo
   })
-  console.log(data)
+  presetList.value = data
 }
 const onTypeChange = (type) => {
   isBig.value = type === 'big'
@@ -1013,13 +1155,27 @@ function openClodopInstaller() {
     downLoadHref.value = lodopWin32Url
   }
 }
-const fullscreenLoading = ref(false)
-const getrecordexam = async () => {
-  fullscreenLoading.value = true
+
+const getrecordexam = async (type: 'province' | 'pageApply') => {
+  const loading = ElLoading.service({
+    lock: true,
+    text: '正在执行',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
   try {
-    await apiGetrecordexam({ ...activeRow.value, userInfo })
+    const { data, isSuccess, message } = await apiGetrecordexam({
+      ...activeRow.value,
+      userInfo,
+      applyMethod: type
+    })
+    if (isSuccess) {
+      ElMessage.success('已成功获取关联检查')
+      nextList.value = data
+    } else {
+      ElMessage.error(message)
+    }
   } finally {
-    fullscreenLoading.value = false
+    loading.close()
   }
 }
 
@@ -1028,7 +1184,7 @@ onMounted(async () => {
   window.addEventListener('mouseup', stopDrag)
   getTorg() // 超管机构才获取
   onSearch()
-  getpresetList()
+  getpresetList() //获取预设
 
   // 确保字典数据加载完成后再初始化表单选项
   try {
@@ -1055,8 +1211,92 @@ const colorMap = (row) => {
       return '#67c23a'
   }
 }
+// 锁定原因
+const sureLock = async () => {
+  upLoadingFileLoading.value = true
+  try {
+    await lockcheck({
+      examUID: selectLockRow.value?.examUID || '',
+      lockReason: modelValue.lockReason,
+      isLock: lockTitle.value === '锁定原因' ? true : false
+    })
+    ElMessage.success('操作成功')
+    lockDialog.value = false
+    // 清理输入
+    modelValue.lockReason = ''
+    onSearch()
+  } catch (err: any) {
+    ElMessage.error(err?.message || '操作失败')
+  } finally {
+    upLoadingFileLoading.value = false
+  }
+}
+const isShowTemplate = ref(false)
+// 模板
+const setForm = (item) => {
+  console.log('item', item)
+  // modelValue.lockReason = item.lockReason
+}
+const closeModel = async (item) => {
+  await deletepreset({
+    querySeq: item.querySeq
+  })
+  getpresetList()
+}
 
+const starModal = async (item: PresetList, type: 'star' | 'unstar') => {
+  let data
+  if (type === 'unstar') {
+    data = await updatepresetdefaul({
+      defaultFlag: '0',
+      publicFlag: item.publicFlag,
+      queryCondition: item.queryCondition,
+      queryType: 'exam',
+      name: item.name,
+      querySeq: item.querySeq,
+      sortNO: item.sortNO,
+      userUID: userInfo.userUID,
+      userInfo
+    })
+  } else {
+    data = await cancelPreset({
+      querySeq: item.querySeq,
+      queryType: 'exam',
+      defaultFlag: '1'
+    })
+  }
+  if (data.isSuccess) {
+    ElMessage.success('设置成功')
+    await getpresetList()
+  } else {
+    ElMessage.error(data.message || '操作失败')
+  }
+}
+
+const onConfirm = async () => {
+  const { isSuccess, message } = await addpreset({
+    name: modalTemplate.name,
+    queryCondition: JSON.stringify({ ...formFirst.value, ...advance.value }),
+    queryType: 'exam',
+    userInfo
+  })
+  if (isSuccess) {
+    ElMessage.success('保存成功')
+    isShowTemplate.value = false
+    modalTemplate.name = ''
+    await getpresetList()
+  } else {
+    ElMessage.error(message || '保存失败')
+  }
+}
+
+const showLockDialog = (row, isLock) => {
+  selectLockRow.value = row
+  lockTitle.value = isLock ? '锁定原因' : '解锁原因'
+  lockDialog.value = true
+}
 onBeforeUnmount(() => {
+  permiseListSearch()
   window.removeEventListener('mousemove', onMove)
   window.removeEventListener('mouseup', stopDrag)
 })
@@ -1313,5 +1553,20 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 3px;
   right: 25px;
+}
+
+.header-right-modal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.icon-drop {
+  display: flex;
+  justify-content: space-between;
+  min-width: 150px;
+  align-items: center;
+  padding: 2px 10px;
 }
 </style>

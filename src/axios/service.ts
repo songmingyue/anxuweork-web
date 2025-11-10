@@ -39,7 +39,8 @@ const listUnProto = [
   'api/doc/GetFailTaskPluginName',
   'api/doc/GetFailTaskPluginName',
   'api/doc/GetSensitiveLogList',
-  'api/doc/ExportExamHZRMYY'
+  'api/doc/ExportExamHZRMYY',
+  'api/check/lockcheck'
 ] // 列表不解密白名单aaaaa又一种逻辑
 
 const filderUrl = ['/system/version', '/key', listUnProto].flat(Infinity) // 加密白名单

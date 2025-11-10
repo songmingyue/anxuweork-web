@@ -54,6 +54,7 @@ export interface RoleData {
   createUserName: string
   createDate: string
   createUserUID: string
+  lAYChecked: string
   memo: string
   organizationID: string
   organizationName: string
@@ -182,6 +183,17 @@ export interface CreateOrganization {
   parentOrganizationID: string // 父组织ID
   province: string // 省份信息
   searchOrganizationID: string // 搜索用组织ID
+}
+
+export interface RoleMsgOut {
+  roleUID: string
+  roleName: string
+  createUserUID: string
+  createDate: string
+  memo: string
+  lAYChecked: string
+  organizationID: string
+  organizationName: string
 }
 
 export const getUsers = async (data: UserListData): Promise<IResponse<UserOnce[]>> => {
@@ -420,6 +432,21 @@ export const getdicmsg = (data: DeptOnce): Promise<IResponse<[]>> => {
     requestTem: {
       requestTem: 'DicItemMstInputProto',
       responseTem: 'DicItemMstProto'
+    }
+  })
+}
+// 更新权限
+export const addUserRoles = (data: {
+  organizationID: string
+  userUID: string
+  right: RoleData[]
+}): Promise<IResponse<[]>> => {
+  return request.post({
+    url: 'user/addroles',
+    data,
+    requestTem: {
+      requestTem: 'AddRoleInputProto',
+      responseTem: 'whitelist'
     }
   })
 }

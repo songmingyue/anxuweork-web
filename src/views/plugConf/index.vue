@@ -4,39 +4,8 @@
 
     <el-card body-style="display: flex; align-item: center; justify-content: space-between">
       <el-button type="primary" @click="onCreateService">新增服务</el-button>
-      <!-- todo: 应该拆出去，在代码太乱了 -->
-      <el-dropdown size="small" type="primary">
-        <el-button type="primary" size="small">
-          模板<el-icon><ArrowDownBold /></el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item
-              v-for="item in modalList"
-              :key="item.sortNO"
-              @click="editModalMed(item)"
-            >
-              <div class="icon-drop">
-                <span>{{ item.name }}</span>
-                <div>
-                  <el-icon @click.stop="closeModel(item)" class="icon-hover"><CloseBold /></el-icon>
-                  <el-icon
-                    @click.stop="starModal(item, 'unstar')"
-                    class="icon-hover"
-                    v-if="item.defaultFlag === '0'"
-                    ><Star
-                  /></el-icon>
-                  <el-icon @click="starModal(item, 'star')" v-else
-                    ><StarFilled color="#fbc02d"
-                  /></el-icon>
-                </div>
-              </div>
-            </el-dropdown-item>
-            <el-dropdown-item divided :icon="Plus" @click="createModal">新增模板</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      <!-- 到这里 -->
+      <!-- 模板模块（已拆分为独立组件） -->
+      <TemplateDropdown />
     </el-card>
     <el-card shadow="never" class="mb8">
       <el-table
@@ -127,12 +96,7 @@
       <!-- 下表不分页：不渲染 el-pagination -->
     </el-card>
 
-    <!-- 新增服务对话框 -->
-    <ServiceConfigDialog
-      v-model="showModalDialog"
-      :title="modalDialogTitle"
-      :model="editModal || undefined"
-      @save="onServiceSave" />
+    <!-- 模板功能已拆分为组件 TemplateDropdown -->
     <el-dialog v-model="showServiceModal" :title="serviceDlgTitle" width="600px">
       <el-form :rules="rules" v-model="serviceModal">
         <el-form-item label="任务组名" label-width="80px" required>
@@ -164,7 +128,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ArrowDownBold, CloseBold, Plus, Star, StarFilled } from '@element-plus/icons-vue'
+// template dropdown moved to TemplateDropdown component; icons used there
 import {
   ElMessage,
   ElTable,
@@ -178,18 +142,13 @@ import {
   ElSelect,
   ElOption,
   ElPagination,
-  ElDialog,
-  ElDropdownMenu,
-  ElDropdownItem,
-  ElDropdown,
-  ElIcon
+  ElDialog
 } from 'element-plus'
-import ServiceConfigDialog from './components/ServiceConfigDialog.vue'
+// Template dialog moved into TemplateDropdown component
 import {
   createpluginService,
   deletepluginService,
   deletepluginservicemap,
-  deletepreset,
   disablepluginservicemap,
   disableService,
   editpluginService,
@@ -197,11 +156,10 @@ import {
   getpluginservicemaplist,
   getservicelist,
   ServiceConfig,
-  Servicemaplist,
-  updateplugindefault
+  Servicemaplist
 } from '@/api/plugConf'
-import { getpreset, PresetList } from '@/api/authConf'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import TemplateDropdown from './components/TemplateDropdown.vue'
+// userStore removed from parent; TemplateDropdown handles template API
 import TaskConfigDialog from './components/TaskConfigDialog.vue'
 const pluginServiceMapUID = ref('')
 const pluginConfigKeyValue = ref('')
@@ -224,17 +182,13 @@ const dlgTitle = ref('新增任务')
 const editTask = ref({})
 const showTaskDlg = ref(false)
 // 服务对话框状态
-const showModalDialog = ref(false)
 const serviceDlgTitle = ref('新增服务信息')
-const modalDialogTitle = ref('新增通用模板')
 const editService = ref<Partial<ServiceConfig> | null>(null)
-const editModal = ref({})
 const rules = {
   serviceName: [{ required: true, message: '服务名称不能为空', trigger: 'blur' }],
   ifEnable: [{ required: true, message: '请选择服务状态', trigger: 'change' }]
 }
 
-const modalList = ref<PresetList[]>([])
 const changeSwitch = async (row: Servicemaplist) => {
   const { isSuccess, message } = await disablepluginservicemap(row)
   if (isSuccess) {
@@ -306,12 +260,7 @@ function onCreateService() {
   showServiceModal.value = true
 }
 
-function onServiceSave(formData: any) {
-  console.log('保存服务配置:', formData)
-  ElMessage.success('服务配置保存成功')
-  getModelList()
-  // loadServices()
-}
+// onServiceSave removed (template dialog handled by TemplateDropdown)
 
 function onEditService(row: ServiceConfig) {
   serviceDlgTitle.value = '编辑服务'
@@ -366,27 +315,7 @@ const saveService = async () => {
     ElMessage.error(`服务保存失败: ${data.message}`)
   }
 }
-const userStore = useUserStoreWithOut()
-const getModelList = async () => {
-  // 获取模板列表的逻辑
-  const { data } = await getpreset({
-    userInfo: userStore.getUserInfo, // 示例参数，根据实际API需求调整
-    queryType: 'plugin'
-  })
-  modalList.value = data || []
-}
-
-const createModal = () => {
-  modalDialogTitle.value = '新增通用模板'
-  editModal.value = {}
-  showModalDialog.value = true
-}
-
-const editModalMed = (item: PresetList) => {
-  modalDialogTitle.value = '编辑通用模板'
-  editModal.value = { ...item }
-  showModalDialog.value = true
-}
+// userStore not used in parent after extracting template logic
 
 const onTaskSave = () => {
   loadTasks()
@@ -408,34 +337,9 @@ const editPlugin = (row: Servicemaplist) => {
   dlgTitle.value = '编辑任务'
   showTaskDlg.value = true
 }
-// 删除
-const closeModel = async (item: PresetList) => {
-  const { isSuccess, message } = await deletepreset({
-    querySeq: item.querySeq
-  })
-  if (isSuccess) {
-    ElMessage.success(message || '操作成功')
-    await getModelList()
-  } else {
-    ElMessage.error(message || '操作失败')
-  }
-}
-
-const starModal = async (item: PresetList, type: 'star' | 'unstar') => {
-  const { isSuccess, message } = await updateplugindefault({
-    ...item,
-    defaultFlag: type === 'star' ? '0' : '1'
-  })
-  if (isSuccess) {
-    ElMessage.success(message || '操作成功')
-    await getModelList()
-  } else {
-    ElMessage.error(message || '操作失败')
-  }
-}
+// 模板相关逻辑已移动到 `TemplateDropdown` 组件
 onMounted(() => {
   loadServices()
-  getModelList()
   getPluginlist()
 })
 </script>
@@ -463,14 +367,6 @@ onMounted(() => {
 .new-modal {
   display: flex;
   border: 1px solid #dcdfe6;
-}
-
-.icon-drop {
-  display: flex;
-  justify-content: space-between;
-  min-width: 150px;
-  align-items: center;
-  padding: 2px 10px;
 }
 
 .icon-hover {

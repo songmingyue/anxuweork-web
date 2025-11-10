@@ -672,28 +672,28 @@ message PluginServiceMapProto {
 }
 
 message UserQuerySetMstDtoProto {
-  int32 query_seq = 1;           // 查询序列号
-  string query_type = 2;         // 查询类型
-  string user_uid = 3;           // 用户UID
+  int32 querySeq = 1;           // 查询序列号
+  string queryType = 2;         // 查询类型
+  string userUID = 3;           // 用户UID
   string name = 4;               // 名称
-  string query_condition = 5;    // 查询条件
-  int32 sort_no = 6;            // 排序号
-  string default_flag = 7;      // 默认标志
-  string public_flag = 8;       // 公开标志
-  UserOrgInfoProto user_info = 9; // 用户组织信息
+  string queryCondition = 5;    // 查询条件
+  int32 sortNO = 6;            // 排序号
+  string defaultFlag = 7;      // 默认标志
+  string publicFlag = 8;       // 公开标志
+  UserOrgInfoProto userInfo = 9; // 用户组织信息
 }
 message ScriptMstProto {
-  int32 script_id = 1;
+  int32 scriptID = 1;
   string script = 2;
-  string script_type = 3;
-  string create_date = 4;
-  string last_edit_date = 5;
+  string scriptType = 3;
+  string createDate = 4;
+  string lastEditDate = 5;
   string creator = 6;
-  string last_editor = 7;
-  string script_description = 8;
-  string script_memo = 9;
-  string program_version = 10;
-  string script_content = 11;
+  string lastEditor = 7;
+  string scriptDescription = 8;
+  string scriptMemo = 9;
+  string programVersion = 10;
+  string scriptContent = 11;
 }
 
 message DBConfigDtoProto {
@@ -1162,4 +1162,22 @@ message GetOperateRecordListOutputProto {
 
 message  DeletePreSetInputProto {
   int32 querySeq = 1;
+}
+
+message AddRoleInputProto {
+  string userUID = 1;
+  string searchOrganizationID = 2;
+  repeated RoleMstOutputProto right = 3;
+}
+
+message RoleMstOutputProto {
+  string roleUID = 1;
+  string roleName = 2;
+  string createUserUID = 3;
+  string createUserName = 4;
+  string createDate = 5;
+  string memo = 6;
+  string lAYChecked = 7;
+  string organizationID = 8;
+  string organizationName = 9;
 }

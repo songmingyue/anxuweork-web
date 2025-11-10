@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, unref } from 'vue'
+import { ref, reactive, onMounted, unref, nextTick } from 'vue'
 import {
   ElMessage,
   ElMessageBox,
@@ -25,7 +25,8 @@ import {
   disableUser,
   resetUser,
   RoleData,
-  createUser
+  createUser,
+  addUserRoles
 } from '@/api/userMessage'
 import { OrganizationList } from '@/api/login/types'
 import UserFormDialog from './components/UserFormDialog.vue'
@@ -55,6 +56,10 @@ const currentPage = ref(1)
 
 // 角色列表（选中用户后展示）
 const roleList = ref<RoleData[]>([])
+const roleTableRef = ref<InstanceType<typeof ElTable> | null>(null)
+const currentUser = ref<UserOnce | null>(null)
+const initializingRoles = ref(false) // 避免初始化时触发保存
+const prevSelectedRoleUIDs = ref<string[]>([])
 
 // 对话框
 const dialogVisible = ref(false)
@@ -110,9 +115,32 @@ async function handlePassword(row: UserOnce) {
   })
 }
 
+const isRowChecked = (row: any) => {
+  // 后端可能返回多种命名：lAY_CHECKED / lAYChecked / layChecked / checked
+  const v =
+    row?.lAY_CHECKED ?? row?.lAYChecked ?? row?.LAY_CHECKED ?? row?.layChecked ?? row?.checked
+  return v === true || v === 'true' || v === '1' || v === 1 || v === '是'
+}
+
+const syncRoleSelection = async () => {
+  if (!roleTableRef.value) return
+  initializingRoles.value = true
+  await nextTick()
+  roleTableRef.value!.clearSelection()
+  roleList.value.forEach((row) => {
+    if (isRowChecked(row)) {
+      roleTableRef.value!.toggleRowSelection(row, true)
+    }
+  })
+  prevSelectedRoleUIDs.value = roleList.value.filter(isRowChecked).map((r: any) => r.roleUID)
+  // 小延迟避免紧跟着触发 selection-change
+  setTimeout(() => (initializingRoles.value = false), 0)
+}
+
 const getRoleList = async (userUID: string) => {
   const data = await getRole({ userUID })
   roleList.value = data.data || []
+  await syncRoleSelection()
 }
 
 const getUserList = async () => {
@@ -134,6 +162,7 @@ const getOrgList = async () => {
   filters.organizationID = orgOptions.value[0]?.value || ''
   await getUserList()
   if (tableData.value.length > 0) {
+    currentUser.value = tableData.value[0]
     await getRoleList(tableData.value[0].userUID)
   }
 }
@@ -153,7 +182,24 @@ const changeStatus = async (row: UserOnce) => {
 }
 
 const handleCurrentChange = (val: UserOnce) => {
+  currentUser.value = val
   getRoleList(val.userUID)
+}
+
+const onRoleSelectionChange = async (selection: RoleData[]) => {
+  if (initializingRoles.value) return
+  if (!currentUser.value) return
+  try {
+    await addUserRoles({
+      organizationID: currentUser.value.organizationID,
+      userUID: currentUser.value.userUID,
+      right: selection
+    })
+    ElMessage.success('已更新用户角色')
+    // getRoleList(currentUser.value.userUID)
+  } catch (e: any) {
+    getRoleList(currentUser.value.userUID)
+  }
 }
 
 const handleUserConfirm = async (formData: UserOnce) => {
@@ -290,7 +336,14 @@ onMounted(() => {
     </el-card>
 
     <el-card class="mt8" shadow="never" header="角色列表">
-      <el-table :data="roleList" border>
+      <el-table
+        :data="roleList"
+        border
+        ref="roleTableRef"
+        row-key="roleUID"
+        @selection-change="onRoleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="roleName" label="角色" min-width="160" show-overflow-tooltip />
         <el-table-column prop="memo" label="备注" min-width="140" show-overflow-tooltip />
         <el-table-column

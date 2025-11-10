@@ -27,7 +27,7 @@
                 <el-option
                   v-for="opt in getFieldOptions(sub)"
                   :key="opt.itemCode || opt.prop || opt.value"
-                  :label="opt.itemName || opt.label || opt.lable"
+                  :label="opt.itemName || opt.name || opt.lable"
                   :value="opt.itemCode || opt.prop || opt.value"
                 />
               </el-select>
@@ -51,11 +51,13 @@
             :model-value="modelValue[item.prop]"
             @update:model-value="updateValue(item.prop, $event)"
             type="date"
+            value-format="YYYY-MM-DD"
+            format="YYYY-MM-DD"
             :style="{ width: item.width || '180px' }"
             placeholder="选择日期"
           />
           <el-select
-            v-else-if="item.type === 'select' || item.type === 'virtualSelect'"
+            v-else-if="item.type === 'select'"
             :model-value="modelValue[item.prop]"
             @update:model-value="updateValue(item.prop, $event)"
             :style="{ width: item.width || '180px' }"
@@ -64,14 +66,15 @@
           >
             <el-option
               v-for="opt in getFieldOptions(item)"
-              :key="opt.itemCode || opt.prop || opt.label"
-              :label="opt.itemName || opt.label || opt.lable"
+              :key="opt.itemCode || opt.prop || opt.value"
+              :label="opt.itemName || opt.name || opt.lable"
               :value="opt.itemCode || opt.prop || opt.value"
             />
           </el-select>
           <el-select
-            v-else-if="item.type === 'muliSelect'"
+            v-else-if="item.type === 'muliSelect' || item.type === 'virtualSelect'"
             :model-value="modelValue[item.prop]"
+            collapse-tags
             @update:model-value="updateValue(item.prop, $event)"
             multiple
             :style="{ width: item.width || '180px' }"
@@ -81,7 +84,7 @@
             <el-option
               v-for="opt in getFieldOptions(item)"
               :key="opt.itemCode || opt.prop || opt.label"
-              :label="opt.itemName || opt.label || opt.lable"
+              :label="opt.itemName || opt.name || opt.label || opt.lable"
               :value="opt.itemCode || opt.prop || opt.value"
             />
           </el-select>
@@ -133,6 +136,7 @@ const formSchema = computed(() => getSearchFormList())
 
 // 获取字段选项
 const getFieldOptions = (field: any) => {
+  console.log('获取字段选项:', field)
   // 优先使用从父组件传入的选项
   if (props.formOptions[field.prop] && props.formOptions[field.prop].length > 0) {
     return props.formOptions[field.prop]

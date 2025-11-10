@@ -122,14 +122,12 @@
 import { PropType } from 'vue'
 import type { CheckInfoRow, CheckReportDetail } from '@/api/checkInfo'
 
-const props = defineProps({
+defineProps({
   detail: {
     type: Object as PropType<Partial<CheckInfoRow & CheckReportDetail>>,
     default: () => ({})
   }
 })
-
-const detail = props.detail
 </script>
 
 <style scoped>

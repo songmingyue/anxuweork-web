@@ -64,6 +64,7 @@ export interface CheckInfoRow {
   iDCardNo?: string
   editType?: number
   contactPhoneNO?: string
+  lockReason?: string
 }
 
 export interface CheckReportDetail {
@@ -364,8 +365,9 @@ export const getValidPrintlist = (data: {
   })
 }
 
+// province  "pageApply" // 默认 "province" // 互联互通
 export const apiGetrecordexam = (
-  data: Partial<CheckInfoRow & { userInfo: any }>
+  data: Partial<CheckInfoRow & { userInfo: any } & { applyMethod: string }>
 ): Promise<IResponse<[]>> => {
   return request.post({
     url: 'check/getrecordexam',
@@ -382,5 +384,38 @@ export const upDownload = (data: any) => {
     url: 'doc/ExportExamHZRMYY',
     data,
     responseType: 'arraybuffer'
+  })
+}
+// 锁定
+
+export const lockcheck = (data: { examUID: string; isLock: boolean; lockReason?: string }) => {
+  return request.post({
+    url: 'check/lockcheck',
+    data,
+    responseType: 'json'
+  })
+}
+
+// 取消star
+export const cancelPreset = (data: any): Promise<IResponse<void>> => {
+  return request.post({
+    url: 'check/cancelpreset',
+    data,
+    requestTem: {
+      requestTem: 'UserQuerySetMstProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+// 取消star
+export const updatepresetdefaul = (data: any): Promise<IResponse<void>> => {
+  return request.post({
+    url: 'check/updatepresetdefaul',
+    data,
+    requestTem: {
+      requestTem: 'UserQuerySetMstDtoProto',
+      responseTem: 'whitelist'
+    }
   })
 }

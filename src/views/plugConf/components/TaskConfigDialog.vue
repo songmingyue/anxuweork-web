@@ -45,7 +45,6 @@
           </ElCol>
         </ElRow>
       </ElForm>
-
       <!-- 动态表单区域 -->
       <ElForm ref="dynamicFormRef" :model="formData" :rules="dynamicRules" label-width="220px">
         <div v-if="typeForm === 'step'" class="dynamic-form-container">
@@ -146,7 +145,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  save: [data: any]
+  save
 }>()
 
 const visible = computed({
@@ -317,7 +316,9 @@ const handleFieldUpdate = (data: { prop: string; value: any }) => {
   if (typeForm.value !== 'step') {
     formData.value[data.prop] = data.value
   } else {
-    formData.value[processFormActiveSmall.value.prop][data.prop] = data.value
+    const { prop, value } = data
+    const propList = prop.split('.')
+    formData.value[processFormActiveSmall.value.prop][propList[1]] = value
   }
   console.log('当前表单数据:', formData.value)
 
@@ -389,10 +390,10 @@ const handleSubmit = async () => {
     if (isSuccess) {
       ElMessage.success(message || '操作成功')
       cancel()
+      emit('save')
     } else {
       ElMessage.error(message || '操作失败')
     }
-    // emit('save', submitData)
   } catch (error) {
     console.error('表单验证失败:', error)
     ElMessage.error('请完善必填信息')
@@ -450,6 +451,36 @@ const processFormActiveSmall = computed(() => {
     newOptions[0].fiedlInfos[0].opt = filteredOptions
   }
 
+  // 为所有字段的 prop 添加最外层模块名前缀
+  const addModulePrefix = (fields: any[], prefix: string) => {
+    if (!fields || !Array.isArray(fields)) return
+
+    fields.forEach((field) => {
+      if (field.prop && !field.prop.includes('.')) {
+        field.prop = `${prefix}.${field.prop}`
+      }
+
+      // 递归处理嵌套字段
+      if (field.fiedlInfos && Array.isArray(field.fiedlInfos)) {
+        addModulePrefix(field.fiedlInfos, prefix)
+      }
+
+      // 递归处理选项中的嵌套字段
+      if (field.opt && Array.isArray(field.opt)) {
+        field.opt.forEach((option) => {
+          if (option.fiedlInfos && Array.isArray(option.fiedlInfos)) {
+            addModulePrefix(option.fiedlInfos, prefix)
+          }
+        })
+      }
+    })
+  }
+
+  // 添加模块前缀
+  if (newOptions[0] && newOptions[0].prop && newOptions[0].fiedlInfos) {
+    addModulePrefix(newOptions[0].fiedlInfos, newOptions[0].prop)
+  }
+
   return newOptions[0]
 })
 // 获取步骤状态
@@ -466,8 +497,11 @@ const getStepStatus = (index: number) => {
 const changePlugin = (val) => {
   if (val) {
     // 清空表单数据和验证规则
-    formData.value = {}
-    dynamicRules.value = {}
+    if (!props.pluginServiceMapUID) {
+      // 编辑模式下不允许更改任务用途
+      formData.value = {}
+      dynamicRules.value = {}
+    }
     const activeLable = props.taskPurposeOptions.find((item) => item.pluginUid === val)
     if (activeLable && activeLable.pluginConfigs) {
       try {

@@ -1,5 +1,5 @@
 <template>
-  <div class="right-detail">
+  <div class="right-detail" v-if="detail.isShowDialog">
     <div class="detail-top">
       <div class="top-left">
         <span v-if="top.abnormal" :class="top.abnormal === '阴性' ? 'abnormal' : 'redabnormal'"
@@ -113,7 +113,9 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="reportChange('reportText')"> 文字报告</el-dropdown-item>
-              <el-dropdown-item @click="reportChange('reportImage')"> 图文报告</el-dropdown-item>
+              <el-dropdown-item v-if="detail.examResultStatus" @click="reportChange('reportImage')">
+                图文报告</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -253,6 +255,9 @@
       </template>
     </el-dialog>
   </div>
+  <div class="right-empty" v-else>
+    <el-empty description="该检查已被锁定" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -276,6 +281,7 @@ import {
 import {
   ElCarousel,
   ElCarouselItem,
+  ElEmpty,
   // ElImage,
   ElDropdown,
   ElDropdownItem,
@@ -314,7 +320,13 @@ interface Detail extends Partial<CheckInfoRow> {
 const props = defineProps({
   detail: {
     type: Object as PropType<
-      Partial<CheckInfoRow & CheckReportDetail & PushStatus & DocStatusProto & DocumentProto>
+      Partial<
+        CheckInfoRow &
+          CheckReportDetail &
+          PushStatus &
+          DocStatusProto &
+          DocumentProto & { isShowDialog: boolean }
+      >
     >,
     default: () => ({})
   }
@@ -637,6 +649,13 @@ const changeSize = (type: 'small' | 'big') => {
 <style scoped>
 .right-detail {
   padding: 8px 12px;
+}
+
+.right-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .top-left {

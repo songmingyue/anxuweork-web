@@ -1,6 +1,16 @@
 @import './var.css';
 @import 'element-plus/theme-chalk/dark/css-vars.css';
 
+.padding-none {
+  .el-card__body {
+    padding-bottom: 0px !important;
+  }
+}
+.page {
+  min-width: 1450px;
+  overflow: auto;
+}
+
 // 解决抽屉弹出时，body宽度变化的问题
 .el-popup-parent--hidden {
   width: 100% !important;

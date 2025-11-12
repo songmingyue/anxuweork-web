@@ -152,7 +152,7 @@ onMounted(() => {
 
 <template>
   <div class="page">
-    <el-card shadow="never">
+    <el-card shadow="never" class="padding-none">
       <el-form :inline="true" :model="query" label-width="120px">
         <el-row>
           <el-col :span="6">
@@ -192,7 +192,7 @@ onMounted(() => {
         v-loading="loading"
         border
         style="width: 100%"
-        height="calc(100vh - 270px)"
+        height="calc(100vh - 230px)"
       >
         <el-table-column type="selection" width="48" />
         <el-table-column prop="aeTitleOrgName" label="医疗机构名称" min-width="180" />

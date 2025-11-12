@@ -104,10 +104,10 @@ async function onConfirmStorage() {
 }
 </script>
 <template>
-  <div>
+  <div class="page">
     <el-card shadow="never" class="mb2">
       <div class="class-flex">
-        <span>检查机构</span>
+        <span style="font-size: 14px; color: #333">检查机构</span>
         <el-select v-model="searchType" style="width: 180px" placeholder="检查机构" clearable>
           <el-option
             v-for="opt in orgOptions"

@@ -1,6 +1,8 @@
 <script lang="tsx">
 import { defineComponent, computed } from 'vue'
 import { Collapse } from '@/components/Collapse'
+import { ElIcon } from 'element-plus'
+import { Tools } from '@element-plus/icons-vue'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
@@ -36,6 +38,9 @@ const locale = computed(() => appStore.getLocale)
 export default defineComponent({
   name: 'ToolHeader',
   setup() {
+    const openSettingDrawer = () => {
+      window.dispatchEvent(new Event('open-setting-drawer'))
+    }
     return () => (
       <div id={`${variables.namespace}-tool-header`} class={[prefixCls, 'tool-header']}>
         {layout.value !== 'top' ? (
@@ -59,7 +64,12 @@ export default defineComponent({
               color="var(--top-header-text-color)"
             ></LocaleDropdown>
           ) : undefined}
-          <span>主题</span>
+          {/* <span>主题</span> */}
+          <span class="custom-hover marginright" onClick={openSettingDrawer}>
+            <ElIcon color="var(--el-color-primary)">
+              <Tools />
+            </ElIcon>
+          </span>
           <UserInfo></UserInfo>
         </div>
       </div>
@@ -90,5 +100,13 @@ export default defineComponent({
   display: flex;
   height: 100%;
   align-items: center;
+}
+
+.custom-hover {
+  cursor: pointer;
+}
+
+.marginright {
+  margin-right: 12px;
 }
 </style>

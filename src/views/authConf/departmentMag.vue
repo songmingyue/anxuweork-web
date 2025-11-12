@@ -246,8 +246,8 @@ onMounted(() => {
 <template>
   <div class="page org-dept-manage">
     <!-- 上：机构（无分页） -->
-    <el-card shadow="never" class="mb8">
-      <el-form :inline="true" label-width="90px">
+    <el-card shadow="never" class="mb8 padding-none">
+      <el-form :inline="true" label-width="70px" label-position="left">
         <el-form-item label="机构编号">
           <el-input
             v-model="orgQuery.searchOrganizationID"
@@ -274,7 +274,6 @@ onMounted(() => {
         <el-table
           :data="orgList"
           v-loading="orgLoading"
-          border
           default-expand-all
           row-key="searchOrganizationID"
           highlight-current-row
@@ -337,8 +336,13 @@ onMounted(() => {
     <el-divider />
 
     <!-- 下：科室（有分页） -->
-    <el-card shadow="never" class="mb8">
-      <el-form :inline="true" label-width="90px">
+    <el-card shadow="never" class="mb8 padding-none">
+      <el-form
+        :inline="true"
+        label-width="70px"
+        label-position="left"
+        style="width: 1240px; overflow: auto"
+      >
         <el-form-item label="科室编号">
           <el-input
             v-model="deptQuery.deptID"
@@ -363,7 +367,7 @@ onMounted(() => {
     </el-card>
     <el-card shadow="never" class="mb8 flex-card">
       <div class="table-wrap">
-        <el-table :data="deptList" v-loading="deptLoading" border style="width: 100%" height="100%">
+        <el-table :data="deptList" v-loading="deptLoading" style="width: 100%" height="100%">
           <el-table-column prop="deptID" label="科室编号" min-width="120" />
           <el-table-column prop="deptName" label="科室名称" min-width="160" />
           <el-table-column prop="deptTypeName" label="科室类型" min-width="120" />

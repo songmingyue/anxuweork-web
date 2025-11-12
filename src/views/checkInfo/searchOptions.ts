@@ -36,7 +36,7 @@ export const permiseListSearch = async () => {
 
 const getDicmsgList = (codeType: string) => {
   const userStore = useUserStoreWithOut()
-  const getCommonList = userStore.getDicmsList
+  const getCommonList = userStore.getDicmisList
   const selectList = getCommonList.filter((item: any) => item.typeCode === codeType)
   return selectList
 }

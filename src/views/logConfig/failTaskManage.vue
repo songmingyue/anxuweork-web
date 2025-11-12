@@ -1,7 +1,12 @@
 <template>
   <div class="page">
     <!-- 顶部查询（按截图布局） -->
-    <el-card shadow="never" body-style="{padding:'12px 16px'}" ref="searchCard">
+    <el-card
+      shadow="never"
+      body-style="{padding:'12px 16px'}"
+      ref="searchCard"
+      class="padding-none"
+    >
       <el-form :inline="true" :model="query" label-width="80px">
         <!-- 第一行：检查号、模态码、检查类型、检查类型（操作类型）及操作员 -->
         <el-form-item label="检查号">
@@ -73,13 +78,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table
-        :data="rows"
-        v-loading="loading"
-        border
-        style="width: 100%"
-        :max-height="tableMaxHeight"
-      >
+      <el-table :data="rows" v-loading="loading" style="width: 100%" :max-height="tableMaxHeight">
         <el-table-column prop="accessionNumber" label="检查号" min-width="110" sortable />
         <el-table-column prop="examDate" label="检查时间" min-width="160" sortable />
         <el-table-column prop="serviceSectID" label="检查类型" min-width="120" sortable />

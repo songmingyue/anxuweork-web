@@ -1,8 +1,8 @@
 <template>
   <div class="page">
     <!-- 顶部筛选 -->
-    <el-card shadow="never">
-      <el-form :inline="true" :model="topQuery" label-width="80px">
+    <el-card shadow="never" class="padding-none">
+      <el-form :inline="true" :model="topQuery" label-width="80px" label-position="left">
         <el-form-item label="字典分类">
           <el-select
             v-model="topQuery.category"
@@ -45,7 +45,6 @@
       <el-table
         :data="topList"
         v-loading="topLoading"
-        border
         highlight-current-row
         @row-click="onTopRowClick"
         height="calc(50vh - 207px)"
@@ -76,7 +75,7 @@
     </el-card>
 
     <!-- 下方筛选（不分页，仅过滤当前类型下的字典项） -->
-    <el-card class="mt8" shadow="never">
+    <el-card class="mt8 padding-none" shadow="never">
       <el-form :inline="true" :model="bottomQuery" label-width="90px">
         <el-form-item label="字典项代码">
           <el-input
@@ -114,7 +113,6 @@
       <el-table
         :data="bottomList"
         v-loading="bottomLoading"
-        border
         height="calc(50vh - 207px)"
         style="width: 100%"
         :empty-text="selectedType ? '暂无数据' : '请先在上方选择一个类型'"

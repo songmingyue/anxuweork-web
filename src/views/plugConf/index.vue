@@ -11,7 +11,6 @@
       <el-table
         :data="serviceList"
         v-loading="svcLoading"
-        border
         highlight-current-row
         @row-click="onServiceRowClick"
         height="273"
@@ -63,7 +62,7 @@
         </span>
       </div>
 
-      <el-table :data="taskList" v-load ing="taskLoading" border class="mt8">
+      <el-table :data="taskList" v-load ing="taskLoading" class="mt8">
         <el-table-column prop="pluginUID" label="任务UID" min-width="300" />
         <el-table-column prop="pluginName" label="任务名称" min-width="200" />
         <el-table-column prop="triggerInternal" label="触发间隔" min-width="120" />

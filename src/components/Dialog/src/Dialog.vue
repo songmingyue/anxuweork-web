@@ -75,16 +75,14 @@ const dialogStyle = computed(() => {
     :show-close="false"
   >
     <template #header="{ close }">
-      <div class="flex justify-between items-center h-54px pl-15px pr-15px relative">
+      <div class="dialog-header">
         <slot name="title">
           {{ title }}
         </slot>
-        <div
-          class="h-54px flex justify-between items-center absolute top-[50%] right-15px translate-y-[-50%]"
-        >
+        <div class="dialog-header-actions">
           <Icon
             v-if="fullscreen"
-            class="cursor-pointer is-hover !h-54px mr-10px"
+            class="dialog-icon-btn is-hover dialog-icon-btn--mr"
             :icon="
               isFullscreen ? 'vi-radix-icons:exit-full-screen' : 'vi-radix-icons:enter-full-screen'
             "
@@ -93,7 +91,7 @@ const dialogStyle = computed(() => {
             @click="toggleFull"
           />
           <Icon
-            class="cursor-pointer is-hover !h-54px"
+            class="dialog-icon-btn is-hover"
             icon="vi-ep:close"
             hover-color="var(--el-color-primary)"
             color="var(--el-color-info)"
@@ -141,5 +139,38 @@ const dialogStyle = computed(() => {
   &__headerbtn {
     top: 0;
   }
+}
+
+/* Converted from atomic utilities to semantic classes */
+.dialog-header {
+  position: relative;
+  display: flex;
+  height: 54px;
+  padding-right: 15px;
+  padding-left: 15px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-header-actions {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  display: flex;
+  height: 54px;
+  transform: translateY(-50%);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-icon-btn {
+  display: inline-flex;
+  height: 54px; /* replace !h-54px */
+  cursor: pointer;
+  align-items: center;
+}
+
+.dialog-icon-btn--mr {
+  margin-right: 10px;
 }
 </style>

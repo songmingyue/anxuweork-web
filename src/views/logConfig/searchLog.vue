@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <!-- 顶部查询 -->
-    <el-card shadow="never" body-style="{padding:'12px 16px'}">
+    <el-card shadow="never" body-style="{padding:'12px 16px'}" class="padding-none">
       <el-form :inline="true" :model="query" label-width="80px">
         <el-form-item label="操作日期">
           <el-date-picker
@@ -43,7 +43,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" border style="width: 100%">
+      <el-table :data="rows" v-loading="loading" style="width: 100%">
         <el-table-column prop="organizationName" label="机构名称" min-width="120" sortable />
         <el-table-column
           prop="requestURL"

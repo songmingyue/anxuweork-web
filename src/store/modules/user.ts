@@ -71,11 +71,23 @@ export const useUserStore = defineStore('user', {
     getLoginInfo(): UserLoginType | undefined {
       return this.loginInfo
     },
-    getDicmsList(): MedicalRecordDicItem[] {
+    getDicmisList(): MedicalRecordDicItem[] {
       return this.dicmisList
     },
     getDicitemlists(): DictItemRow[] {
       return this.dicitemlists
+    },
+    // 获取部门选项
+    getDeptOptions(): Array<{ label: string; value: string }> {
+      const raw = localStorage.getItem('org')
+      const list = raw ? JSON.parse(raw) : []
+      if (Array.isArray(list.value)) {
+        const isHaveDept = list.value.find((item) => item.value === this.getorganizationID)
+        if (isHaveDept) {
+          return isHaveDept.DeptMstDto || []
+        }
+      }
+      return []
     }
   },
   actions: {

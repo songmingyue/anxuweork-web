@@ -1,23 +1,27 @@
 <script setup lang="ts">
 import { ElDrawer, ElDivider } from 'element-plus'
-import { ref, unref } from 'vue'
+import { ref, unref, onMounted, onBeforeUnmount } from 'vue'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { useCssVar } from '@vueuse/core'
 import { useAppStore } from '@/store/modules/app'
 import { trim, setCssVar } from '@/utils'
 import ColorRadioPicker from './components/ColorRadioPicker.vue'
 import { useStorage } from '@/hooks/web/useStorage'
-import { useDesign } from '@/hooks/web/useDesign'
 
 const { clear: storageClear } = useStorage('localStorage')
-
-const { getPrefixCls } = useDesign()
-
-const prefixCls = getPrefixCls('setting')
 
 const appStore = useAppStore()
 
 const drawer = ref(false)
+
+// 支持外部打开：监听全局事件
+const openFromEvent = () => (drawer.value = true)
+onMounted(() => {
+  window.addEventListener('open-setting-drawer', openFromEvent)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('open-setting-drawer', openFromEvent)
+})
 
 // 主题色相关
 const systemTheme = ref(appStore.getTheme.elColorPrimary)
@@ -144,9 +148,9 @@ const clear = () => {
 </script>
 
 <template>
-  <div :class="prefixCls" class="setting-trigger" @click="drawer = true">
+  <!-- <div :class="prefixCls" class="setting-trigger" @click="drawer = true">
     <Icon icon="vi-ant-design:setting-outlined" color="#fff" />
-  </div>
+  </div> -->
 
   <ElDrawer v-model="drawer" direction="rtl" size="350px" :z-index="4000">
     <template #header>

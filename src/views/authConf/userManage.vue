@@ -30,7 +30,8 @@ import {
 } from '@/api/userMessage'
 import { OrganizationList } from '@/api/login/types'
 import UserFormDialog from './components/UserFormDialog.vue'
-import { OptionDeptMstDto, OrganizationOnce } from '@/api/type'
+import { OrganizationOnce } from '@/api/type'
+import { computed } from 'vue'
 
 // 查询条件
 const filters = reactive<UserInfo>({
@@ -41,8 +42,6 @@ const filters = reactive<UserInfo>({
 })
 
 const orgOptions = ref<OrganizationOnce[]>([])
-
-const deptOptions = ref<OptionDeptMstDto[]>([])
 
 // 列表与分页
 const loading = ref(false)
@@ -101,13 +100,14 @@ async function handlePassword(row: UserOnce) {
     type: 'warning'
   })
   const data = await resetUser(row)
+  const password = 'yjp@HRB2025'
   ElMessage.success(data.message || '操作成功')
-  ElMessageBox.confirm('密码已重置为初始密码TomTaw@HZ1993，', '提示', {
+  ElMessageBox.confirm(`密码已重置为初始密码${password}，点击复制可复制到剪切板`, '提示', {
     type: 'success',
     confirmButtonText: '复制',
     cancelButtonText: '我知道了'
   }).then(() => {
-    navigator.clipboard.writeText('TomTaw@HZ1993')
+    navigator.clipboard.writeText(password)
     ElMessage.success('已复制到剪贴板')
   })
 }
@@ -154,7 +154,8 @@ const getOrgList = async () => {
   const data = await getorgList()
   orgOptions.value = data.data.map((org: OrganizationList) => ({
     label: org.organizationName,
-    value: org.organizationID
+    value: org.organizationID,
+    DeptMstDto: org.deptMstDto
   }))
   filters.organizationID = orgOptions.value[0]?.value || ''
   await getUserList()
@@ -199,9 +200,11 @@ const onRoleSelectionChange = async (selection: RoleData[]) => {
   }
 }
 
-const changeOrganization = (val) => {
-  deptOptions.value = orgOptions.value.find((o) => o.value === val)?.deptMstDto || []
-}
+// 科室选项根据机构变化重新计算；避免在 computed 中产生副作用
+const deptOptions = computed(() => {
+  const org = orgOptions.value.find((o) => o.value === filters.organizationID)
+  return org?.DeptMstDto || []
+})
 
 const handleUserConfirm = async (formData: UserOnce) => {
   const data = await createUser(formData)
@@ -217,8 +220,8 @@ onMounted(() => {
 
 <template>
   <div class="page user-manage">
-    <el-card shadow="never">
-      <el-form :inline="true" label-width="80px">
+    <el-card shadow="never" class="padding-none">
+      <el-form :inline="true" label-width="60px" label-position="left">
         <el-form-item label="姓名">
           <el-input v-model="filters.name" placeholder="请输入姓名" clearable />
         </el-form-item>
@@ -226,7 +229,6 @@ onMounted(() => {
           <el-select
             v-model="filters.organizationID"
             placeholder="请选择"
-            @change="changeOrganization"
             clearable
             style="width: 180px"
           >

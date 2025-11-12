@@ -27,5 +27,5 @@ export interface OptionDeptMstDto {
 export interface OrganizationOnce {
   value: string
   label: string
-  deptMstDto: OptionDeptMstDto[]
+  DeptMstDto: OptionDeptMstDto[]
 }

@@ -1321,7 +1321,7 @@ onBeforeUnmount(() => {
 }
 
 .toolbar {
-  padding: 8px 12px;
+  padding: 8px 12px 0;
   background: #fff;
   border-bottom: 1px solid #ebeef5;
 }

@@ -41,26 +41,6 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'password',
-    label: '密码强度',
-    value: '',
-    component: 'RadioButton',
-    colProps: { span: 24 },
-    componentProps: {
-      style: { width: '100%' },
-      options: [
-        { label: '弱', value: 'weak' },
-        { label: '中', value: 'medium' },
-        { label: '强', value: 'strong' }
-      ],
-      disabled: true,
-      strength: true,
-      placeholder: '请输入密码',
-      // 禁用浏览器自动填充
-      autocomplete: 'new-password'
-    }
-  },
-  {
-    field: 'password',
     label: '密码',
     value: '',
     component: 'InputPassword',

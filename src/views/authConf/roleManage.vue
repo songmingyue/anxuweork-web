@@ -202,7 +202,6 @@ onMounted(() => {
       <el-table
         :data="roleList"
         v-loading="loadingRole"
-        border
         highlight-current-row
         @row-click="handleRowClick"
         style="width: 100%"
@@ -245,7 +244,6 @@ onMounted(() => {
         :data="permList"
         height="304"
         v-loading="loadingPerm"
-        border
         style="width: 100%"
         ref="permTableRef"
         row-key="rightID"

@@ -18,6 +18,8 @@ const prefixCls = getPrefixCls('login')
 const organizationList = ref<OrganizationList[]>([])
 const appStore = useAppStore()
 const isLogin = ref(true)
+// 读取环境变量中的公司名称
+const companyName = (import.meta as any).env?.VITE_APP_COMPANY_NAME || ''
 const toRegister = () => {
   isLogin.value = false
 }
@@ -28,6 +30,7 @@ const toLogin = () => {
 const getVersionMsd = async () => {
   const data = await getVersion()
   version.value = data
+  localStorage.setItem('version', data)
 }
 
 const getorgbylogin = async () => {
@@ -84,9 +87,7 @@ onMounted(() => {
                 />
 
                 <RegisterForm v-else class="form-card" @to-login="toLogin" />
-                <div class="class-message">
-                  宁波全网云医疗科技股份有限公司 eWordIMCIS {{ version }}
-                </div>
+                <div class="class-message">{{ companyName }} eWordIMCIS {{ version }}</div>
               </div>
             </div>
           </Transition>
@@ -102,14 +103,14 @@ onMounted(() => {
 .@{prefix-cls} {
   position: relative;
   height: 100%;
-  overflow: auto;
 
   // 小于 xl 时背景与左右留白
-  @media (width <= 1279px) {
-    padding-right: 10px;
-    padding-left: 10px;
-    background: var(--login-bg-color);
-  }
+  // @media (width <= 1279px) {
+  padding-right: 10px;
+  padding-left: 10px;
+  overflow: auto;
+  background: var(--login-bg-color);
+  // }
 
   &__left {
     &::before {
@@ -145,14 +146,14 @@ onMounted(() => {
 
 .left-pane {
   position: relative;
-  flex: 1 1 0;
-  padding: 30px;
-  background: rgb(107 114 128 / 20%); // gray-500 with 20% opacity
 
   // 小于 xl 隐藏
-  @media (width <= 1279px) {
-    display: none;
-  }
+  // @media (width <= 1279px) {
+  display: none;
+  padding: 30px;
+  background: rgb(107 114 128 / 20%); // gray-500 with 20% opacity
+  flex: 1 1 0;
+  // }
 }
 
 .brand {
@@ -196,9 +197,9 @@ onMounted(() => {
   color: #fff;
 
   // >= xl 时右对齐
-  @media (width >= 1280px) {
-    justify-content: flex-end;
-  }
+  // @media (width >= 1280px) {
+  // justify-content: flex-end;
+  // }
 }
 
 .brand-mini {
@@ -206,9 +207,9 @@ onMounted(() => {
   align-items: center;
 
   // >= xl 时隐藏（有左侧大面板和品牌）
-  @media (width >= 1280px) {
-    display: none;
-  }
+  // @media (width >= 1280px) {
+  // display: none;
+  // }
 }
 
 .actions {
@@ -243,10 +244,10 @@ onMounted(() => {
   margin: 0 auto;
 
   // 小于 xl 圆角+白底（light）
-  @media (width <= 1279px) {
-    background: #fff;
-    border-radius: 24px;
-  }
+  // @media (width <= 1279px) {
+  background: #fff;
+  border-radius: 24px;
+  // }header-row
 }
 
 .class-message {

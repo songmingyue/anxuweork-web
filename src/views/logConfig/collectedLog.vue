@@ -1,7 +1,12 @@
 <template>
   <div class="page">
     <!-- 顶部查询 -->
-    <el-card shadow="never" body-style="{padding:'12px 16px'}" ref="searchCard">
+    <el-card
+      shadow="never"
+      body-style="{padding:'12px 16px'}"
+      ref="searchCard"
+      class="padding-none"
+    >
       <el-form :inline="true" :model="query" label-width="80px">
         <el-form-item label="类型">
           <el-select v-model="query.type" placeholder="请选择" clearable style="width: 180px">
@@ -54,13 +59,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table
-        :data="rows"
-        v-loading="loading"
-        border
-        style="width: 100%"
-        :max-height="tableMaxHeight"
-      >
+      <el-table :data="rows" v-loading="loading" style="width: 100%" :max-height="tableMaxHeight">
         <el-table-column prop="typeName" label="类型" min-width="120" sortable />
         <el-table-column
           prop="gainRecordUID"

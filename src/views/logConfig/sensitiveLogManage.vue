@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <!-- 顶部查询（按截图） -->
-    <el-card shadow="never" body-style="{padding:'12px 16px'}">
+    <el-card shadow="never" body-style="{padding:'12px 16px'}" class="padding-none">
       <el-form :inline="true" :model="query" label-width="80px">
         <el-form-item label="操作类型">
           <el-input
@@ -36,7 +36,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" border style="width: 100%">
+      <el-table :data="rows" v-loading="loading" style="width: 100%">
         <el-table-column prop="operationType" label="操作类型" min-width="120" sortable />
         <el-table-column prop="operationLink" label="操作环节" min-width="180" sortable />
         <el-table-column label="操作内容" min-width="160">

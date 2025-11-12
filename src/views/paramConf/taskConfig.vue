@@ -5,13 +5,7 @@
         <el-button type="primary" @click="onCreate">新增服务</el-button>
       </div>
 
-      <el-table
-        :data="list"
-        border
-        highlight-current-row
-        style="width: 100%"
-        @sort-change="onSortChange"
-      >
+      <el-table :data="list" highlight-current-row style="width: 100%" @sort-change="onSortChange">
         <el-table-column prop="taskName" label="任务名称" min-width="180" show-overflow-tooltip />
         <el-table-column prop="taskType" label="任务类型" width="100">
           <template #default="{ row }">

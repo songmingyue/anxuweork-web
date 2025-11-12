@@ -155,7 +155,7 @@ onMounted(() => {
 
 <template>
   <div class="page">
-    <el-card shadow="never">
+    <el-card shadow="never" class="padding-none">
       <el-form :inline="true" :model="query" label-width="120px">
         <el-row>
           <el-form-item label="医疗机构标识">

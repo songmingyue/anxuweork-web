@@ -56,6 +56,9 @@ export const useUserStore = defineStore('user', {
       localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
       return this.userInfo
     },
+    getUserInfoObj(): UserType | undefined {
+      return this.userInfo && this.userInfo[0]
+    },
     getorganizationID(): string | undefined {
       return (this.userInfo && this.userInfo[0]?.organizationID) || ''
     },

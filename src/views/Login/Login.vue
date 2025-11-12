@@ -7,7 +7,7 @@ import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
 import { onMounted, ref, unref } from 'vue'
 import { ElScrollbar } from 'element-plus'
-import { getLoginList } from '@/api/login'
+import { getOrganization } from '@/api/login'
 import { getVersion } from '@/api/common'
 import { OrganizationList } from '@/api/login/types'
 import { useStorage } from '@/hooks/web/useStorage'
@@ -31,14 +31,9 @@ const getVersionMsd = async () => {
 }
 
 const getorgbylogin = async () => {
-  const datas = await getLoginList()
-  organizationList.value = datas.data || []
-  const orgList = unref(organizationList)
-    .filter((item) => item.organizationID !== '-1')
-    .map((item) => ({
-      label: item.organizationName,
-      value: item.organizationID
-    }))
+  const { data } = await getOrganization()
+  organizationList.value = data || []
+  const orgList = unref(organizationList).filter((item) => item.value !== '-1')
   setStorage('org', orgList)
 }
 onMounted(() => {

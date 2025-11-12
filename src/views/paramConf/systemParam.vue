@@ -1,8 +1,8 @@
 <template>
   <div class="sys-param">
-    <el-collapse v-model="activeNames">
-      <el-collapse-item v-for="g in groups" :key="g.key" :name="g.key" class="group-systemparam">
-        <template #title>
+    <el-tabs v-model="activeTab">
+      <el-tab-pane v-for="g in groups" :key="g.key" :name="g.key">
+        <template #label>
           <div class="collapse-title">
             <svg class="hdr-icon" aria-hidden="true">
               <use :xlink:href="g.icon" />
@@ -13,22 +13,26 @@
 
         <div class="group-body">
           <el-row v-for="item in items[g.key]" :key="item.key" :gutter="40" class="cfg-item">
-            <el-col :span="8" :xs="10" class="flex-col"
-              ><div class="name">{{ item.name }}</div></el-col
+            <el-col :span="8" :xs="10" class="flex-col" @click="onConfig(item)">
+              <div class="name">
+                <el-tooltip class="box-item" effect="dark" content="设置" placement="top-start">
+                  <el-icon :size="25"><Setting /></el-icon>
+                </el-tooltip>
+
+                {{ item.name }}</div
+              ></el-col
             >
             <el-col :span="10" :xs="10" class="flex-col">
               <div v-if="item.desc" class="desc">{{ item.desc }}</div>
             </el-col>
 
             <el-col :span="6" :xs="4" class="flex-col">
-              <div class="float-right">
-                <el-button type="primary" size="small" @click="onConfig(item)"> 配置 </el-button>
-              </div>
+              <div class="float-right"> </div>
             </el-col>
           </el-row>
         </div>
-      </el-collapse-item>
-    </el-collapse>
+      </el-tab-pane>
+    </el-tabs>
 
     <!-- 拆分任务插入上传和推送表配置 弹窗 -->
     <SplitTaskConfigDialog v-model="showSplitTaskDlg" :model="splitTaskModel" @save="onSplitSave" />
@@ -87,7 +91,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElMessage, ElCollapse, ElCollapseItem, ElButton, ElCol, ElRow } from 'element-plus'
+import { ElMessage, ElTabs, ElTabPane, ElTooltip, ElCol, ElRow, ElIcon } from 'element-plus'
 import SplitTaskConfigDialog from './components/SplitTaskConfigDialog.vue'
 import ChargeStatusDefaultDialog from './components/ChargeStatusDefaultDialog.vue'
 import SimpleParamDialog from './components/SimpleParamDialog.vue'
@@ -101,6 +105,7 @@ import PrintConfigDialog from './components/PrintConfigDialog.vue'
 import HeNanProvinceConfigDialog from './components/HeNanProvinceConfigDialog.vue'
 import MessageSystemConfigDialog from './components/MessageSystemConfigDialog.vue'
 import ZJProvinceConfigDialog from './components/ZJProvinceConfigDialog.vue'
+import { Setting } from '@element-plus/icons-vue'
 import {
   CodeName,
   editsysparametersingle,
@@ -211,8 +216,8 @@ const items: Record<GroupKey, CfgItem[]> = {
   others: [{ key: 'eWordMSNInfo', name: '消息系统配置', desc: '消息系统配置' }]
 }
 
-// 默认全部收起；如需默认展开某些，填入对应 key 数组
-const activeNames = ref<GroupKey[]>([])
+// 默认选中的分组 Tab
+const activeTab = ref<GroupKey>('plugin')
 const showSplitTaskDlg = ref(false)
 const splitTaskModel = ref<any>({})
 const showChargeDlg = ref(false)
@@ -531,6 +536,7 @@ function onZJSave(v: any) {
   flex-direction: row;
   place-items: center center;
   justify-content: flex-start;
+  cursor: pointer;
 }
 
 .float-right {

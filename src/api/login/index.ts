@@ -14,7 +14,38 @@ export const loginApi = (data: any): Promise<IResponse<UserType>> => {
     }
   })
 }
+//
 
+export const changepwd = (data: any): Promise<IResponse<UserType>> => {
+  return request.post({
+    url: 'login/changepwd',
+    data,
+    requestTem: {
+      requestTem: 'AdminChangePasswordInputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+export const getOrganization = () => {
+  return request.post({
+    url: 'register/organizations',
+    requestTem: {
+      requestTem: 'OrganizationInputProto',
+      responseTem: 'OrganizationDtoNewProto'
+    }
+  })
+}
+
+export const register = (data: any): Promise<IResponse<UserType>> => {
+  return request.post({
+    url: 'login/register',
+    data,
+    requestTem: {
+      requestTem: 'UserMstProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
 export const userLogout = (data: any): Promise<IResponse<UserType>> => {
   return request.post({
     url: 'login/userlogout',

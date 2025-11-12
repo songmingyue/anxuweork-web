@@ -15,3 +15,17 @@ export interface PageBase {
   token?: string
   totalRecords?: number
 }
+
+export interface OptionDeptMstDto {
+  deptID: string
+  deptName: string
+  deptType: 'ClinicDept' | 'ExamDept'
+  organizationID: string
+  organizationName: string
+}
+
+export interface OrganizationOnce {
+  value: string
+  label: string
+  deptMstDto: OptionDeptMstDto[]
+}

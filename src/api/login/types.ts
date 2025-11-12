@@ -16,7 +16,7 @@ export interface UserType {
   loginName: string
   organizationName: string // 机构名称
   userUID: string // 用户ID
-  username: string
+  userName: string
   organizationID: string
   viewParts: MenuList[]
   UserRight: UserRight
@@ -107,6 +107,8 @@ export interface UserLoginTypes {
 
 export interface OrganizationList {
   deptMstDto: any[]
-  organizationID: string
-  organizationName: string
+  organizationID?: string
+  organizationName?: string
+  label?: string
+  value?: string
 }

@@ -28,7 +28,12 @@
       </el-form-item>
       <el-form-item label="科室" prop="deptID">
         <el-select v-model="form.deptID" placeholder="请选择">
-          <el-option v-for="d in deptOptions" :key="d.value" :label="d.label" :value="d.value" />
+          <el-option
+            v-for="d in deptOptions"
+            :key="d.deptID"
+            :label="d.deptName"
+            :value="d.deptID"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="办公电话" prop="officePhone">
@@ -63,6 +68,7 @@ import {
   ElSelect,
   ElOption
 } from 'element-plus'
+import { OptionDeptMstDto } from '@/api/type'
 
 interface OptionItem {
   label: string
@@ -73,7 +79,7 @@ const props = defineProps<{
   isEdit: boolean
   formData?: Record<string, any>
   orgOptions: OptionItem[]
-  deptOptions: OptionItem[]
+  deptOptions: OptionDeptMstDto[]
 }>()
 const emits = defineEmits(['update:visible', 'confirm'])
 

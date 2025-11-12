@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { reactive, ref, watch, onMounted, unref } from 'vue'
 import { Form, FormSchema } from '@/components/Form'
-import { ElCheckbox } from 'element-plus'
+import { ElCheckbox, ElButton } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { loginApi } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
@@ -56,13 +56,14 @@ const schema = reactive<FormSchema[]>([
     component: 'Select',
     colProps: { span: 24 },
     componentProps: {
+      autocomplete: 'off',
       style: { width: '100%' },
       placeholder: '请选择机构',
       options: props.organizationList.map((org) => ({
-        label: org.organizationName,
-        value: org.organizationID
+        label: org.label,
+        value: org.value
       })),
-      filterable: true,
+
       clearable: true,
       onChange: (value: string) => {
         console.log('选择的机构ID:', value)
@@ -75,7 +76,8 @@ const schema = reactive<FormSchema[]>([
     component: 'Input',
     colProps: { span: 24 },
     componentProps: {
-      placeholder: '请输入用户名'
+      placeholder: '请输入用户名',
+      autocomplete: 'username'
     }
   },
   {
@@ -86,6 +88,7 @@ const schema = reactive<FormSchema[]>([
     componentProps: {
       style: { width: '100%' },
       placeholder: '请输入密码',
+      autocomplete: 'off',
       onKeydown: (_e: any) => {
         if (_e.key === 'Enter') {
           _e.stopPropagation()
@@ -114,21 +117,26 @@ const schema = reactive<FormSchema[]>([
       slots: {
         default: () => (
           <>
-            <div class="full-width">
-              <BaseButton
-                loading={loading.value}
-                type="primary"
-                class="full-width"
-                onClick={signIn}
-              >
-                登录
-              </BaseButton>
+            <BaseButton
+              style="width: 100%"
+              loading={loading.value}
+              type="primary"
+              class="full-width"
+              onClick={signIn}
+            >
+              登录
+            </BaseButton>
+            <div style="display: flex">
+              <span class="register">还没有账号？</span>
+              <ElButton link onClick={toRegister} type="primary">
+                去注册
+              </ElButton>
             </div>
-            <div class="full-width mt-15">
-              <BaseButton class="full-width" onClick={toRegister}>
+            {/* <div class="full-width" style="margin-left: 15px"> */}
+            {/* <BaseButton type="primary" onClick={toRegister}>
                 注册
-              </BaseButton>
-            </div>
+              </BaseButton> */}
+            {/* </div> */}
           </>
         )
       }
@@ -278,5 +286,16 @@ const toRegister = () => {
 .themed-border {
   border: 1px solid var(--el-border-color);
   border-radius: var(--el-border-radius-base);
+}
+
+.register {
+  margin-left: 15px;
+}
+
+.register-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 </style>

@@ -12,6 +12,10 @@ export const permissionsMsd = (type, code, falseValue = 'True') => {
   if (org === '-1') {
     return falseValue !== 'True' ? false : true
   }
+  // 不是超管检查机构的处理
+  if (!type) {
+    return true
+  }
   if (UserRight[type][code] === falseValue) {
     return true
   }

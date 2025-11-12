@@ -108,5 +108,6 @@ declare global {
     readonly VITE_USE_ONLINE_ICON: string
     readonly VITE_ICON_PREFIX: string
     readonly VITE_HIDE_GLOBAL_SETTING: string
+    __APP_ENV__?: Record<string, string>
   }
 }

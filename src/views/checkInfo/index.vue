@@ -505,8 +505,8 @@
       <template #footer>
         <el-button @click="isShowTemplate = false">取消</el-button>
         <el-button type="primary" :loading="loading" @click="onConfirm">确认</el-button>
-      </template> </el-dialog
-    >>
+      </template>
+    </el-dialog>
   </div>
 </template>
 

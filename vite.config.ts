@@ -12,6 +12,7 @@ import ServerUrlCopy from 'vite-plugin-url-copy'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
 import { visualizer } from 'rollup-plugin-visualizer'
+import type { Plugin } from 'vite'
 
 // https://vitejs.dev/config/
 const root = process.cwd()
@@ -31,6 +32,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   return {
     base: env.VITE_BASE_PATH,
     plugins: [
+      // 自定义插件：将 .env 中的 VITE_ 前缀变量生成为运行时可加载的文件，而不是直接内联
+      runtimeEnvPlugin(env),
       Vue({
         script: {
           // 开启defineModel
@@ -129,6 +132,22 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
             'element-plus': ['element-plus'],
             'wang-editor': ['@wangeditor/editor', '@wangeditor/editor-for-vue'],
             echarts: ['echarts', 'echarts-wordcloud']
+          },
+          // JS 输出到 js 目录
+          entryFileNames: 'js/[name]-[hash].js',
+          chunkFileNames: 'js/[name]-[hash].js',
+          // 资源分类：css 单独目录，png 单独目录，其它归类到 assets
+          assetFileNames: ({ name }) => {
+            if (!name) return 'assets/[name]-[hash][extname]'
+            const ext = name.split('.').pop()?.toLowerCase()
+            if (ext === 'css') {
+              return 'css/[name]-[hash][extname]'
+            }
+            if (ext === 'png') {
+              return 'png/[name]-[hash][extname]'
+            }
+            // 其它静态资源
+            return 'assets/[name]-[hash][extname]'
           }
         }
       },
@@ -171,6 +190,61 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         'dayjs',
         'cropperjs'
       ]
+    }
+  }
+}
+
+// 运行时环境变量插件：生成 public/runtime-env.js （构建后位于 dist/runtime-env.js）
+function runtimeEnvPlugin(env: Record<string, string>): Plugin {
+  // 仅收集 VITE_ 前缀变量
+  const viteEnv: Record<string, string> = {}
+  Object.keys(env).forEach((key) => {
+    if (key.startsWith('VITE_')) {
+      viteEnv[key] = env[key]
+    }
+  })
+  let base = '/'
+  return {
+    name: 'runtime-env-plugin',
+    apply: 'build',
+    enforce: 'pre',
+    configResolved(resolved) {
+      base = resolved.base || '/'
+    },
+    // 将源码中的 import.meta.env.XXX 替换为 window.__APP_ENV__.XXX，避免值被内联到 bundle
+    transform(code, id) {
+      // 只处理脚本和 Vue 单文件组件
+      if (!/(\.(ts|tsx|js|jsx)$|\.vue(\?.*)?$)/.test(id)) return null
+      const replaced = code
+        .replace(/\bimport\.meta\.env\.(VITE_[A-Z0-9_]+)/g, 'window.__APP_ENV__.$1')
+        .replace(/\bimport\.meta\.env\.BASE_URL\b/g, 'window.__APP_ENV__.BASE_URL')
+      return replaced === code ? null : { code: replaced, map: null }
+    },
+    transformIndexHtml(html) {
+      // 注入运行时配置脚本，需在应用主脚本之前加载
+      return {
+        html,
+        tags: [
+          {
+            tag: 'script',
+            attrs: { src: `${base}runtime-env.js` },
+            injectTo: 'head-prepend'
+          }
+        ]
+      }
+    },
+    // 产物阶段生成 runtime-env.js
+    generateBundle() {
+      // 将 BASE_URL 一并注入，便于在代码中读取
+      const payload = { ...viteEnv, BASE_URL: base }
+      const code =
+        `// 自动生成，构建时写入。不要手动修改\n` +
+        `window.__APP_ENV__ = ${JSON.stringify(payload, null, 2)};\n`
+      this.emitFile({
+        type: 'asset',
+        fileName: 'runtime-env.js',
+        source: code
+      })
     }
   }
 }

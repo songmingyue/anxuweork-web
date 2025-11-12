@@ -30,6 +30,7 @@ import {
 } from '@/api/userMessage'
 import { OrganizationList } from '@/api/login/types'
 import UserFormDialog from './components/UserFormDialog.vue'
+import { OptionDeptMstDto, OrganizationOnce } from '@/api/type'
 
 // 查询条件
 const filters = reactive<UserInfo>({
@@ -39,13 +40,9 @@ const filters = reactive<UserInfo>({
   status: StatusOptions[0].value
 })
 
-const orgOptions = ref<{ label: string; value: string }[]>([])
+const orgOptions = ref<OrganizationOnce[]>([])
 
-const deptOptions = ref([
-  { label: '全部科室', value: '' },
-  { label: '内科', value: 'dept-1' },
-  { label: '外科', value: 'dept-2' }
-])
+const deptOptions = ref<OptionDeptMstDto[]>([])
 
 // 列表与分页
 const loading = ref(false)
@@ -202,6 +199,10 @@ const onRoleSelectionChange = async (selection: RoleData[]) => {
   }
 }
 
+const changeOrganization = (val) => {
+  deptOptions.value = orgOptions.value.find((o) => o.value === val)?.deptMstDto || []
+}
+
 const handleUserConfirm = async (formData: UserOnce) => {
   const data = await createUser(formData)
   ElMessage.success(data.message || '操作成功')
@@ -225,6 +226,7 @@ onMounted(() => {
           <el-select
             v-model="filters.organizationID"
             placeholder="请选择"
+            @change="changeOrganization"
             clearable
             style="width: 180px"
           >
@@ -233,7 +235,12 @@ onMounted(() => {
         </el-form-item>
         <el-form-item label="科室">
           <el-select v-model="filters.deptID" placeholder="请选择" clearable style="width: 180px">
-            <el-option v-for="d in deptOptions" :key="d.value" :label="d.label" :value="d.value" />
+            <el-option
+              v-for="d in deptOptions"
+              :key="d.deptID"
+              :label="d.deptName"
+              :value="d.deptID"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
@@ -338,7 +345,6 @@ onMounted(() => {
     <el-card class="mt8" shadow="never" header="角色列表">
       <el-table
         :data="roleList"
-        border
         ref="roleTableRef"
         row-key="roleUID"
         @selection-change="onRoleSelectionChange"

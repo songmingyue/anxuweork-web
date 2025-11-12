@@ -5,8 +5,6 @@ import {
   ElTable,
   ElTableColumn,
   ElButton,
-  ElRow,
-  ElCol,
   ElSelect,
   ElCard,
   ElOption,
@@ -108,29 +106,27 @@ async function onConfirmStorage() {
 <template>
   <div>
     <el-card shadow="never" class="mb2">
-      <el-row :gutter="4">
-        <el-col :span="4">
-          <el-select v-model="searchType" placeholder="检查机构" clearable>
-            <el-option
-              v-for="opt in orgOptions"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
-            />
-          </el-select>
-        </el-col>
-        <el-col :span="12">
+      <div class="class-flex">
+        <span>检查机构</span>
+        <el-select v-model="searchType" style="width: 180px" placeholder="检查机构" clearable>
+          <el-option
+            v-for="opt in orgOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
+        </el-select>
+        <span>
           <el-button type="primary" @click="onSearch">查 询</el-button>
           <el-button type="success" @click="onAdd">新增存储媒介</el-button>
-        </el-col>
-      </el-row>
+        </span>
+      </div>
     </el-card>
 
     <el-card shadow="never">
       <el-table
         align="center"
         :data="tableData"
-        border
         style="width: 100%; margin-bottom: 10px"
         height="calc(100vh - 220px)"
       >
@@ -236,5 +232,11 @@ async function onConfirmStorage() {
 <style scoped>
 .mb2 {
   margin-bottom: 8px;
+}
+
+.class-flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>

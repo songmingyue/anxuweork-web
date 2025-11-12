@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus'
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon } from 'element-plus'
+import { ArrowDown, Avatar } from '@element-plus/icons-vue'
 import { useDesign } from '@/hooks/web/useDesign'
-import LockDialog from './components/LockDialog.vue'
+import UserInfoDialog from './components/UserInfoDialog.vue'
 import { ref, computed } from 'vue'
 import LockPage from './components/LockPage.vue'
 import { useLockStore } from '@/store/modules/lock'
@@ -34,8 +35,15 @@ const dialogVisible = ref<boolean>(false)
 <template>
   <ElDropdown class="custom-hover" :class="prefixCls" trigger="click">
     <div class="user-info">
-      <img src="@/assets/imgs/avatar.jpg" alt="" class="avatar" />
-      <span class="username">{{ userStore.getUserInfo?.username }}</span>
+      <!-- <img src="@/assets/imgs/avatar.jpg" alt="" class="avatar" /> -->
+      <span class="username"
+        ><el-icon :size="15"><Avatar /></el-icon>您好，{{
+          userStore.getUserInfoObj?.userName
+        }}</span
+      >
+      <el-icon class="el-icon--right">
+        <arrow-down />
+      </el-icon>
     </div>
     <template #dropdown>
       <ElDropdownMenu>
@@ -49,7 +57,7 @@ const dialogVisible = ref<boolean>(false)
     </template>
   </ElDropdown>
 
-  <LockDialog v-if="dialogVisible" v-model="dialogVisible" />
+  <UserInfoDialog v-if="dialogVisible" v-model="dialogVisible" />
   <teleport to="body">
     <transition name="fade-bottom" mode="out-in">
       <LockPage v-if="getIsLock" />
@@ -78,6 +86,7 @@ const dialogVisible = ref<boolean>(false)
 .user-info {
   display: flex;
   align-items: center;
+  margin-right: 10px;
 }
 
 .avatar {
@@ -87,9 +96,11 @@ const dialogVisible = ref<boolean>(false)
 }
 
 .username {
+  display: flex;
   padding-left: 5px;
   font-size: 14px;
-  color: var(--top-header-text-color);
+  color: var(--el-color-primary);
+  align-items: center;
 }
 
 @media (width <= 1023px) {

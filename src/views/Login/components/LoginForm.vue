@@ -130,11 +130,6 @@ const schema = reactive<FormSchema[]>([
                 去注册
               </ElButton>
             </div>
-            {/* <div class="full-width" style="margin-left: 15px"> */}
-            {/* <BaseButton type="primary" onClick={toRegister}>
-                注册
-              </BaseButton> */}
-            {/* </div> */}
           </>
         )
       }

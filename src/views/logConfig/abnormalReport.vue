@@ -14,19 +14,12 @@
 
         <el-form-item label="操作日期">
           <el-date-picker
-            v-model="query.start"
-            type="date"
+            v-model="query.date"
+            type="daterange"
             value-format="YYYY-MM-DD"
-            placeholder="开始日期"
-            style="width: 160px"
-          />
-          <span class="sep">至</span>
-          <el-date-picker
-            v-model="query.end"
-            type="date"
-            value-format="YYYY-MM-DD"
-            placeholder="结束日期"
-            style="width: 160px"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
           />
         </el-form-item>
 
@@ -39,7 +32,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" height="calc(100vh - 220px)">
         <el-table-column prop="accessionNumber" label="检查号" min-width="120" sortable />
         <el-table-column prop="examDate" label="检查时间" min-width="120" sortable />
         <el-table-column prop="typeCode" label="类型" min-width="140" sortable />
@@ -79,8 +72,7 @@ import { getUploadFailList, UploadFailList, UploadFailOnce } from '@/api/logConf
 
 const query = reactive({
   accessionNumber: '',
-  start: '',
-  end: ''
+  date: [] as string[]
 })
 
 const loading = ref(false)
@@ -92,7 +84,7 @@ async function fetch() {
   const request: UploadFailList = {
     currentPage: currentPage.value,
     pageSize: pageSize.value,
-    examTimeRange: `${query.start},${query.end}`,
+    examTimeRange: `${query.date[0]} 00:00:00,${query.date[1]} 23:59:59`,
     accessionNumber: query.accessionNumber
   }
   const { resultValue, pageBaseJson } = await getUploadFailList(request)
@@ -102,8 +94,7 @@ async function fetch() {
 
 const handleReset = () => {
   query.accessionNumber = ''
-  query.start = ''
-  query.end = ''
+  query.date = []
   currentPage.value = 1
   fetch()
 }

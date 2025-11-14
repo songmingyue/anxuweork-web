@@ -7,7 +7,7 @@
       ref="searchCard"
       class="padding-none"
     >
-      <el-form :inline="true" :model="query" label-width="80px">
+      <el-form :inline="true" :model="query" label-width="80px" label-position="left">
         <el-form-item label="类型">
           <el-select v-model="query.type" placeholder="请选择" clearable style="width: 180px">
             <el-option
@@ -21,17 +21,12 @@
 
         <el-form-item label="操作日期">
           <el-date-picker
-            v-model="query.date[0]"
-            type="date"
-            placeholder="开始日期"
-            style="width: 160px"
-          />
-          <span class="sep">至</span>
-          <el-date-picker
-            v-model="query.date[1]"
-            type="date"
-            placeholder="结束日期"
-            style="width: 160px"
+            v-model="query.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
           />
         </el-form-item>
 
@@ -59,17 +54,24 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%" :max-height="tableMaxHeight">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" height="calc(100vh - 220px)">
         <el-table-column prop="typeName" label="类型" min-width="120" sortable />
         <el-table-column
           prop="gainRecordUID"
           label="记录id"
           min-width="120"
+          align="center"
           sortable
           show-overflow-tooltip
         />
-        <el-table-column prop="createTime" label="时间" min-width="140" sortable />
-        <el-table-column prop="organizationName" label="机构名称" min-width="120" sortable />
+        <el-table-column prop="createTime" label="时间" min-width="140" sortable align="center" />
+        <el-table-column
+          prop="organizationName"
+          label="机构名称"
+          min-width="120"
+          sortable
+          align="center"
+        />
       </el-table>
 
       <div class="pager" ref="pagerWrap">
@@ -90,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import {
   ElTable,
   ElTableColumn,
@@ -125,18 +127,8 @@ const currentPage = ref(1)
 const orgOptions = ref<{ label: string; value: string }[]>([])
 
 // 表格内部滚动，确保筛选和分页可见
-const tableMaxHeight = ref<string | number>('380px')
 const searchCard = ref<HTMLElement | null>(null)
 const pagerWrap = ref<HTMLElement | null>(null)
-
-function computeTableMaxHeight() {
-  const topH = searchCard.value?.offsetHeight ?? 0
-  const pagerH = pagerWrap.value?.offsetHeight ?? 0
-  const extra = 120 // 预留边距与卡片间距
-  const vh = window.innerHeight
-  const h = Math.max(240, vh - topH - pagerH - extra)
-  tableMaxHeight.value = `${h}px`
-}
 
 function loadOrgOptions() {
   try {
@@ -156,8 +148,10 @@ async function fetch() {
   const request: InputGainList = {
     currentPage: currentPage.value,
     pageSize: pageSize.value,
-    ...query,
-    date: query.date
+    ...query
+  }
+  if (query.date.length === 2) {
+    request.date = `${query.date[0]} 00:00:00,${query.date[1]} 23:59:59`
   }
   const { data, pageBase } = await getGainList(request)
   rows.value = data
@@ -180,12 +174,6 @@ function onSizeChange(s: number) {
 onMounted(() => {
   loadOrgOptions()
   fetch()
-  setTimeout(() => computeTableMaxHeight(), 0)
-  window.addEventListener('resize', computeTableMaxHeight)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', computeTableMaxHeight)
 })
 </script>
 

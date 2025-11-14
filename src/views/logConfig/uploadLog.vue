@@ -16,6 +16,14 @@
 
         <el-form-item label="操作日期">
           <el-date-picker
+            v-model="query.dateTime"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+          />
+          <!-- <el-date-picker
             v-model="query.startTime"
             type="date"
             placeholder="开始日期"
@@ -27,7 +35,7 @@
             type="date"
             placeholder="结束日期"
             style="width: 160px"
-          />
+          /> -->
         </el-form-item>
 
         <el-form-item label="机构">
@@ -54,17 +62,24 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" height="calc(100vh - 220px)">
         <el-table-column prop="typeName" label="类型" min-width="120" sortable />
         <el-table-column
-          prop="gainRecordUID"
+          prop="uploadUID"
           label="记录id"
           min-width="120"
           sortable
+          align="center"
           show-overflow-tooltip
         />
-        <el-table-column prop="createTime" label="时间" min-width="140" sortable />
-        <el-table-column prop="organizationName" label="机构名称" min-width="120" sortable />
+        <el-table-column prop="createTime" label="时间" min-width="140" sortable align="center" />
+        <el-table-column
+          prop="organizationName"
+          label="机构名称"
+          min-width="120"
+          sortable
+          align="center"
+        />
       </el-table>
 
       <div class="pager">
@@ -108,9 +123,8 @@ import {
 
 const query = reactive({
   type: TypeGain.Null,
-  startTime: '',
-  endTime: '',
-  organizationID: ''
+  organizationID: '',
+  dateTime: [] as string[]
 })
 
 const loading = ref(false)
@@ -138,9 +152,12 @@ async function fetch() {
   const request: InputOperateList = {
     currentPage: currentPage.value,
     pageSize: pageSize.value,
-    date: `${query.startTime},${query.endTime}`,
+    // date: `${query.startTime},${query.endTime}`,
     organizationID: query.organizationID,
     type: query.type
+  }
+  if (query.dateTime.length === 2) {
+    request.date = `${query.dateTime[0]} 00:00:00,${query.dateTime[1]} 23:59:59`
   }
   const { data, pageBase } = await getUploadList(request)
   rows.value = data

@@ -207,16 +207,17 @@ async function onConfirmStorage() {
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :total="total"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        class="mt-4 mb-4"
-      />
+      <div class="pager">
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total="total"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </el-card>
   </div>
   <AddStorageMedium
@@ -238,5 +239,11 @@ async function onConfirmStorage() {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.pager {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
 }
 </style>

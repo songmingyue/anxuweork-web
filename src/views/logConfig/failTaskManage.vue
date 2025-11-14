@@ -78,7 +78,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%" :max-height="tableMaxHeight">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" height="calc(100vh - 240px)">
         <el-table-column prop="accessionNumber" label="检查号" min-width="110" sortable />
         <el-table-column prop="examDate" label="检查时间" min-width="160" sortable />
         <el-table-column prop="serviceSectID" label="检查类型" min-width="120" sortable />
@@ -229,7 +229,9 @@ async function fetch() {
     const payload: InputFailTask = {
       currentPage: currentPage.value,
       pageSize: pageSize.value,
-      ...query
+      ...query,
+      examStartTime: query.examStartTime ? query.examStartTime + ' 00:00:00' : '',
+      examEndTime: query.examEndTime ? query.examEndTime + ' 23:59:59' : ''
     }
     const { resultValue, pageBaseJson } = await getFailTaskList(payload)
     rows.value = resultValue || []

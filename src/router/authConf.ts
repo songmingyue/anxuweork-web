@@ -32,8 +32,8 @@ export const authConf = [
     children: [
       {
         path: '',
-        component: import('@/views/authConf/roleManage.vue'),
-        name: 'RroleManages',
+        component: () => import('@/views/authConf/roleManage.vue'),
+        name: 'RoleManage',
         meta: {
           title: '角色管理',
           icon: 'vi-cib:telegram-plane'

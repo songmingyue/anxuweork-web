@@ -268,6 +268,7 @@ onMounted(() => {
         :data="tableData"
         v-loading="loading"
         highlight-current-row
+        height="calc(50vh - 160px)"
         style="width: 100%"
         @current-change="handleCurrentChange"
       >
@@ -348,6 +349,7 @@ onMounted(() => {
       <el-table
         :data="roleList"
         ref="roleTableRef"
+        height="calc(50vh - 160px)"
         row-key="roleUID"
         @selection-change="onRoleSelectionChange"
       >

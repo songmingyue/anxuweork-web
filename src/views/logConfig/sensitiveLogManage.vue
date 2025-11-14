@@ -36,7 +36,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" height="calc(100vh - 220px)">
         <el-table-column prop="operationType" label="操作类型" min-width="120" sortable />
         <el-table-column prop="operationLink" label="操作环节" min-width="180" sortable />
         <el-table-column label="操作内容" min-width="160">

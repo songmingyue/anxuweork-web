@@ -305,7 +305,7 @@
                     placement="top"
                   >
                     <img
-                      @click="showLockDialog(row, true)"
+                      @click.stop="showLockDialog(row, true)"
                       class="image-icon"
                       src="@/assets/imgs/info/unlock-icon.png"
                       alt="imgs"
@@ -357,9 +357,11 @@
                   <span class="bottom-left-text">{{ activeRow?.patientName }}</span>
                   <span class="bottom-left-text">相关检查【{{ nextList.length }}】</span>
                 </div>
-                <div class="icon-hulianhutong" @click="getrecordexam('province')">
-                  <el-icon><Connection /></el-icon>
-                </div>
+                <el-tooltip class="icon-hulianhutong" content="互联互通" placement="top">
+                  <div class="icon-hulianhutong" @click="getrecordexam('province')">
+                    <el-icon><Connection /></el-icon>
+                  </div>
+                </el-tooltip>
               </template>
               <el-table
                 :data="nextList"
@@ -1621,6 +1623,7 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 3px;
   right: 25px;
+  cursor: pointer;
 }
 
 .header-right-modal {

@@ -36,16 +36,12 @@
           </template>
         </el-dropdown>
         <el-tooltip class="box-item" effect="dark" content="相关检查" placement="top">
-          <img
-            @click="
-              () => {
-                // window.open('http://example.com')
-              }
-            "
-            class="image-icon icon-margin"
-            src="@/assets/imgs/info/related_check.png"
-            alt="imgs"
-          />
+          <a href="http://example.com" target="_blank">
+            <img
+              class="image-icon icon-margin"
+              src="@/assets/imgs/info/related_check.png"
+              alt="imgs"
+          /></a>
         </el-tooltip>
         <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'manualEditVisible')">
           <span class="el-dropdown-link">

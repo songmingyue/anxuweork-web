@@ -1231,4 +1231,18 @@ message AdminChangePasswordInputProto {
   string cofirmPassword = 4;
  }
 
+message GetUploadRecordListInputProto {
+  int32 currentPage = 1;
+  int32 pageSize = 2;
+  string date = 3;
+  int32 type = 4;
+  string organizationID = 5;
+}
 
+message GetUploadRecordListOutputProto {
+  string uploadUID = 1;
+  int32 type = 2;
+  string createTime = 3;
+  string organizationName = 4;
+  string typeName = 5;
+}

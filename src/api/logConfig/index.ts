@@ -43,7 +43,7 @@ export const TypeGainOptions = [
 
 export interface InputGainList {
   currentPage: number
-  date: string[]
+  date: string | string[]
   organizationID: string
   pageSize: number
   type: TypeGain
@@ -51,7 +51,7 @@ export interface InputGainList {
 
 export interface InputOperateList {
   currentPage: number
-  date: string
+  date?: string
   organizationID?: string
   pageSize?: number
   type?: TypeGain
@@ -192,8 +192,8 @@ export const getUploadList = (data: InputOperateList): Promise<IResponse<UploadL
     url: 'log/getUploadList',
     data,
     requestTem: {
-      requestTem: 'GetOperateRecordListInputProto',
-      responseTem: 'GetOperateRecordListOutputProto'
+      requestTem: 'GetUploadRecordListInputProto',
+      responseTem: 'GetUploadRecordListOutputProto'
     }
   })
 }

@@ -5,17 +5,12 @@
       <el-form :inline="true" :model="query" label-width="80px">
         <el-form-item label="操作日期">
           <el-date-picker
-            v-model="query.date[0]"
-            type="date"
-            placeholder="开始日期"
-            style="width: 160px"
-          />
-          <span class="sep">至</span>
-          <el-date-picker
-            v-model="query.date[1]"
-            type="date"
-            placeholder="结束日期"
-            style="width: 160px"
+            v-model="query.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
           />
         </el-form-item>
 
@@ -43,7 +38,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" height="calc(100vh - 220px)">
         <el-table-column prop="organizationName" label="机构名称" min-width="120" sortable />
         <el-table-column
           prop="requestURL"
@@ -128,9 +123,12 @@ async function fetch() {
       currentPage: currentPage.value,
       pageSize: pageSize.value,
       organizationID: query.organizationID,
-      date: query.date.join(','),
+
       // 此接口暂复用 InputGainList 结构，类型可置空
       type: TypeGain.Null
+    }
+    if (query.date.length === 2) {
+      request.date = `${query.date[0]} 00:00:00,${query.date[1]} 23:59:59`
     }
     const { data, pageBase } = await getOperateList(request)
     rows.value = data as any

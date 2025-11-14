@@ -2,24 +2,19 @@
   <div class="page">
     <!-- 顶部查询 -->
     <el-card shadow="never" body-style="{padding:'12px 16px'}" class="padding-none">
-      <el-form :inline="true" :model="query" label-width="80px">
+      <el-form :inline="true" :model="query" label-width="80px" label-position="left">
         <el-form-item label="操作者">
           <el-input v-model="query.oprerator" placeholder="请输入" clearable style="width: 220px" />
         </el-form-item>
 
         <el-form-item label="操作日期">
           <el-date-picker
-            v-model="query.start"
-            type="date"
-            placeholder="开始日期"
-            style="width: 160px"
-          />
-          <span class="sep">至</span>
-          <el-date-picker
-            v-model="query.end"
-            type="date"
-            placeholder="结束日期"
-            style="width: 160px"
+            v-model="query.dateTime"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
           />
         </el-form-item>
 
@@ -47,7 +42,7 @@
 
     <!-- 表格 -->
     <el-card class="mt8" shadow="never">
-      <el-table :data="rows" v-loading="loading" style="width: 100%">
+      <el-table :data="rows" v-loading="loading" style="width: 100%" height="calc(100vh - 220px)">
         <el-table-column prop="sourceType" label="来源" min-width="120" sortable />
         <el-table-column prop="oprerator" label="操作者" min-width="120" sortable />
         <el-table-column prop="requestIP" label="请求设备IP" min-width="140" sortable />
@@ -92,8 +87,7 @@ import { DataPrintLog, getprintlog } from '@/api/logConfig'
 
 const query = reactive({
   oprerator: '',
-  start: '',
-  end: '',
+  dateTime: [],
   organizationID: ''
 })
 
@@ -119,12 +113,14 @@ function loadOrgOptions() {
 }
 
 async function fetch() {
-  const request = {
+  const request: any = {
     currentPage: currentPage.value,
     pageSize: pageSize.value,
-    operateTime: `${query.start},${query.end}`,
     oprerator: query.oprerator,
     organizationID: query.organizationID
+  }
+  if (query.dateTime.length === 2) {
+    request.operateTime = `${query.dateTime[0]} 00:00:00,${query.dateTime[1]} 23:59:59`
   }
   const { data, pageBase } = await getprintlog(request)
   rows.value = data

@@ -2,7 +2,7 @@
   <div class="page">
     <!-- 顶部筛选 -->
     <el-card shadow="never" class="padding-none">
-      <el-form :inline="true" :model="topQuery" label-width="80px" label-position="left">
+      <el-form :inline="true" :model="topQuery" label-width="70px" label-position="left">
         <el-form-item label="字典分类">
           <el-select
             v-model="topQuery.category"
@@ -50,13 +50,13 @@
         height="calc(50vh - 207px)"
         style="width: 100%"
       >
-        <el-table-column prop="typeClass" label="字典分类" min-width="140" />
-        <el-table-column prop="typeCode" label="类型代码" min-width="180" />
-        <el-table-column prop="typeName" label="类型名称" min-width="180" />
-        <el-table-column prop="allowCreateItem" label="创建字典项" width="120" />
-        <el-table-column prop="allowUpdateItem" label="修改字典项" width="120" />
-        <el-table-column prop="allowDeleteItem" label="删除字典项" width="120" />
-        <el-table-column prop="memo" label="备注" min-width="240" show-overflow-tooltip />
+        <el-table-column prop="typeClass" sortable label="字典分类" min-width="140" />
+        <el-table-column prop="typeCode" sortable label="类型代码" min-width="180" />
+        <el-table-column prop="typeName" sortable label="类型名称" min-width="180" />
+        <el-table-column prop="allowCreateItem" sortable label="创建字典项" width="120" />
+        <el-table-column prop="allowUpdateItem" sortable label="修改字典项" width="120" />
+        <el-table-column prop="allowDeleteItem" sortable label="删除字典项" width="120" />
+        <el-table-column prop="memo" label="备注" sortable min-width="240" show-overflow-tooltip />
       </el-table>
 
       <div class="pager">
@@ -117,24 +117,27 @@
         style="width: 100%"
         :empty-text="selectedType ? '暂无数据' : '请先在上方选择一个类型'"
       >
-        <el-table-column prop="itemCode" label="字典代码" min-width="85" />
-        <el-table-column prop="itemName" label="字典名称" min-width="85" />
-        <el-table-column prop="isDefault" label="是否默认" min-width="85">
+        <el-table-column prop="itemCode" label="字典代码" sortable min-width="85" />
+        <el-table-column prop="itemName" label="字典名称" sortable min-width="85" />
+        <el-table-column prop="isDefault" label="是否默认" sortable min-width="85">
           <template #default="{ row }">{{ row.defaultFlag ? '是' : '否' }}</template>
         </el-table-column>
         <el-table-column
+          sortable
           prop="itemRepresenExt1"
           label="字典扩展1"
           min-width="90"
           show-overflow-tooltip
         />
         <el-table-column
+          sortable
           prop="itemRepresenExt2"
           label="字典扩展2"
           min-width="90"
           show-overflow-tooltip
         />
         <el-table-column
+          sortable
           prop="itemRepresenExt3"
           label="字典扩展3"
           min-width="90"

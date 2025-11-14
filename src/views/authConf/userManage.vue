@@ -222,10 +222,10 @@ onMounted(() => {
   <div class="page user-manage">
     <el-card shadow="never" class="padding-none">
       <el-form :inline="true" label-width="60px" label-position="left">
-        <el-form-item label="姓名">
+        <el-form-item label="姓名" label-width="40px">
           <el-input v-model="filters.name" placeholder="请输入姓名" clearable />
         </el-form-item>
-        <el-form-item label="机构">
+        <el-form-item label="机构" label-width="40px">
           <el-select
             v-model="filters.organizationID"
             placeholder="请选择"
@@ -235,7 +235,7 @@ onMounted(() => {
             <el-option v-for="o in orgOptions" :key="o.value" :label="o.label" :value="o.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="科室">
+        <el-form-item label="科室" label-width="40px">
           <el-select v-model="filters.deptID" placeholder="请选择" clearable style="width: 180px">
             <el-option
               v-for="d in deptOptions"
@@ -245,7 +245,7 @@ onMounted(() => {
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" label-width="40px">
           <el-select v-model="filters.status" placeholder="请选择" clearable style="width: 180px">
             <el-option
               v-for="d in StatusOptions"
@@ -272,42 +272,65 @@ onMounted(() => {
         style="width: 100%"
         @current-change="handleCurrentChange"
       >
-        <el-table-column prop="name" label="姓名" min-width="100" show-overflow-tooltip />
-        <el-table-column prop="workNO" label="工号" min-width="100" show-overflow-tooltip />
+        <el-table-column sortable prop="name" label="姓名" min-width="100" show-overflow-tooltip />
         <el-table-column
+          sortable
+          prop="workNO"
+          label="工号"
+          min-width="100"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          sortable
           prop="organizationName"
           label="机构"
           min-width="120"
           show-overflow-tooltip
         />
-        <el-table-column prop="deptName" label="科室" min-width="120" show-overflow-tooltip />
+        <el-table-column
+          sortable
+          prop="deptName"
+          label="科室"
+          min-width="120"
+          show-overflow-tooltip
+        />
         <el-table-column
           prop="officePhone"
           label="办公电话"
+          sortable
           min-width="120"
           show-overflow-tooltip
         />
         <el-table-column
           prop="privatePhone"
           label="个人电话"
+          sortable
           min-width="120"
           show-overflow-tooltip
         />
-        <el-table-column prop="email" label="邮箱" min-width="160" show-overflow-tooltip />
+        <el-table-column sortable prop="email" label="邮箱" min-width="160" show-overflow-tooltip />
         <el-table-column
+          sortable
           prop="lastLogonTime"
           label="最后登录"
           min-width="160"
           show-overflow-tooltip
         />
         <el-table-column
+          sortable
           prop="createUserName"
           label="创建用户"
           min-width="120"
           show-overflow-tooltip
         />
-        <el-table-column prop="createDate" label="创建时间" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="memo" label="备注" min-width="140" show-overflow-tooltip />
+        <el-table-column
+          sortable
+          prop="createDate"
+          label="创建时间"
+          min-width="160"
+          show-overflow-tooltip
+        />
+        <el-table-column sortable prop="memo" label="备注" min-width="140" show-overflow-tooltip />
         <el-table-column label="状态" width="140">
           <template #default="{ row }">
             <el-switch

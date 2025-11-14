@@ -7,8 +7,8 @@
       ref="searchCard"
       class="padding-none"
     >
-      <el-form :inline="true" :model="query" label-width="80px" label-position="left">
-        <el-form-item label="类型">
+      <el-form :inline="true" :model="query" label-width="66px" label-position="left">
+        <el-form-item label="类型" label-width="40px">
           <el-select v-model="query.type" placeholder="请选择" clearable style="width: 180px">
             <el-option
               v-for="o in TypeGainOptions"
@@ -30,7 +30,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="机构">
+        <el-form-item label="机构" label-width="40px">
           <el-select
             v-model="query.organizationID"
             placeholder="请选择"

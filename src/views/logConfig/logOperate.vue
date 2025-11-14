@@ -2,9 +2,9 @@
   <div class="page">
     <!-- 顶部查询 -->
     <el-card shadow="never" body-style="{padding:'12px 16px'}" class="padding-none">
-      <el-form :inline="true" :model="query" label-width="80px" label-position="left">
-        <el-form-item label="操作者">
-          <el-input v-model="query.oprerator" placeholder="请输入" clearable style="width: 220px" />
+      <el-form :inline="true" :model="query" label-width="68px" label-position="left">
+        <el-form-item label="操作者" label-width="55px">
+          <el-input v-model="query.oprerator" placeholder="请输入" clearable style="width: 140px" />
         </el-form-item>
 
         <el-form-item label="操作日期">
@@ -18,7 +18,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="机构">
+        <el-form-item label="机构" label-width="40px">
           <el-select
             v-model="query.organizationID"
             placeholder="请选择"
@@ -34,7 +34,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item>
+        <el-form-item label-width="0">
           <el-button type="primary" @click="handleSearch">检索</el-button>
         </el-form-item>
       </el-form>

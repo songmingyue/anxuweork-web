@@ -26,7 +26,8 @@ import {
   resetUser,
   RoleData,
   createUser,
-  addUserRoles
+  addUserRoles,
+  getroles
 } from '@/api/userMessage'
 import { OrganizationList } from '@/api/login/types'
 import UserFormDialog from './components/UserFormDialog.vue'
@@ -137,7 +138,7 @@ const syncRoleSelection = async () => {
 const getRoleList = async (userUID: string) => {
   const data = await getRole({ userUID })
   roleList.value = data.data || []
-  await syncRoleSelection()
+  // await syncRoleSelection()
 }
 
 const getUserList = async () => {
@@ -179,9 +180,19 @@ const changeStatus = async (row: UserOnce) => {
   }
 }
 
+const getRolesList = async (userid: string) => {
+  if (!userid) {
+    roleList.value = []
+    return
+  }
+  const data = await getroles({ userUID: userid })
+  roleList.value = data.data || []
+  await syncRoleSelection()
+}
+
 const handleCurrentChange = (val: UserOnce) => {
   currentUser.value = val
-  getRoleList(val.userUID)
+  getRolesList(val.userUID)
 }
 
 const onRoleSelectionChange = async (selection: RoleData[]) => {
@@ -394,7 +405,6 @@ onMounted(() => {
       :isEdit="isEdit"
       :formData="editRow"
       :orgOptions="orgOptions"
-      :deptOptions="deptOptions"
       @confirm="handleUserConfirm"
     />
   </div>

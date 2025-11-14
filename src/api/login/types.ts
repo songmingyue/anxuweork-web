@@ -107,8 +107,9 @@ export interface UserLoginTypes {
 
 export interface OrganizationList {
   deptMstDto: any[]
+  DeptMstDto: any[]
   organizationID?: string
   organizationName?: string
   label?: string
-  value?: string
+  value: string
 }

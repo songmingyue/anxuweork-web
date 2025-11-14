@@ -1246,3 +1246,9 @@ message GetUploadRecordListOutputProto {
   string organizationName = 4;
   string typeName = 5;
 }
+
+message UserUIDInputProto {
+  string userUID = 1;
+}
+
+

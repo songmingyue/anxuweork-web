@@ -26,6 +26,7 @@
           <el-option v-for="o in orgOptions" :key="o.value" :label="o.label" :value="o.value" />
         </el-select>
       </el-form-item>
+
       <el-form-item label="科室" prop="deptID">
         <el-select v-model="form.deptID" placeholder="请选择">
           <el-option
@@ -68,20 +69,16 @@ import {
   ElSelect,
   ElOption
 } from 'element-plus'
-import { OptionDeptMstDto } from '@/api/type'
+import { OrganizationOnce } from '@/api/type'
 
-interface OptionItem {
-  label: string
-  value: string
-}
 const props = defineProps<{
   visible: boolean
   isEdit: boolean
   formData?: Record<string, any>
-  orgOptions: OptionItem[]
-  deptOptions: OptionDeptMstDto[]
+  orgOptions: OrganizationOnce[]
 }>()
 const emits = defineEmits(['update:visible', 'confirm'])
+const deptOptions = ref<any[]>([])
 
 const visible = ref(props.visible)
 const isEdit = ref(props.isEdit)
@@ -123,6 +120,13 @@ watch(
   () => props.isEdit,
   (val) => {
     isEdit.value = val
+  }
+)
+watch(
+  () => form.value.organizationID,
+  (val) => {
+    const org = props.orgOptions.find((o) => o.value === val)
+    deptOptions.value = org?.DeptMstDto || []
   }
 )
 

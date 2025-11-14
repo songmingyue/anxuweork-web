@@ -206,6 +206,17 @@ export const getUsers = async (data: UserListData): Promise<IResponse<UserOnce[]
     }
   })
 }
+// 获取用户角色
+export const getroles = (data: UserUID): Promise<IResponse<RoleData[]>> => {
+  return request.post({
+    url: 'user/getroles',
+    data,
+    requestTem: {
+      requestTem: 'UserUIDInputProto',
+      responseTem: 'RoleMstOutputProto'
+    }
+  })
+}
 
 export const getRole = (data: UserUID): Promise<IResponse<RoleData[]>> => {
   return request.post({

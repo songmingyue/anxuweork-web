@@ -1,15 +1,14 @@
 <script lang="tsx">
-import { defineComponent, computed } from 'vue'
-import { Collapse } from '@/components/Collapse'
+import { defineComponent, computed, unref } from 'vue'
 import { ElIcon } from 'element-plus'
-import { Tools } from '@element-plus/icons-vue'
+import { Tools, Fold, Expand } from '@element-plus/icons-vue'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
 import { Screenfull } from '@/components/Screenfull'
-import { Breadcrumb } from '@/components/Breadcrumb'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
+import { underlineToHump } from '@/utils'
 
 const { getPrefixCls, variables } = useDesign()
 
@@ -18,10 +17,8 @@ const prefixCls = getPrefixCls('tool-header')
 const appStore = useAppStore()
 
 // 面包屑
-const breadcrumb = computed(() => appStore.getBreadcrumb)
 
 // 折叠图标
-const hamburger = computed(() => appStore.getHamburger)
 
 // 全屏图标
 const screenfull = computed(() => appStore.getScreenfull)
@@ -35,6 +32,11 @@ const layout = computed(() => appStore.getLayout)
 // 多语言图标
 const locale = computed(() => appStore.getLocale)
 
+const collapse = computed(() => appStore.getCollapse)
+const toggleCollapse = () => {
+  const collapsed = unref(collapse)
+  appStore.setCollapse(!collapsed)
+}
 export default defineComponent({
   name: 'ToolHeader',
   setup() {
@@ -45,12 +47,15 @@ export default defineComponent({
       <div id={`${variables.namespace}-tool-header`} class={[prefixCls, 'tool-header']}>
         {layout.value !== 'top' ? (
           <div class="left">
-            {hamburger.value && layout.value !== 'cutMenu' ? (
-              <Collapse class="custom-hover" color="var(--top-header-text-color)"></Collapse>
-            ) : undefined}
-            {breadcrumb.value ? <Breadcrumb class="<md:hidden"></Breadcrumb> : undefined}
+            <span class="header-icon" onClick={toggleCollapse}>
+              <ElIcon size={20}>{unref(collapse) ? <Expand /> : <Fold />}</ElIcon>
+            </span>
+            <span style="font-size: 14px; margin-left: 8px;">
+              {underlineToHump(appStore.getTitle)}({underlineToHump(appStore.getVersion)})
+            </span>
           </div>
         ) : undefined}
+
         <div class="right">
           {screenfull.value ? (
             <Screenfull class="custom-hover" color="var(--top-header-text-color)"></Screenfull>
@@ -108,5 +113,17 @@ export default defineComponent({
 
 .marginright {
   margin-right: 12px;
+}
+
+.left-icon {
+  position: fixed;
+}
+
+.header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
 }
 </style>

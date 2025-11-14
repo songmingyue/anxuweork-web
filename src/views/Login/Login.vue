@@ -109,7 +109,8 @@ onMounted(() => {
   padding-right: 10px;
   padding-left: 10px;
   overflow: auto;
-  background: var(--login-bg-color);
+  // background: var(--login-bg-color);
+  background: url('../../assets/imgs/bac-login.png');
   // }
 
   &__left {

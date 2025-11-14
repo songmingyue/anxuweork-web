@@ -1,5 +1,5 @@
 <template>
-  <div class="checkinfo-page">
+  <div class="checkinfo-page page">
     <div
       v-if="permissionsMsd('displayStyleRightInfo', 'ServiceSectIDs')"
       class="header-right-modal"
@@ -60,7 +60,7 @@
               v-model="formFirst[alternative[indexInput].prop]"
               placeholder="请输入"
               clearable
-              style="width: 180px"
+              style="width: 120px"
             />
           </div>
         </el-form-item>
@@ -70,7 +70,7 @@
             size="small"
             clearable
             placeholder="请输入"
-            style="width: 160px"
+            style="width: 120px"
           />
         </el-form-item>
         <el-form-item label="">
@@ -99,6 +99,7 @@
               type="date"
               value-format="YYYY-MM-DD"
               placeholder="开始时间"
+              style="width: 120px"
               size="small"
             />
             <span class="sep">-</span>
@@ -106,6 +107,7 @@
               v-model="formFirst[timeAlternative[indexTime].propEndTime]"
               value-format="YYYY-MM-DD"
               type="date"
+              style="width: 120px"
               placeholder="结束时间"
               size="small"
             />
@@ -116,7 +118,7 @@
             size="small"
             v-model="formFirst.organizationID"
             placeholder="请选择"
-            style="width: 160px"
+            style="width: 120px"
             clearable
           >
             <el-option
@@ -128,11 +130,11 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSearch">搜索</el-button>
-          <el-button @click="onReset">重置</el-button>
-          <el-button @click="upLoad">导出</el-button>
-          <el-button @click="onSaveAdvance">存为预设</el-button>
-          <el-button text type="primary" @click="showAdvance = !showAdvance">
+          <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
+          <el-button size="small" @click="onReset">重置</el-button>
+          <el-button size="small" @click="upLoad">导出</el-button>
+          <el-button size="small" @click="onSaveAdvance">存为预设</el-button>
+          <el-button size="small" text type="primary" @click="showAdvance = !showAdvance">
             {{ showAdvance ? '收起' : '展开' }}
             <el-icon style="margin-left: 6px">
               <arrow-up v-if="showAdvance" />
@@ -741,9 +743,13 @@ const currentDetail = ref<CurrentDetail>({
 const setQuery = () => {
   timeAlternative.forEach((item) => {
     if (formFirst.value[item.propStart]) {
+      // 统一起始时间到 00:00:00；若未填结束时间，则默认同日起止
       if (!formFirst.value[item.propStart].includes('00:00:00')) {
-        formFirst.value[item.propStart] = formFirst.value[item.propStart] + ' 00:00:00'
-        formFirst.value[item.propEndTime] = undefined
+        const day = String(formFirst.value[item.propStart]).split(' ')[0]
+        formFirst.value[item.propStart] = `${day} 00:00:00`
+        if (!formFirst.value[item.propEndTime]) {
+          formFirst.value[item.propEndTime] = day
+        }
       }
     }
     if (formFirst.value[item.propEndTime]) {
@@ -791,6 +797,14 @@ async function upLoad() {
   window.URL.revokeObjectURL(url)
 }
 
+const getOrganization = () => {
+  if (userStore.getorganizationID === '-1') {
+    return formFirst.value.organizationID || ''
+  } else {
+    return userStore.getorganizationID
+  }
+}
+
 // 查询
 async function onSearch() {
   try {
@@ -806,7 +820,8 @@ async function onSearch() {
       serviceSectID: advance.value.serviceSectID?.join(',') || '',
       examStatus: advance.value.examStatus?.join(',') || '',
       requestDeptID: advance.value.requestDeptID?.join(',') || '',
-      patientClass: advance.value.patientClass?.join(',') || ''
+      patientClass: advance.value.patientClass?.join(',') || '',
+      organizationID: getOrganization()
     }
     console.log(query, 'query')
     const data = await getcheckinfolist(query)
@@ -829,6 +844,7 @@ async function onSearch() {
 const onReset = () => {
   formFirst.value = {}
   advance.value = {}
+  onSearch()
 }
 function onResetAdvance() {
   showAdvance.value = false
@@ -1188,14 +1204,40 @@ const getrecordexam = async (type: 'province' | 'pageApply') => {
     loading.close()
   }
 }
+const startGetPresetList = async () => {
+  await getpresetList()
+  const d = new Date()
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const day = `${yyyy}-${mm}-${dd}`
+  if (presetList.value.length > 0) {
+    const indexOnce = presetList.value.findIndex((item) => item.defaultFlag === '1')
+    if (indexOnce !== -1) {
+      // 命中默认预设，直接按预设查询
+      setForm(presetList.value[indexOnce])
+    } else {
+      // 无默认预设：设置“检查时间”为当天 00:00 ~ 23:59:59，再查询
 
+      formFirst.value.examEndTime = day
+      formFirst.value.examStartTime = day
+      onSearch()
+    }
+  } else {
+    // 无任何预设：设置“检查时间”为当天 00:00 ~ 23:59:59，再查询
+
+    formFirst.value.examEndTime = day
+    formFirst.value.examStartTime = day
+    onSearch()
+  }
+}
 onMounted(async () => {
   window.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', stopDrag)
   getTorg() // 超管机构才获取
-  onSearch()
-  getpresetList() //获取预设
 
+  // getpresetList() //获取预设
+  startGetPresetList()
   // 确保字典数据加载完成后再初始化表单选项
   try {
     await Promise.all([getDicmsgList(), getdicitemlists()])
@@ -1244,8 +1286,24 @@ const sureLock = async () => {
 const isShowTemplate = ref(false)
 // 模板
 const setForm = (item) => {
-  console.log('item', item)
-  // modelValue.lockReason = item.lockReason
+  console.log(JSON.parse(item.queryCondition), 'item')
+  const formList = JSON.parse(item.queryCondition)
+  console.log(formList, 'formList')
+  const formArray = Object.keys(formList)
+  const isHaveFirstDropdown = examOptions.findIndex((item) => formArray.includes(item.value))
+  if (isHaveFirstDropdown !== -1) {
+    indexInput.value = isHaveFirstDropdown
+  }
+  const isHaveSecondDropdown = timeAlternative.findIndex(
+    (item) => formArray.includes(item.propStart) && formList[item.propStart]
+  )
+  if (isHaveSecondDropdown !== -1) {
+    indexTime.value = isHaveSecondDropdown
+  }
+
+  formFirst.value = formList
+  advance.value = formList
+  onSearch()
 }
 const closeModel = async (item) => {
   await deletepreset({
@@ -1322,7 +1380,7 @@ onBeforeUnmount(() => {
 
 .toolbar {
   padding: 8px 12px 0;
-  background: #fff;
+  background: var(--el-fill-color-blank);
   border-bottom: 1px solid #ebeef5;
 }
 
@@ -1390,7 +1448,7 @@ onBeforeUnmount(() => {
 .left {
   display: flex;
   min-width: 1%;
-  background: #fff;
+  background: var(--el-fill-color-blank);
   border-right: 1px solid #ebeef5;
   flex-direction: column;
 }
@@ -1443,7 +1501,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   min-width: 0%;
-  background: #fff;
+  background: var(--el-fill-color-blank);
 }
 
 .preview-toolbar {

@@ -172,7 +172,7 @@ const dynamicRules = ref<Record<string, any>>({})
 // 生成验证规则
 const generateValidationRules = (configData: any[], pluginRules?: any) => {
   const rules: Record<string, any> = {}
-
+  dynamicRules.value = {}
   // 递归处理字段，提取所有需要验证的字段
   const extractFieldRules = (fields: any[]) => {
     if (!fields || !Array.isArray(fields)) return
@@ -313,24 +313,38 @@ const updateFormData = (data: Record<string, any>) => {
 // 处理字段更新
 const handleFieldUpdate = (data: { prop: string; value: any }) => {
   console.log('字段更新:', data)
+  let stepForm: any = { ...formData.value }
   if (typeForm.value !== 'step') {
-    formData.value[data.prop] = data.value
+    stepForm[data.prop] = data.value
   } else {
     const { prop, value } = data
     const propList = prop.split('.')
-    formData.value[processFormActiveSmall.value.prop][propList[1]] = value
+    stepForm = {
+      ...stepForm,
+      [processFormActiveSmall.value.prop]: {
+        ...stepForm[processFormActiveSmall.value.prop],
+        [propList[1]]: value
+      }
+    }
   }
-  console.log('当前表单数据:', formData.value)
+  console.log('当前表单数据:', stepForm)
 
   // 强制触发视图更新
-  formData.value = { ...formData.value }
+  formData.value = { ...stepForm }
 }
 const initFormNostep = (activeLabel) => {
+  if (props.pluginServiceMapUID) {
+    return
+  }
   formData.value = { ...formData.value, ...JSON.parse(activeLabel.defaultKeyValue) }
 }
 
 // 初始化表单默认值(有分步的)
+
 const initFormData = (configData: any[]) => {
+  if (props.pluginServiceMapUID) {
+    return
+  }
   if (!configData || !configData.length) return
 
   // 遍历配置数据，设置默认值
@@ -361,12 +375,21 @@ const handleSubmit = async () => {
     // 验证基础表单
     await baseFormRef.value?.validate()
 
-    // 验证动态表单（如果有验证规则）
+    // 在提交时做一次“全量必填校验”（覆盖折叠/分步造成的未渲染项漏校验问题）
     if (Object.keys(dynamicRules.value).length > 0) {
+      const manualErrors = validateAllRequiredOnSubmit()
+      if (manualErrors.length > 0) {
+        // 聚合前若干条错误信息进行提示
+        const tips = Array.from(new Set(manualErrors.map((e) => e.message))).slice(0, 3)
+        ElMessage.error(`请完善必填信息：${tips.join('、')}`)
+        throw new Error('dynamic-required-validate-failed')
+      }
+
+      // 仍然触发一次内置校验，以对已渲染项展示红框等交互
       await dynamicFormRef.value?.validate()
     }
+    console.log(dynamicRules.value, 'rules')
     const { pluginName } = baseForm.value
-    console.log('表单数据准备提交:', baseForm.value)
     const { configVersion, pluginUid } = props.taskPurposeOptions.find(
       (item) => item.pluginUid === baseForm.value.pluginUID
     )
@@ -378,6 +401,7 @@ const handleSubmit = async () => {
       pluginName: pluginName,
       serviceUID: props.serviceUID
     }
+    console.log('表单数据准备提交:', formData.value)
 
     // 若存在 pluginServiceMapUID，则认为是编辑
     if (props.pluginServiceMapUID) {
@@ -398,6 +422,84 @@ const handleSubmit = async () => {
     console.error('表单验证失败:', error)
     ElMessage.error('请完善必填信息')
   }
+}
+
+// 提交时的全量必填校验（不依赖表单项是否已渲染）
+const validateAllRequiredOnSubmit = () => {
+  const errors: Array<{ prop: string; message: string }> = []
+  // 单独处理step
+  // 读取某个路径的值，支持 a.b.c 形式
+  const getValueByPath = (obj: Record<string, any>, path: string) => {
+    if (!obj) return undefined
+    const segments = path.split('.')
+    let cur: any = obj
+    for (const s of segments) {
+      if (cur == null) return undefined
+      cur = cur[s]
+    }
+    return cur
+  }
+
+  // 判断某个路径是否真实存在（最后一个键存在于对象中）
+  const hasPropByPath = (obj: Record<string, any>, path: string) => {
+    if (!obj) return false
+    const segments = path.split('.')
+    let cur: any = obj
+    for (let i = 0; i < segments.length - 1; i++) {
+      const seg = segments[i]
+      if (cur == null || typeof cur !== 'object') return false
+      cur = cur[seg]
+    }
+    const last = segments[segments.length - 1]
+    return cur != null && Object.prototype.hasOwnProperty.call(cur, last)
+  }
+
+  const isEmpty = (val: any) => {
+    if (val === undefined || val === null) return true
+    if (typeof val === 'string') return val.trim() === ''
+    if (Array.isArray(val)) return val.length === 0
+    return false
+  }
+
+  Object.entries(dynamicRules.value).forEach(([prop, ruleList]: [string, any]) => {
+    const ruleArr = Array.isArray(ruleList) ? ruleList : [ruleList]
+    const requiredRule = ruleArr.find((r) => r && r.required)
+    if (!requiredRule) return
+
+    // 仅当 formData 中存在该键（或该路径）时才进行校验
+    const exists = prop.includes('.')
+      ? hasPropByPath(formData.value, prop)
+      : Object.prototype.hasOwnProperty.call(formData.value, prop)
+    if (!exists) return
+
+    const value = prop.includes('.') ? getValueByPath(formData.value, prop) : formData.value[prop]
+
+    if (isEmpty(value)) {
+      if (prop.split('.')[0] === 'GetTaskModule') {
+        if (value === 'TaskCount') {
+          errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
+        }
+      } else {
+        // 单独处理step
+        if (prop.split('.')[0] === 'ReadFileModule') {
+          if (
+            (['IMCISAETitle', 'PeerAddress', 'PeerAETitle', 'PeerPort'].includes(value) &&
+              formData.value['ReadFileModule']?.ClassName === 'ReadIMGFileByCMOVE') ||
+            formData.value['ReadFileModule']?.ClassName === 'ReadIMGByCGET' ||
+            formData.value['ReadFileModule']?.ClassName === 'ReadFilmByCget' ||
+            formData.value['ReadFileModule']?.ClassName === 'ReadFilmByCMOVE' ||
+            formData.value['ReadFileModule']?.ClassName === 'ReadIMGFileByCMOVE'
+          ) {
+            errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
+          }
+        } else {
+          errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
+        }
+      }
+    }
+  })
+
+  return errors
 }
 
 // 处理步骤点击
@@ -547,7 +649,9 @@ const changePlugin = (val) => {
               }
             })
           }
-          formData.value = { ...formData.value, ...defaultFormData }
+          if (props.pluginServiceMapUID) {
+            formData.value = { ...formData.value, ...defaultFormData }
+          }
           console.log('文件采集类型默认值:', defaultFormData)
 
           methodChangeData(formActive.value)
@@ -664,6 +768,12 @@ const methodChangeData = (data) => {
 
   return processedData
 }
+watch(
+  () => baseForm.value.pluginUID,
+  (val) => {
+    changePlugin(val)
+  }
+)
 // 监听弹窗打开，重置数据
 watch(
   () => props.modelValue,
@@ -682,14 +792,15 @@ watch(
           pluginUID: ''
         }
       }
-      formData.value = {}
+      if (props.pluginConfigKeyValue && props.pluginServiceMapUID) {
+        const editObj = parsePluginConfigKV(props.pluginConfigKeyValue)
+        applyEditValuesToForm(editObj)
+        // 编辑模式下，changePlugin 会在 watch baseForm.pluginUID 时触发
+      } else {
+        // 新增模式下，直接调用 changePlugin 初始化表单
+        formData.value = {}
+      }
     }
-  }
-)
-watch(
-  () => baseForm.value.pluginUID,
-  (val) => {
-    changePlugin(val)
   }
 )
 
@@ -698,19 +809,8 @@ watch(
   () => typeForm.value,
   () => {
     if (!visible.value) return
-    if (!props.pluginConfigKeyValue) return
+    if (!props.pluginConfigKeyValue && props.pluginServiceMapUID) return
     const editObj = parsePluginConfigKV(props.pluginConfigKeyValue)
-    applyEditValuesToForm(editObj)
-  }
-)
-
-// 若编辑值后续发生变化，也同步一次
-watch(
-  () => props.pluginConfigKeyValue,
-  (nv) => {
-    if (!visible.value) return
-    if (!nv) return
-    const editObj = parsePluginConfigKV(nv)
     applyEditValuesToForm(editObj)
   }
 )

@@ -479,10 +479,12 @@ watch(
   }
 
   .nested-fields {
-    padding-left: 20px;
+    /* padding-left: 20px; */
     margin-top: 10px;
-    margin-left: 20px;
-    border-left: 2px solid #e4e7ed;
+
+    /* margin-left: 20px; */
+
+    /* border-left: 2px solid #e4e7ed; */
   }
 
   .field-group-title {

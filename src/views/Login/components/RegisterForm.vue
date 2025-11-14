@@ -23,7 +23,7 @@ const schema = reactive<FormSchema[]>([
     colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => <h2 class="form-title">注册账号</h2>
+        default: () => <h2 class="form-title">注册平台账号</h2>
       }
     }
   },

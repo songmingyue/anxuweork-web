@@ -134,7 +134,7 @@ defineProps({
 .block {
   margin-top: 25px;
   margin-bottom: 10px;
-  background: #fff;
+  background: var(--el-fill-color-blank);
   border-radius: 4px;
 }
 
@@ -145,7 +145,9 @@ defineProps({
   font-weight: 500;
   line-height: 36px;
   color: #606266;
-  background-color: #f7f7f7;
+
+  /* background-color: #f7f7f7; */
+  background-color: var(--el-disabled-bg-color);
   border-bottom: 1px solid #ebeef5;
   align-items: center;
 }

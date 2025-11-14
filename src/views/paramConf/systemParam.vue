@@ -1,13 +1,15 @@
 <template>
   <div class="sys-param">
-    <el-tabs v-model="activeTab">
+    <el-tabs v-model="activeTab" type="card">
       <el-tab-pane v-for="g in groups" :key="g.key" :name="g.key">
         <template #label>
           <div class="collapse-title">
-            <svg class="hdr-icon" aria-hidden="true">
+            <!-- <svg class="hdr-icon" aria-hidden="true">
               <use :xlink:href="g.icon" />
-            </svg>
-            <span class="title">{{ g.title }}</span>
+            </svg> -->
+            <span :style="g.key === activeTab ? 'color: var(--color)' : ''" class="title">{{
+              g.title
+            }}</span>
           </div>
         </template>
 
@@ -481,7 +483,7 @@ function onZJSave(v: any) {
 .sys-param {
   height: calc(100vh - 60px);
   padding: 12px 16px;
-  background: #fff;
+  background: var(--app-content-bg-color);
 }
 
 /* 折叠标题 */
@@ -500,7 +502,7 @@ function onZJSave(v: any) {
 
 .title {
   font-size: 18px;
-  color: #303133;
+  color: var(--el-text-color-primary);
 }
 
 /* 内容 */
@@ -522,7 +524,8 @@ function onZJSave(v: any) {
 .cfg-item .name {
   display: flex;
   font-size: 15px;
-  color: #303133;
+  gap: 8px;
+  color: var(--el-text-color-primary);
 }
 
 .cfg-item .desc {

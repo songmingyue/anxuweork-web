@@ -5,15 +5,15 @@ import { ElCheckbox, ElButton } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { loginApi } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
-import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
-import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OrganizationList, UserLoginTypes } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
 import { encryptWithPublicKey } from '@/utils/encrypt'
 import { getLoginKey } from '@/api/common'
+import { underlineToHump } from '@/utils'
 const publicKey = ref('')
 const { required } = useValidator()
 
@@ -27,9 +27,7 @@ const appStore = useAppStore()
 
 const userStore = useUserStore()
 
-const permissionStore = usePermissionStore()
-
-const { currentRoute, addRoute, push } = useRouter()
+const { currentRoute, push } = useRouter()
 
 const rules = {
   username: [required()],
@@ -46,7 +44,7 @@ const schema = reactive<FormSchema[]>([
     colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => <h2 class="form-title">登录</h2>
+        default: () => <h2 class="form-title">{underlineToHump(appStore.getTitle)}登录</h2>
       }
     }
   },
@@ -206,39 +204,19 @@ const signIn = async () => {
           userStore.setRememberMe(unref(remember))
           userStore.setUserInfo(res.data)
           userStore.setToken(res.pageBase?.token || '')
-          // 是否使用动态路由
-          if (appStore.getDynamicRouter) {
-            getRole(res.data.viewParts)
+          let pushUrl = '/userManage'
+          if (res.data[0].viewParts[0].children.length > 0) {
+            pushUrl = res.data[0].viewParts[0].children[0].url
+          } else {
+            pushUrl = res.data[0].viewParts[0].url
           }
+          push({ path: pushUrl })
         }
       } finally {
         loading.value = false
       }
     }
   })
-}
-
-// 获取角色信息
-const getRole = async (menuList: MenuList[]) => {
-  // const formData = await getFormData<UserType>()
-  // const params = {
-  //   roleName: formData.username
-  // }
-
-  // const res =
-  //   appStore.getDynamicRouter && appStore.getServerDynamicRouter
-  //     ? await getAdminRoleApi(params)
-  //     : await getTestRoleApi(params)
-  // if (res) {
-  userStore.setRoleRouters(menuList)
-  await permissionStore.generateRoutes(menuList).catch(() => {})
-  permissionStore.getAddRouters.forEach((route) => {
-    addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
-  })
-  permissionStore.setIsAddRouters(true)
-
-  push({ path: redirect.value || '/userManage' })
-  // }
 }
 
 // 去注册页面

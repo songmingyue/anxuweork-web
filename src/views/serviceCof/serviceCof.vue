@@ -108,7 +108,7 @@
               >该配置页面用于集成平台数据库脚本升级执行，选择对应脚本后执行即可生效</span
             >
           </el-card>
-          <el-card class="mt-10">
+          <el-card class="pt-10">
             <div class="ddl-wrap">
               <el-card class="ddl-col" shadow="never">
                 <template #header>可执行脚本列表</template>
@@ -517,6 +517,10 @@ const submitTokenConfig = async () => {
     const { isSuccess, message } = await editTokenConfig(tokenForm.value)
     if (isSuccess) {
       ElMessage.success(message || '操作成功')
+      localStorage.clear()
+      setTimeout(() => {
+        location.href = '/login'
+      }, 10)
     } else {
       ElMessage.error(message || '操作失败')
     }
@@ -699,8 +703,15 @@ onMounted(() => {
 }
 
 .mt-10 {
+  padding-top: 150px;
+  padding-left: 150px;
   margin-top: 10px;
   flex: 1;
+}
+
+.pt-10 {
+  flex: 1;
+  margin-top: 10px;
 }
 
 .title-tips {
@@ -735,7 +746,7 @@ onMounted(() => {
   word-break: break-word;
   white-space: pre-wrap;
   cursor: pointer;
-  background: #fafafa;
+  background: var(--el-bg-color-overlay);
   border: 1px solid #f0f0f0;
   border-radius: 4px;
 }

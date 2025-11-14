@@ -558,8 +558,13 @@ const getPortrai = async () => {
     userInfo: ui,
     typeCode: 'ExamImage'
   })
-  const details = data[0].document.documentDtos[0]
-  window.open(details.imgUrl || '')
+  let details = ''
+  if (Array.isArray(data[0].document)) {
+    details = data[0].document[0].documentDtos[0].imgUrl
+  } else {
+    details = data[0].document.documentDtos[0].imgUrl
+  }
+  window.open(details || '')
 }
 
 function onCarouselChange(newIndex: number) {
@@ -738,7 +743,8 @@ const changeSize = (type: 'small' | 'big') => {
 .block {
   margin-top: 25px;
   margin-bottom: 10px;
-  background: #fff;
+
+  /* background: var(--el-fill-color-blank); */
   border-radius: 4px;
 
   /* padding-left: 16px; */
@@ -751,7 +757,9 @@ const changeSize = (type: 'small' | 'big') => {
   font-weight: 500;
   line-height: 36px;
   color: #606266;
-  background-color: #f7f7f7;
+
+  /* background-color: #f7f7f7; */
+  background: var(--el-fill-color-blank);
   border-bottom: 1px solid #ebeef5;
   align-items: center;
 }

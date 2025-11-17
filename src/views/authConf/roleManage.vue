@@ -207,11 +207,11 @@ onMounted(() => {
         style="width: 100%"
         height="304"
       >
-        <el-table-column prop="roleName" label="角色名称" min-width="160" />
-        <el-table-column prop="organizationName" label="所属机构名称" min-width="160" />
-        <el-table-column prop="memo" label="备注" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="createUserName" label="创建用户" min-width="140" />
-        <el-table-column prop="createDate" label="创建时间" min-width="180" />
+        <el-table-column prop="roleName" label="角色名称" min-width="160" sortable />
+        <el-table-column prop="organizationName" label="所属机构名称" min-width="160" sortable />
+        <el-table-column prop="memo" label="备注" min-width="160" show-overflow-tooltip sortable />
+        <el-table-column prop="createUserName" label="创建用户" min-width="140" sortable />
+        <el-table-column prop="createDate" label="创建时间" min-width="180" sortable />
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" size="small" @click.stop="handleEdit(row)"
@@ -249,11 +249,11 @@ onMounted(() => {
         row-key="rightID"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="48" />
-        <el-table-column prop="rightName" label="权限名称" min-width="200" />
-        <el-table-column prop="rightID" label="权限ID" min-width="160" />
-        <el-table-column prop="rightClass" label="权限分类" min-width="120" />
-        <el-table-column prop="memo" label="备注" min-width="160" />
+        <el-table-column type="selection" width="48" sortable />
+        <el-table-column prop="rightName" label="权限名称" min-width="200" sortable />
+        <el-table-column prop="rightID" label="权限ID" min-width="160" sortable />
+        <el-table-column prop="rightClass" label="权限分类" min-width="120" sortable />
+        <el-table-column prop="memo" label="备注" min-width="160" sortable />
       </el-table>
     </el-card>
   </div>

@@ -6,6 +6,13 @@
   "description": "全网云前端icon",
   "glyphs": [
     {
+      "icon_id": "35483062",
+      "name": "统计_折线图",
+      "font_class": "tongji_zhexiantu",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
       "icon_id": "13474746",
       "name": "影像集中诊断",
       "font_class": "yingxiangjizhongzhenduan",

@@ -53,6 +53,10 @@ const menuIconList = reactive<
   {
     key: '/logConfig',
     icon: 'rizhi'
+  },
+  {
+    key: '/statistics',
+    icon: 'tongji_zhexiantu'
   }
 ])
 const menuMode = computed((): 'vertical' | 'horizontal' => {

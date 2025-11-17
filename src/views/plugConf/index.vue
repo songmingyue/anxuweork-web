@@ -16,8 +16,14 @@
         height="calc(50vh - 150px)"
         class="mt8"
       >
-        <el-table-column prop="serviceUID" label="服务UID" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="serviceName" label="任务组名" min-width="200" />
+        <el-table-column
+          prop="serviceUID"
+          label="服务UID"
+          sortable
+          min-width="200"
+          show-overflow-tooltip
+        />
+        <el-table-column prop="serviceName" label="任务组名" sortable min-width="200" />
         <el-table-column prop="ifEnable" label="运行状态" min-width="130">
           <template #default="{ row }">
             <el-switch
@@ -63,16 +69,16 @@
       </div>
 
       <el-table :data="taskList" v-loading="taskLoading" class="mt8" height="calc(50vh - 150px)">
-        <el-table-column prop="pluginUID" label="任务UID" min-width="300" />
-        <el-table-column prop="pluginName" label="任务名称" min-width="200" />
-        <el-table-column prop="triggerInternal" label="触发间隔" min-width="120" />
-        <el-table-column prop="triggerTimes" label="触发次数" min-width="120" />
-        <el-table-column prop="ifTriggerByDate" label="是否根据时间触发" min-width="150" />
-        <el-table-column prop="triggerBeginTime" label="触发开始时间" min-width="140" />
-        <el-table-column prop="triggerEndTime" label="触发结束时间" min-width="140" />
-        <el-table-column prop="ifTriggerByDate" label="是否根据日期触发" min-width="150" />
-        <el-table-column prop="triggerBeginDate" label="触发开始日期" min-width="160" />
-        <el-table-column prop="triggerEndDate" label="触发结束日期" min-width="160" />
+        <el-table-column prop="pluginUID" label="任务UID" min-width="300" sortable />
+        <el-table-column prop="pluginName" label="任务名称" min-width="200" sortable />
+        <el-table-column prop="triggerInternal" label="触发间隔" min-width="120" sortable />
+        <el-table-column prop="triggerTimes" label="触发次数" min-width="120" sortable />
+        <el-table-column prop="ifTriggerByDate" label="是否根据时间触发" min-width="180" sortable />
+        <el-table-column prop="triggerBeginTime" label="触发开始时间" min-width="140" sortable />
+        <el-table-column prop="triggerEndTime" label="触发结束时间" min-width="140" sortable />
+        <el-table-column prop="ifTriggerByDate" label="是否根据日期触发" min-width="180" sortable />
+        <el-table-column prop="triggerBeginDate" label="触发开始日期" min-width="160" sortable />
+        <el-table-column prop="triggerEndDate" label="触发结束日期" min-width="160" sortable />
 
         <el-table-column prop="ifEnable" label="状态" width="150" fixed="right">
           <template #default="{ row }">

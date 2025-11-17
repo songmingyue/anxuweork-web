@@ -54,7 +54,7 @@ watch(
       :class="[prefixCls, layout !== 'classic' ? `${prefixCls}__Top` : '', 'logo-link']"
       to="/"
     >
-      <img src="@/assets/imgs/logo.svg" class="logo-img" />
+      <!-- <img src="@/assets/imgs/logo.svg" class="logo-img" /> -->
       <div
         v-if="show"
         :class="[

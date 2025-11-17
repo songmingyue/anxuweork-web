@@ -101,7 +101,17 @@ message ReportPrintRightProto {
 }
 
 message DisplayStyleRightProto {
-  string ServiceSectIDs = 1;
+  string searchBarVisible = 1;
+  string printPageVisible = 2;
+  string reGainLeftFileVisible = 3;
+  string chargeStatusVisible = 4;
+  string manualPushVisible = 5;
+  string relatedExamVisible = 6;
+  string manualEditVisible = 7;
+  string reGainRightFileVisible = 8;
+  string manualUploadVisible = 9;
+  string manualLockVisible = 10;
+  string eWordMSNLinkVisible = 11;
 }
 
 message PageBase {
@@ -1250,5 +1260,3 @@ message GetUploadRecordListOutputProto {
 message UserUIDInputProto {
   string userUID = 1;
 }
-
-

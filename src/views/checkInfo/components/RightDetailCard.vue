@@ -19,7 +19,7 @@
           <span class="dot" :class="{ ok: detail.digitalimageneed === '是' }"></span>
           <span class="charged">{{ detail.digitalimageneed === '是' ? '已收费' : '未收费' }}</span>
         </div>
-        <el-dropdown>
+        <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'manualPushVisible')">
           <span class="el-dropdown-link">
             <img class="image-icon" src="@/assets/imgs/info/push.png" alt="imgs" />
             <el-icon class="el-icon--right">
@@ -35,7 +35,13 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-tooltip class="box-item" effect="dark" content="相关检查" placement="top">
+        <el-tooltip
+          class="box-item"
+          effect="dark"
+          content="相关检查"
+          placement="top"
+          v-if="permissionsMsd('displayStyleRightInfo', 'relatedExamVisible')"
+        >
           <a href="http://example.com" target="_blank">
             <img
               class="image-icon icon-margin"
@@ -638,6 +644,7 @@ const checkResampling = async () => {
 // 获取申请单
 const getRequestList = async () => {
   activeIcon.value = 'requestReport'
+  console.log(props.detail, 'props.detail')
   const { data } = await getrequest({
     ...props.detail,
     userInfo: ui
@@ -691,6 +698,7 @@ const changeSize = (type: 'small' | 'big') => {
   display: flex;
   width: 550px;
   min-width: 545px;
+  justify-content: end;
 }
 
 .detail-top {

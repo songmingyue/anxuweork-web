@@ -10,6 +10,7 @@ import { logConfig } from './logConfig'
 import { plugConf } from './plugConf'
 import { serviceCof } from './serviceCof'
 import { diagnosisInfo } from './diagnosisInfo'
+import { statics } from './orgCheckCharge'
 
 export const constantRouterMap: AppRouteRecordRaw[] = [
   {
@@ -135,7 +136,8 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
   ...logConfig,
   ...plugConf,
   ...serviceCof,
-  ...diagnosisInfo
+  ...diagnosisInfo,
+  ...statics
 ]
 
 const router = createRouter({

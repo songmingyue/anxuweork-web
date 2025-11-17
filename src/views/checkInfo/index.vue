@@ -33,7 +33,7 @@
       </el-dropdown>
     </div>
     <!-- 顶部搜索条 -->
-    <div class="toolbar" v-if="permissionsMsd('displayStyleRightInfo', 'ServiceSectIDs')">
+    <div class="toolbar" v-if="permissionsMsd('displayStyleRightInfo', 'searchBarVisible')">
       <el-form :inline="true" :model="formFirst">
         <el-form-item label="">
           <div style="display: flex; gap: 8px; align-items: center">
@@ -113,7 +113,7 @@
             />
           </div>
         </el-form-item>
-        <el-form-item v-if="permissionsMsd('', '')" label="检查机构">
+        <el-form-item v-if="permissionsMsd('examInfo', 'organizationVisible')" label="检查机构">
           <el-select
             size="small"
             v-model="formFirst.organizationID"
@@ -582,7 +582,7 @@ import RightDetailCard from './components/RightDetailCard.vue'
 import LockDialog from './components/LockDialog.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { getOrg } from '@/api/paramConf'
-import { alternative, timeAlternative, checkBoxList, examOptions, defaultStart } from './index'
+import { alternative, timeAlternative, checkBoxList, defaultStart } from './index'
 import { getSearchFormList, permiseListSearch } from './searchOptions'
 import { getpreset, PresetList } from '@/api/authConf'
 import { getdicitemlists, getDicmsgList } from '@/utils/dicmsg'
@@ -629,8 +629,8 @@ const clodopVersion = ref<string | undefined>('')
 const formFirst = ref<any>({})
 const radioFile = ref('0')
 const selectedExamLabel = computed(() => {
-  const opt = examOptions[indexInput.value]
-  return opt ? opt.label : '检查号'
+  const opt = alternative[indexInput.value]
+  return opt.label ? opt.label : '检查号'
 })
 const selectTimeOption = computed(() => {
   const opt = timeAlternative[indexTime.value]
@@ -803,7 +803,11 @@ const getOrganization = () => {
   if (userStore.getorganizationID === '-1') {
     return formFirst.value.organizationID || ''
   } else {
-    return userStore.getorganizationID
+    return formFirst.value.organizationID
+      ? formFirst.value.organizationID
+      : permissionsMsd('examInfo', 'organizationVisible')
+        ? ''
+        : userStore.getorganizationID
   }
 }
 
@@ -1288,11 +1292,11 @@ const sureLock = async () => {
 const isShowTemplate = ref(false)
 // 模板
 const setForm = (item) => {
-  console.log(JSON.parse(item.queryCondition), 'item')
   const formList = JSON.parse(item.queryCondition)
-  console.log(formList, 'formList')
   const formArray = Object.keys(formList)
-  const isHaveFirstDropdown = examOptions.findIndex((item) => formArray.includes(item.value))
+  console.log(formArray, 'formArray')
+  // findLastIndex 过滤掉初始的accessionNumber
+  const isHaveFirstDropdown = alternative.findLastIndex((item) => formArray.includes(item.prop))
   if (isHaveFirstDropdown !== -1) {
     indexInput.value = isHaveFirstDropdown
   }
@@ -1381,7 +1385,7 @@ onBeforeUnmount(() => {
 }
 
 .toolbar {
-  padding: 8px 12px 0;
+  padding: 20px 12px 0;
   background: var(--el-fill-color-blank);
   border-bottom: 1px solid #ebeef5;
 }

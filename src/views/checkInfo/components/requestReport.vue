@@ -109,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import type { RequestReportDetail } from '@/api/checkInfo'
 import { ElRow, ElCol } from 'element-plus'
 
@@ -119,7 +119,7 @@ const props = defineProps({
     default: () => ({})
   }
 })
-const detail = props.detail
+const detail = computed(() => props.detail)
 </script>
 
 <style scoped>

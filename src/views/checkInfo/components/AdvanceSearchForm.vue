@@ -36,7 +36,6 @@
             </template>
           </div>
         </el-form-item>
-
         <!-- 普通输入类 -->
         <el-form-item v-else :label="item.label" :prop="item.prop">
           <el-input

@@ -42,7 +42,7 @@ const form = reactive<CloudStorageConfig>({
   name: '测试',
   organizationID: '',
   path: '6f.eword.cn',
-  type: '',
+  type: 'AmazonS3',
   host: 'https://oos-nm2.ctyunapi.cn',
   accessID: 'c765bcfaa4747085cdfd',
   accessKey: '8bca31315848f45315688928c4610e4da3feb6a5',
@@ -102,9 +102,9 @@ async function loadOrgOptions() {
   form.organizationID = props.orgOptions[0]?.value || ''
   form.type = typeOptions[0].value
 
-  if (props.formData) {
+  if (Object.keys(props.formData as any).length > 0) {
     Object.assign(form, props.formData)
-    form.type = typeOptions.find((it) => it.label === form.name)?.value || form.name
+    form.type = typeOptions.find((it) => it.label === form.name)?.value || 'AmazonS3'
   }
 }
 

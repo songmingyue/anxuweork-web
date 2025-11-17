@@ -20,6 +20,8 @@ const appStore = useAppStore()
 const isLogin = ref(true)
 // 读取环境变量中的公司名称
 const companyName = (import.meta as any).env?.VITE_APP_COMPANY_NAME || ''
+const eword = (import.meta as any).env?.VITE_APP_COMPANY_EN_NAME || ''
+
 const toRegister = () => {
   isLogin.value = false
 }
@@ -51,7 +53,7 @@ onMounted(() => {
       <div class="wrapper">
         <div :class="`${prefixCls}__left left-pane`">
           <div class="brand">
-            <img src="@/assets/imgs/logo.svg" alt="" class="logo" />
+            <!-- <img src="@/assets/imgs/logo.svg" alt="" class="logo" /> -->
             <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span>
           </div>
           <div class="left-inner">
@@ -67,7 +69,7 @@ onMounted(() => {
         <div class="right-pane">
           <div class="header-row">
             <div class="brand-mini">
-              <img src="@/assets/imgs/logo.svg" alt="" class="logo" />
+              <!-- <img src="@/assets/imgs/logo.svg" alt="" class="logo" /> -->
               <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span>
             </div>
 
@@ -87,7 +89,7 @@ onMounted(() => {
                 />
 
                 <RegisterForm v-else class="form-card" @to-login="toLogin" />
-                <div class="class-message">{{ companyName }} eWordIMCIS {{ version }}</div>
+                <div class="class-message">{{ companyName }} {{ eword }} {{ version }}</div>
               </div>
             </div>
           </Transition>
@@ -104,13 +106,15 @@ onMounted(() => {
   position: relative;
   height: 100%;
 
-  // 小于 xl 时背景与左右留白
+  // 小于 xl 时背景与左右留白userManage
   // @media (width <= 1279px) {
   padding-right: 10px;
   padding-left: 10px;
   overflow: auto;
   // background: var(--login-bg-color);
-  background: url('../../assets/imgs/bac-login.png');
+  background: url('../../assets/imgs/bac-login3.jpg') no-repeat;
+  background-position: center;
+  background-size: cover;
   // }
 
   &__left {
@@ -247,7 +251,7 @@ onMounted(() => {
   // 小于 xl 圆角+白底（light）
   // @media (width <= 1279px) {
   background: #fff;
-  border-radius: 24px;
+  border-radius: 20px;
   // }header-row
 }
 

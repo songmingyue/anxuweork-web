@@ -103,13 +103,13 @@ async function handlePassword(row: UserOnce) {
   const data = await resetUser(row)
   const password = 'yjp@HRB2025'
   ElMessage.success(data.message || '操作成功')
-  ElMessageBox.confirm(`密码已重置为初始密码${password}，点击复制可复制到剪切板`, '提示', {
+  ElMessageBox.confirm(`密码已重置为初始密码${password}`, '提示', {
     type: 'success',
-    confirmButtonText: '复制',
-    cancelButtonText: '我知道了'
+    confirmButtonText: '确定',
+    cancelButtonText: '关闭'
   }).then(() => {
-    navigator.clipboard.writeText(password)
-    ElMessage.success('已复制到剪贴板')
+    // navigator.clipboard.writeText(password)
+    // ElMessage.success('已复制到剪贴板')
   })
 }
 
@@ -388,15 +388,28 @@ onMounted(() => {
         @selection-change="onRoleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="roleName" label="角色" min-width="160" show-overflow-tooltip />
-        <el-table-column prop="memo" label="备注" min-width="140" show-overflow-tooltip />
+        <el-table-column
+          prop="roleName"
+          label="角色"
+          min-width="160"
+          show-overflow-tooltip
+          sortable
+        />
+        <el-table-column prop="memo" label="备注" min-width="140" show-overflow-tooltip sortable />
         <el-table-column
           prop="organizationName"
           label="所属机构名称"
           min-width="160"
           show-overflow-tooltip
+          sortable
         />
-        <el-table-column prop="createDate" label="添加时间" min-width="160" show-overflow-tooltip />
+        <el-table-column
+          prop="createDate"
+          label="添加时间"
+          min-width="160"
+          show-overflow-tooltip
+          sortable
+        />
       </el-table>
     </el-card>
 

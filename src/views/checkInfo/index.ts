@@ -1,6 +1,6 @@
 export const alternative = [
-  { label: '病历号', prop: 'medRecNO' },
   { label: '检查号', prop: 'accessionNumber' },
+  { label: '病历号', prop: 'medRecNO' },
   { label: '就诊号', prop: 'visitID' },
   { label: '门诊号', prop: 'outPatientNO' },
   { label: '住院号', prop: 'inPatientNO' },
@@ -45,8 +45,8 @@ export const timeAlternative: any = [
 ]
 
 export const examOptions = [
-  { label: '病历号', value: 'medRecNO' },
   { label: '检查号', value: 'examNo' },
+  { label: '病历号', value: 'medRecNO' },
   { label: '就诊号', value: 'visitNo' },
   { label: '门诊号', value: 'outpatientNo' },
   { label: '住院号', value: 'inpatientNo' },

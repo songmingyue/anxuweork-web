@@ -51,7 +51,8 @@ export default defineComponent({
               <ElIcon size={20}>{unref(collapse) ? <Expand /> : <Fold />}</ElIcon>
             </span>
             <span style="font-size: 14px; margin-left: 8px;">
-              {underlineToHump(appStore.getTitle)}({underlineToHump(appStore.getVersion)})
+              {unref(collapse) && underlineToHump(appStore.getTitle)}(
+              {underlineToHump(appStore.getVersion)})
             </span>
           </div>
         ) : undefined}

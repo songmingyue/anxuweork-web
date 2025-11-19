@@ -67,15 +67,16 @@
               type="date"
               value-format="YYYY-MM-DD"
               placeholder="开始时间"
-              style="width: 120px"
+              style="width: 120px; margin-top: -5px"
               size="small"
+              :shortcuts="dateShortcuts"
             />
             <span class="sep sep-span">-</span>
             <el-date-picker
               v-model="formFirst[timeAlternative[indexTime].propEndTime]"
               value-format="YYYY-MM-DD"
               type="date"
-              style="width: 120px"
+              style="width: 120px; margin-top: -5px"
               placeholder="结束时间"
               size="small"
             />
@@ -152,7 +153,7 @@
       <el-card shadow="always" class="advance-card">
         <AdvanceSearchForm v-model="advance" :form-options="formOptions" />
         <div class="advance-footer">
-          <el-button type="primary" @click="onSearch">搜索</el-button>
+          <el-button type="primary" style="width: 100%" @click="onSearch">搜索</el-button>
         </div>
       </el-card>
     </div>
@@ -164,7 +165,8 @@
         <div class="left-tools">
           <div class="tools-flex">
             <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'printPageVisible')">
-              <img class="icon-img" src="@/assets/imgs/info/printer_normal.png" />
+              <!-- <img class="icon-img" src="@/assets/imgs/info/printer_normal.png" /> -->
+              <Icon class="icon-img" icon="svg-icon:24gl-printer" :size="20" />
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item @click="printReport('once')">打印当前</el-dropdown-item>
@@ -176,17 +178,31 @@
               content="文件重采"
               v-if="permissionsMsd('displayStyleRightInfo', 'reGainLeftFileVisible')"
             >
-              <el-icon :size="20" color="#606266" @click="fileNewUploadDialog = true"
+              <Icon
+                @click="
+                  () => {
+                    if (!selectRow.length) {
+                      ElMessage.warning('请先选择检查记录')
+                      return
+                    }
+                    fileNewUploadDialog = true
+                  }
+                "
+                class="icon-img"
+                icon="svg-icon:wenjianjiatianjia"
+                :size="20"
+              />
+
+              <!-- <el-icon
+                class="icon-img"
+                :size="20"
+                color="#606266"
+                @click="fileNewUploadDialog = true"
                 ><FolderAdd
-              /></el-icon>
+              /></el-icon> -->
             </el-tooltip>
             <el-tooltip content="批量追加影像">
-              <img
-                class="icon-img"
-                @click="batchAppend"
-                style="margin-left: 16px"
-                src="@/assets/imgs/info/add-icon.png"
-              />
+              <Icon @click="batchAppend" class="icon-img" icon="svg-icon:zhuijia" :size="20" />
             </el-tooltip>
           </div>
           <div class="tools-flex tools-flex-right">
@@ -252,7 +268,13 @@
                   placement="top"
                 >
                   <div class="positions">
-                    <img
+                    <Icon
+                      v-if="selectRow.find((item) => item.examUID === row.examUID)"
+                      icon="svg-icon:a-313805856"
+                      :size="18"
+                    />
+                    <Icon v-else icon="svg-icon:a-313805854" :size="18" />
+                    <!-- <img
                       v-if="selectRow.find((item) => item.examUID === row.examUID)"
                       class="image-icon icon-margin"
                       src="@/assets/imgs/info/img_view_added.png"
@@ -263,7 +285,7 @@
                       class="image-icon icon-margin"
                       src="@/assets/imgs/info/img_view.png"
                       alt="imgs"
-                    />
+                    /> -->
                     <span v-if="row.ifImageUpload === '是'" class="span-icon"></span>
                   </div>
                 </el-tooltip>
@@ -275,7 +297,8 @@
                   placement="top"
                 >
                   <div class="positions">
-                    <img class="image-icon" src="@/assets/imgs/info/w_report.png" alt="imgs" />
+                    <!-- <img class="image-icon" src="@/assets/imgs/info/w_report.png" alt="imgs" /> -->
+                    <Icon icon="svg-icon:baogaoshangchuan" :size="18" />
                     <span v-if="row.ifReportUpload === '是'" class="span-icon"></span>
                   </div>
                 </el-tooltip>
@@ -304,19 +327,17 @@
                     content="检查未锁定"
                     placement="top"
                   >
-                    <img
+                    <Icon
+                      icon="svg-icon:suoding"
                       @click.stop="showLockDialog(row, true)"
-                      class="image-icon"
-                      src="@/assets/imgs/info/unlock-icon.png"
-                      alt="imgs"
+                      :size="18"
                     />
                   </el-tooltip>
                   <el-tooltip v-else effect="dark" content="检查已锁定" placement="top">
-                    <img
+                    <Icon
+                      icon="svg-icon:jiesuo"
                       @click.stop="showLockDialog(row, false)"
-                      class="image-icon"
-                      src="@/assets/imgs/info/lock-icon.png"
-                      alt="imgs"
+                      :size="18"
                     />
                   </el-tooltip>
                 </div>
@@ -516,6 +537,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, computed } from 'vue'
+import { Icon } from '@/components/Icon'
 import { permissionsMsd } from '@/utils/permission'
 import {
   ElForm,
@@ -548,7 +570,6 @@ import {
 import {
   ArrowDown,
   ArrowUp,
-  FolderAdd,
   Connection,
   Operation,
   ArrowDownBold,
@@ -645,6 +666,83 @@ function onExamKeyChange(key: string) {
   })
 }
 const indexTime = ref(0)
+
+// 本地日期快捷项：点击时同时填充 formFirst 的开始/结束字段
+const dateShortcuts = [
+  {
+    text: '今天',
+    onClick() {
+      const end = new Date()
+      const start = new Date()
+      // picker.$emit('pick', [start, end])
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = formatDate(start, 'date')
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+    }
+  },
+  {
+    text: '两天',
+    onClick() {
+      const end = new Date()
+      const start = new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000)
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = formatDate(start, 'date')
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+    }
+  },
+  {
+    text: '三天',
+    onClick() {
+      const end = new Date()
+      const start = new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000)
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = formatDate(start, 'date')
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+    }
+  },
+  {
+    text: '一周',
+    onClick() {
+      const end = new Date()
+      const start = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = formatDate(start, 'date')
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+    }
+  },
+  {
+    text: '一个月',
+    onClick() {
+      const end = new Date()
+      const start = new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = formatDate(start, 'date')
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+    }
+  },
+  {
+    text: '一年',
+    onClick() {
+      const end = new Date()
+      const start = new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000)
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = formatDate(start, 'date')
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+    }
+  }
+]
 
 function onTimeKeyChange(key: string) {
   indexTime.value = timeAlternative.findIndex((item) => item.propStart === key)
@@ -1060,7 +1158,7 @@ const batchAppend = async () => {
     typeCode: 'ExamImage',
     userInfo
   })
-  const datas = data[0].document.documentDtos
+  const datas = data[0].document[0].documentDtos
   datas.map((item) => {
     if (item.imgUrl) {
       window.open(item.imgUrl)
@@ -1070,6 +1168,9 @@ const batchAppend = async () => {
 
 const printReport = async (type) => {
   if (!activeRow.value && type === 'once') {
+    ElMessage.warning('请选择要打印的报告')
+    return
+  } else if (type === 'once' && activeRow.value?.ifHasReport !== '有') {
     ElMessage.warning('当前选择的检查无报告可打印！')
     return
   } else if (type === 'batch') {
@@ -1161,24 +1262,48 @@ const printReport = async (type) => {
     printImages(LODOP, imgs, { mode: 'preview', margin: 0 })
     return
   } else {
-    // 批量打印：合并所有图片为一个打印任务
-    // const firstPage = true
-    LODOP.PRINT_INIT('批量打印-仅图片')
-    LODOP.SET_PRINT_MODE('PRINT_PAGE_PERCENT', 'Auto-Width')
-    const { data } = await getdoc({
-      examUID: selectRow.value.map((item) => item.examUID || '').join(','),
-      typeCode: 'ExamResult',
-      userInfo
-    })
-    const converted = batchChangeDocument(data[0].document as any)
-    const printedAny = converted.length > 0 ? true : false
-    const imgs = converted.map((item) => item.base64url || item.imgUrl)
-    printImages(LODOP, imgs, { mode: 'preview', margin: 0 })
-
-    if (!printedAny) {
-      ElMessage.warning('所选记录均无可打印图片')
-      return
+    const number = selectRow.value.filter((item) => item.ifHasReport !== '有').length
+    if (number > 0) {
+      ElMessageBox.confirm(
+        `当前选中检查中有${number}个检查无图文报告！是否继续打印？`,
+        '批量打印',
+        {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+        .then(async () => {
+          batchDayin(LODOP)
+        })
+        .catch(() => {
+          // 取消打印
+        })
+    } else {
+      batchDayin(LODOP)
     }
+  }
+}
+
+const batchDayin = async (LODOP) => {
+  LODOP.PRINT_INIT('批量打印-仅图片')
+  LODOP.SET_PRINT_MODE('PRINT_PAGE_PERCENT', 'Auto-Width')
+  const { data } = await getdoc({
+    examUID: selectRow.value
+      .filter((item) => item.ifHasReport === '有')
+      .map((item) => item.examUID || '')
+      .join(','),
+    typeCode: 'ExamResult',
+    userInfo
+  })
+  const converted = batchChangeDocument(data[0].document as any)
+  const printedAny = converted.length > 0 ? true : false
+  const imgs = converted.map((item) => item.base64url || item.imgUrl)
+  printImages(LODOP, imgs, { mode: 'preview', margin: 0 })
+
+  if (!printedAny) {
+    ElMessage.warning('所选记录均无可打印图片')
+    return
   }
 }
 
@@ -1573,7 +1698,7 @@ onBeforeUnmount(() => {
 .span-icon {
   position: absolute;
   bottom: 3px;
-  left: 0;
+  left: 2px;
   display: inline-block;
   width: 15px;
   height: 2px;
@@ -1604,15 +1729,15 @@ onBeforeUnmount(() => {
 }
 
 .icon-img {
-  width: 18px;
-  height: 18px;
   margin-right: 16px;
+  color: var(--el-text-color-regular);
 }
 
 .tools-flex {
   display: flex;
   align-items: flex-start;
   margin: 5px 0;
+  color: var(--el-text-color-regular);
 }
 
 .tools-flex-right {

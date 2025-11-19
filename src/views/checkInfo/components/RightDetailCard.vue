@@ -21,7 +21,8 @@
         </div>
         <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'manualPushVisible')">
           <span class="el-dropdown-link">
-            <img class="image-icon" src="@/assets/imgs/info/push.png" alt="imgs" />
+            <!-- <img class="image-icon" src="@/assets/imgs/info/push.png" alt="imgs" /> -->
+            <Icon class="image-icon" icon="svg-icon:feiji1" :size="18" />
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
@@ -42,16 +43,14 @@
           placement="top"
           v-if="permissionsMsd('displayStyleRightInfo', 'relatedExamVisible')"
         >
-          <a href="http://example.com" target="_blank">
-            <img
-              class="image-icon icon-margin"
-              src="@/assets/imgs/info/related_check.png"
-              alt="imgs"
-          /></a>
+          <a href="http://example.com" target="_blank" style="color: var(--el-text-color-regular)">
+            <Icon class="image-icon icon-margin" icon="svg-icon:tingzhenqi1" :size="18" />
+          </a>
         </el-tooltip>
         <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'manualEditVisible')">
           <span class="el-dropdown-link">
-            <img class="image-icon" src="@/assets/imgs/info/updata-icon.png" alt="imgs" />
+            <!-- <img class="image-icon" src="@/assets/imgs/info/updata-icon.png" alt="imgs" /> -->
+            <Icon class="image-icon" icon="svg-icon:tianxie" :size="18" />
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
@@ -66,7 +65,9 @@
         </el-dropdown>
         <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'reGainRightFileVisible')">
           <span class="el-dropdown-link">
-            <img class="image-icon" src="@/assets/imgs/info/collect.png" alt="imgs" />
+            <!-- <img class="image-icon" src="@/assets/imgs/info/collect.png" alt="imgs" /> -->
+            <Icon class="image-icon" icon="svg-icon:wenjianjiatianjia" :size="18" />
+
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
@@ -80,7 +81,8 @@
         </el-dropdown>
         <el-dropdown @command="changeFileType" v-if="permissionsMsd('data', 'isOpenUpload')">
           <span class="el-dropdown-link">
-            <img class="image-icon" src="@/assets/imgs/info/upload.png" alt="imgs" />
+            <!-- <img class="image-icon" src="@/assets/imgs/info/upload.png" alt="imgs" /> -->
+            <Icon class="image-icon" icon="svg-icon:yunshangchuan" :size="18" />
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
@@ -103,13 +105,14 @@
         </el-dropdown>
         <el-dropdown v-if="permissionsMsd('data', 'reportVisible')">
           <span class="el-dropdown-link">
-            <img
-              class="image-icon"
+            <Icon
               v-if="['reportImage', 'reportText'].includes(activeIcon)"
-              src="@/assets/imgs/info/report_selected.png"
-              alt="imgs"
+              class="image-icons"
+              icon="svg-icon:baogao1"
+              :size="18"
             />
-            <img class="image-icon" v-else src="@/assets/imgs/info/report_normal.png" alt="imgs" />
+
+            <Icon v-else class="image-icon" icon="svg-icon:baogao1" :size="18" />
 
             <el-icon class="el-icon--right">
               <arrow-down />
@@ -131,19 +134,27 @@
           placement="top"
           v-if="permissionsMsd('data', 'imageVisible')"
         >
-          <img
-            class="image-icon icon-margin"
+          <Icon
             @click="getPortrai"
             v-if="detail.ifHasImage === '有'"
-            src="@/assets/imgs/info/image_normal.png"
-            alt="imgs"
+            class="image-icon icon-margin"
+            icon="svg-icon:a-313795151"
+            :size="18"
           />
+          <Icon
+            v-else
+            color="#666"
+            class="icon-disabled icon-margin"
+            icon="svg-icon:a-313795151"
+            :size="18"
+          />
+          <!-- 
           <img
             v-else
             class="image-icon icon-margin icon-disabled"
             src="@/assets/imgs/info/image_disable.png"
             alt="imgs"
-          />
+          /> -->
         </el-tooltip>
         <el-tooltip
           class="box-item"
@@ -152,24 +163,25 @@
           placement="top"
           v-if="permissionsMsd('examInfo', 'filmVisible')"
         >
-          <img
+          <Icon
             v-if="detail.examFilmStatus && activeIcon !== 'film'"
             @click="getFilm"
+            color=""
             class="image-icon icon-margin"
-            src="@/assets/imgs/info/film_normal.png"
-            alt="imgs"
+            icon="svg-icon:Gc_125_line-Film"
+            :size="18"
           />
-          <img
+          <Icon
             v-if="!detail.examFilmStatus"
-            class="image-icon icon-margin icon-disabled"
-            src="@/assets/imgs/info/film_disable.png"
-            alt="imgs"
+            class="icon-disabled icon-margin"
+            icon="svg-icon:Gc_125_line-Film"
+            :size="18"
           />
-          <img
+          <Icon
             v-if="activeIcon === 'film'"
-            class="image-icon icon-margin"
-            src="@/assets/imgs/info/film_selected.png"
-            alt="imgs"
+            class="image-icons icon-margin"
+            icon="svg-icon:Gc_125_line-Film"
+            :size="18"
           />
         </el-tooltip>
 
@@ -180,35 +192,36 @@
           placement="top"
           v-if="permissionsMsd('data', 'requestVisible')"
         >
-          <img
-            class="image-icon icon-margin"
-            src="@/assets/imgs/info/application_selected.png"
+          <Icon
             v-if="activeIcon === 'requestReport'"
-            alt="imgs"
+            class="image-icons icon-margin"
+            icon="svg-icon:wodeziliao"
+            :size="18"
           />
-          <img
+          <Icon
             v-else
-            class="image-icon icon-margin"
-            src="@/assets/imgs/info/application_normal.png"
+            class="icon-margin"
             @click="getRequestList"
-            alt="imgs"
+            icon="svg-icon:wodeziliao"
+            :size="18"
           />
         </el-tooltip>
 
         <el-tooltip class="box-item" effect="dark" v-if="!isBig" content="放大" placement="top">
-          <img
+          <!-- <img
             @click="changeSize('big')"
             class="image-icon"
             src="@/assets/imgs/info/enlarge_normal.png"
             alt="imgs"
-          />
+          /> -->
+          <Icon class="icon-margin" @click="changeSize('big')" icon="svg-icon:fangda" :size="16" />
         </el-tooltip>
         <el-tooltip class="box-item" effect="dark" content="缩小" v-else placement="top">
-          <img
+          <Icon
+            class="icon-margin"
             @click="changeSize('small')"
-            class="image-icon"
-            src="@/assets/imgs/info/zoom_normal.png"
-            alt="imgs"
+            icon="svg-icon:suoxiao"
+            :size="16"
           />
         </el-tooltip>
       </div>
@@ -539,7 +552,7 @@ const getFilm = async () => {
     userInfo: ui,
     typeCode: 'ExamFilm'
   })
-  documentDtos.value = data[0].document.documentDtos.map((item) => {
+  documentDtos.value = data[0].document[0].documentDtos.map((item) => {
     return {
       ...item,
       base64url: arrayBufferToBase64(item.base64url)
@@ -802,13 +815,23 @@ const changeSize = (type: 'small' | 'big') => {
 }
 
 .image-icon {
-  width: 18px;
-  height: 18px;
+  color: var(--el-text-color-regular) !important;
+
+  /* width: 18px;
+  height: 18px; */
+  cursor: pointer;
+}
+
+.image-icons {
+  color: #21c0db !important;
+
+  /* width: 18px;
+  height: 18px; */
   cursor: pointer;
 }
 
 .icon-margin {
-  margin-right: 28px;
+  margin-right: 20px;
   cursor: pointer;
 }
 
@@ -850,6 +873,7 @@ const changeSize = (type: 'small' | 'big') => {
 }
 
 .icon-disabled {
+  color: #666;
   cursor: no-drop;
 }
 

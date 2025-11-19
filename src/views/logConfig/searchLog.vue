@@ -3,7 +3,7 @@
     <!-- 顶部查询 -->
     <el-card shadow="never" body-style="{padding:'12px 16px'}" class="padding-none">
       <el-form :inline="true" :model="query" label-width="60px" label-position="left">
-        <el-form-item label="操作日期">
+        <el-form-item label="操作日期" label-width="68px">
           <el-date-picker
             v-model="query.date"
             type="daterange"

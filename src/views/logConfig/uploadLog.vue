@@ -2,7 +2,7 @@
   <div class="page">
     <!-- 顶部查询 -->
     <el-card shadow="never" body-style="{padding:'12px 16px'}" class="padding-none">
-      <el-form :inline="true" :model="query" label-width="80px" label-position="left">
+      <el-form :inline="true" :model="query" label-width="70px" label-position="left">
         <el-form-item label="类型" label-width="40px">
           <el-select v-model="query.type" placeholder="请选择" clearable style="width: 180px">
             <el-option

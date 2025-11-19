@@ -368,11 +368,41 @@ onMounted(() => {
     <el-card shadow="never" class="mb8 flex-card">
       <div class="table-wrap">
         <el-table :data="deptList" v-loading="deptLoading" style="width: 100%" height="100%">
-          <el-table-column prop="deptID" label="科室编号" min-width="120" sortable />
-          <el-table-column prop="deptName" label="科室名称" min-width="160" sortable />
-          <el-table-column prop="deptTypeName" label="科室类型" min-width="120" sortable />
-          <el-table-column prop="examClassName" label="医技科室分类" min-width="140" sortable />
-          <el-table-column prop="officePhoneNO" label="电话" min-width="140" sortable />
+          <el-table-column
+            prop="deptID"
+            label="科室编号"
+            min-width="120"
+            sortable
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="deptName"
+            label="科室名称"
+            min-width="160"
+            sortable
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="deptTypeName"
+            label="科室类型"
+            min-width="120"
+            sortable
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="examClassName"
+            label="医技科室分类"
+            min-width="140"
+            sortable
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="officePhoneNO"
+            label="电话"
+            min-width="140"
+            sortable
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="memo"
             label="备注"

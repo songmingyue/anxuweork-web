@@ -3,7 +3,7 @@
     <!-- 顶部查询 -->
     <el-card shadow="never" body-style="{padding:'12px 16px'}" class="padding-none">
       <el-form :inline="true" :model="query" label-width="80px" label-position="left">
-        <el-form-item label="检查号">
+        <el-form-item label="检查号" label-width="55px">
           <el-input
             v-model="query.accessionNumber"
             placeholder="请输入"

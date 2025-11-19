@@ -144,6 +144,7 @@ export const getSearchFormList = () => ({
       label: '审核医生',
       type: 'select',
       prop: 'resultPrincipalName',
+      vIf: true,
       width: '180px',
       loadOptFcn: 'loadAssessDoc',
       filterable: !0,

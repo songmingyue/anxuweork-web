@@ -34,7 +34,7 @@ const roleList = ref<RoleMstInputProto[]>([])
 const total = ref(0)
 const pageSize = ref(10)
 const currentPage = ref(1)
-
+const initializingSelection = ref(false)
 // 下表：权限
 const loadingPerm = ref(false)
 const permList = ref<RoleMstProto[]>([])
@@ -132,6 +132,8 @@ function handleSizeChange(s: number) {
   fetchRoles()
 }
 const handleRowClick = async (row?: RoleMstInputProto) => {
+  // 在开始程序化更改前打开抑制标志，完成所有程序化选中后再关闭
+  initializingSelection.value = true
   if (row) {
     rolePrimission.organizationID = row.organizationID
     rolePrimission.roleUID = row.roleUID
@@ -140,6 +142,10 @@ const handleRowClick = async (row?: RoleMstInputProto) => {
   try {
     permList.value = (await getRightsList(row)).data || []
     await nextTick()
+    // 清空现有选择，然后根据后端标记恢复选中项。
+    if (permTableRef.value && typeof permTableRef.value.clearSelection === 'function') {
+      permTableRef.value.clearSelection()
+    }
     if (permTableRef.value) {
       permList.value.forEach((item) => {
         if (item.lAY_CHECKED === 'true') {
@@ -148,6 +154,8 @@ const handleRowClick = async (row?: RoleMstInputProto) => {
       })
     }
   } finally {
+    // 程序化完成，关闭抑制标志
+    initializingSelection.value = false
     loadingPerm.value = false
   }
 }
@@ -162,6 +170,9 @@ const handleDelete = async (row: RoleMstInputProto) => {
 }
 
 const handleSelectionChange = async (selection: RoleMstProto[]) => {
+  // 如果处于程序化初始化阶段，则忽略 selection-change 触发
+  if (initializingSelection.value) return
+
   const { message, isSuccess } = await editUserRight({
     organizationID: rolePrimission.organizationID,
     roleUID: rolePrimission.roleUID,

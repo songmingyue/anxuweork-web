@@ -7,7 +7,7 @@
       ref="searchCard"
       class="padding-none"
     >
-      <el-form :inline="true" :model="query" label-width="80px">
+      <el-form :inline="true" :model="query" label-position="left" label-width="80px">
         <!-- 第一行：检查号、模态码、检查类型、检查类型（操作类型）及操作员 -->
         <el-form-item label="检查号">
           <el-input

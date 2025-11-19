@@ -103,8 +103,19 @@ async function loadOrgOptions() {
   form.type = typeOptions[0].value
 
   if (Object.keys(props.formData as any).length > 0) {
+    form.host = ''
+    form.accessID = ''
+    form.accessKey = ''
+    form.subDir = ''
+    form.uploadMediaUID = ''
+    form.uploadURL = ''
+    form.downloadURL = ''
     Object.assign(form, props.formData)
-    form.type = typeOptions.find((it) => it.label === form.name)?.value || 'AmazonS3'
+    if (form.type === '文档存储') {
+      form.type = 'Virtual'
+    } else {
+      form.type = typeOptions.find((it) => it.label === form.type)?.value || 'AmazonS3'
+    }
   }
 }
 

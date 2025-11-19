@@ -705,8 +705,8 @@ const changeSize = (type: 'small' | 'big') => {
   display: flex;
   height: 36px;
   padding: 0 2px 6px;
-  font-size: 12px;
-  color: #303133;
+  font-size: 14px;
+  color: var(--el-table-header-text-color);
   border-bottom: 1px solid #ebeef5;
   align-items: center;
   justify-content: space-between;
@@ -857,5 +857,9 @@ const changeSize = (type: 'small' | 'big') => {
   display: flex;
   align-items: center;
   margin-right: 8px;
+}
+
+.charged {
+  margin-top: -5px;
 }
 </style>

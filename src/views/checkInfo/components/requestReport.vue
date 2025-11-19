@@ -138,7 +138,7 @@ const detail = computed(() => props.detail)
   padding: 0 18px;
   font-weight: 500;
   line-height: 36px;
-  color: #606266;
+  color: var(--el-table-header-text-color);
 
   /* background-color: #f7f7f7; */
   background-color: var(--el-disabled-bg-color);
@@ -173,17 +173,19 @@ const detail = computed(() => props.detail)
   display: flex;
   padding: 5px 0;
   font-size: 12px;
-  color: #606266;
+  color: var(--el-table-header-text-color);
   gap: 8px;
 }
 
 .label {
   min-width: 72px;
+  font-size: 14px;
   color: #909399;
 }
 
 .value {
-  color: #303133;
+  font-size: 14px;
+  color: var(--el-table-header-text-color);
   flex: 1;
 }
 </style>

@@ -1,10 +1,14 @@
 <template>
-  <el-form :model="modelValue" label-width="80px" class="advance-grid" label-position="left">
+  <el-form :model="modelValue" label-width="68px" class="advance-grid" label-position="left">
     <div v-for="sec in sections" :key="sec.key">
-      <h3>{{ sec.title }}</h3>
+      <h3 class="form-title">{{ sec.title }}</h3>
       <template v-for="item in formSchema[sec.key]" :key="item.prop || item.label">
         <!-- 双字段（如年龄 + 单位） -->
-        <el-form-item v-if="item.type === 'double'" :label="item.label">
+        <el-form-item
+          v-if="item.type === 'double'"
+          :label-width="item.labelWidth ? item.labelWidth : '68px'"
+          :label="item.label"
+        >
           <div class="double-group">
             <template v-for="(sub, idx) in item.pdList" :key="idx">
               <el-input-number
@@ -37,7 +41,13 @@
           </div>
         </el-form-item>
         <!-- 普通输入类 -->
-        <el-form-item v-else :label="item.label" :prop="item.prop">
+
+        <el-form-item
+          v-else
+          :label-width="item.labelWidth ? item.labelWidth : '68px'"
+          :label="item.label"
+          :prop="item.prop"
+        >
           <el-input
             v-if="item.type === 'input'"
             :model-value="modelValue[item.prop]"
@@ -195,5 +205,11 @@ const updateValue = (key: string, value: any) => {
 
 .double-gap {
   width: 8px;
+}
+
+.form-title {
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 700;
 }
 </style>

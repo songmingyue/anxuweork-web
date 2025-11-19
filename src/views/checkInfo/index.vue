@@ -1,40 +1,8 @@
 <template>
   <div class="checkinfo-page page">
-    <div
-      v-if="permissionsMsd('displayStyleRightInfo', 'ServiceSectIDs')"
-      class="header-right-modal"
-    >
-      <el-dropdown size="small" type="primary">
-        <el-button type="primary" size="small">
-          模板<el-icon><ArrowDownBold /></el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item v-for="item in presetList" :key="item.sortNO" @click="setForm(item)">
-              <div class="icon-drop">
-                <span>{{ item.name }}</span>
-                <div>
-                  <el-icon @click.stop="closeModel(item)" class="icon-hover"><CloseBold /></el-icon>
-                  <el-icon
-                    @click.stop="starModal(item, 'unstar')"
-                    class="icon-hover"
-                    v-if="item.defaultFlag === '0'"
-                  >
-                    <Star />
-                  </el-icon>
-                  <el-icon @click.stop="starModal(item, 'star')" v-else>
-                    <StarFilled color="#fbc02d" />
-                  </el-icon>
-                </div>
-              </div>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
     <!-- 顶部搜索条 -->
     <div class="toolbar" v-if="permissionsMsd('displayStyleRightInfo', 'searchBarVisible')">
-      <el-form :inline="true" :model="formFirst">
+      <el-form :inline="true" :model="formFirst" class="from-inline-margin">
         <el-form-item label="">
           <div style="display: flex; gap: 8px; align-items: center">
             <el-dropdown @command="onExamKeyChange">
@@ -64,7 +32,7 @@
             />
           </div>
         </el-form-item>
-        <el-form-item label="姓名">
+        <el-form-item label="姓名" label-width="40" label-position="left">
           <el-input
             v-model="formFirst.patientName"
             size="small"
@@ -102,7 +70,7 @@
               style="width: 120px"
               size="small"
             />
-            <span class="sep">-</span>
+            <span class="sep sep-span">-</span>
             <el-date-picker
               v-model="formFirst[timeAlternative[indexTime].propEndTime]"
               value-format="YYYY-MM-DD"
@@ -133,8 +101,42 @@
           <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
           <el-button size="small" @click="onReset">重置</el-button>
           <el-button size="small" @click="upLoad">导出</el-button>
-          <el-button size="small" @click="onSaveAdvance">存为预设</el-button>
-          <el-button size="small" text type="primary" @click="showAdvance = !showAdvance">
+          <div v-if="permissionsMsd('displayStyleRightInfo', 'ServiceSectIDs')">
+            <el-dropdown size="small" type="primary" style="margin-top: 2px; margin-left: 12px">
+              <el-button size="small" @click="onSaveAdvance"
+                >存为预设<el-icon><ArrowDownBold /></el-icon
+              ></el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="item in presetList"
+                    :key="item.sortNO"
+                    @click="setForm(item)"
+                  >
+                    <div class="icon-drop">
+                      <span>{{ item.name }}</span>
+                      <div>
+                        <el-icon @click.stop="closeModel(item)" class="icon-hover"
+                          ><CloseBold
+                        /></el-icon>
+                        <el-icon
+                          @click.stop="starModal(item, 'unstar')"
+                          class="icon-hover"
+                          v-if="item.defaultFlag === '0'"
+                        >
+                          <Star />
+                        </el-icon>
+                        <el-icon @click.stop="starModal(item, 'star')" v-else>
+                          <StarFilled color="#fbc02d" />
+                        </el-icon>
+                      </div>
+                    </div>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+          <el-button size="small" text type="primary" @click="toggleAdvance">
             {{ showAdvance ? '收起' : '展开' }}
             <el-icon style="margin-left: 6px">
               <arrow-up v-if="showAdvance" />
@@ -146,16 +148,14 @@
     </div>
 
     <!-- 展开筛选面板（图二） -->
-    <transition name="fade">
-      <el-card v-if="showAdvance" shadow="always" class="advance-card">
+    <div v-if="showAdvance" name="fade" ref="advanceCardRef">
+      <el-card shadow="always" class="advance-card">
         <AdvanceSearchForm v-model="advance" :form-options="formOptions" />
-        <div> </div>
         <div class="advance-footer">
           <el-button type="primary" @click="onSearch">搜索</el-button>
-          <el-button @click="onResetAdvance">关闭</el-button>
         </div>
       </el-card>
-    </transition>
+    </div>
 
     <!-- 中间主区域：左表格 + 分隔条 + 右预览（图三） -->
     <div class="checkinfo-main">
@@ -313,7 +313,7 @@
                   </el-tooltip>
                   <el-tooltip v-else effect="dark" content="检查已锁定" placement="top">
                     <img
-                      @click="showLockDialog(row, false)"
+                      @click.stop="showLockDialog(row, false)"
                       class="image-icon"
                       src="@/assets/imgs/info/lock-icon.png"
                       alt="imgs"
@@ -591,6 +591,7 @@ import { arrayBufferToBase64 } from '@/utils/base64'
 import { ensureCLodop, printImages, detectCLodop } from '@/utils/clodop'
 import { detectIEVersionAndArch } from '@/utils'
 import { addpreset, deletepreset } from '@/api/plugConf'
+import { formatDate } from '@/utils/timeDate'
 // 预设
 const modalTemplate = reactive({
   name: ''
@@ -654,6 +655,14 @@ function onTimeKeyChange(key: string) {
 }
 // 展开筛选
 const showAdvance = ref(false)
+
+// 面板控制
+const advanceCardRef = ref<HTMLElement | null>(null)
+const toggleAdvance = () => {
+  setTimeout(() => {
+    showAdvance.value = !showAdvance.value
+  }, 10)
+}
 
 // 表单模型与选项缓存
 const advance = ref<Record<string, any>>({})
@@ -813,6 +822,7 @@ const getOrganization = () => {
 
 // 查询
 async function onSearch() {
+  showAdvance.value = false
   try {
     loading.value = true
     setQuery()
@@ -850,10 +860,15 @@ async function onSearch() {
 const onReset = () => {
   formFirst.value = {}
   advance.value = {}
+  formFirst.value.examEndTime = formatDate(new Date(), 'date')
+  formFirst.value.examStartTime = formatDate(new Date(), 'date')
   onSearch()
 }
-function onResetAdvance() {
-  showAdvance.value = false
+function onResetAdvance(event: MouseEvent) {
+  const cards = advanceCardRef.value
+  if (cards && !cards.contains(event?.target as Node)) {
+    showAdvance.value = false
+  }
   // Object.keys(advance).forEach((k) => ((advance as any)[k] = ''))
 }
 function onSizeChange(s: number) {
@@ -1212,11 +1227,6 @@ const getrecordexam = async (type: 'province' | 'pageApply') => {
 }
 const startGetPresetList = async () => {
   await getpresetList()
-  const d = new Date()
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  const day = `${yyyy}-${mm}-${dd}`
   if (presetList.value.length > 0) {
     const indexOnce = presetList.value.findIndex((item) => item.defaultFlag === '1')
     if (indexOnce !== -1) {
@@ -1225,21 +1235,23 @@ const startGetPresetList = async () => {
     } else {
       // 无默认预设：设置“检查时间”为当天 00:00 ~ 23:59:59，再查询
 
-      formFirst.value.examEndTime = day
-      formFirst.value.examStartTime = day
+      formFirst.value.examEndTime = formatDate(new Date(), 'date')
+      formFirst.value.examStartTime = formatDate(new Date(), 'date')
       onSearch()
     }
   } else {
     // 无任何预设：设置“检查时间”为当天 00:00 ~ 23:59:59，再查询
 
-    formFirst.value.examEndTime = day
-    formFirst.value.examStartTime = day
+    formFirst.value.examEndTime = formatDate(new Date(), 'date')
+    formFirst.value.examStartTime = formatDate(new Date(), 'date')
     onSearch()
   }
 }
 onMounted(async () => {
   window.addEventListener('mousemove', onMove)
   window.addEventListener('mouseup', stopDrag)
+  window.addEventListener('click', onResetAdvance)
+
   getTorg() // 超管机构才获取
 
   // getpresetList() //获取预设
@@ -1373,6 +1385,7 @@ onBeforeUnmount(() => {
   permiseListSearch()
   window.removeEventListener('mousemove', onMove)
   window.removeEventListener('mouseup', stopDrag)
+  document.removeEventListener('click', onResetAdvance)
 })
 </script>
 
@@ -1386,6 +1399,7 @@ onBeforeUnmount(() => {
 
 .toolbar {
   padding: 20px 12px 0;
+  margin-bottom: 10px;
   background: var(--el-fill-color-blank);
   border-bottom: 1px solid #ebeef5;
 }
@@ -1540,7 +1554,7 @@ onBeforeUnmount(() => {
   display: flex;
   color: var(--el-color-primary);
   cursor: pointer;
-  align-items: center;
+  place-items: center center;
 }
 
 .image-icon {
@@ -1577,10 +1591,6 @@ onBeforeUnmount(() => {
   display: inline-block;
   width: 4px;
   height: 18px;
-}
-
-.lock-icon .image-icon:hover {
-  cursor: no-drop;
 }
 
 .class-very-big {
@@ -1628,13 +1638,6 @@ onBeforeUnmount(() => {
   top: 3px;
   right: 25px;
   cursor: pointer;
-}
-
-.header-right-modal {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
 }
 
 .icon-drop {

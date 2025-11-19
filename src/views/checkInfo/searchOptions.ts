@@ -56,6 +56,7 @@ export const getSearchFormList = () => ({
       label: '性别',
       type: 'select',
       prop: 'gender',
+      labelWidth: '40px',
       width: '180px',
       opt: [
         { lable: '男', prop: '男' },
@@ -66,6 +67,8 @@ export const getSearchFormList = () => ({
     {
       type: 'double',
       label: '年龄',
+      labelWidth: '40px',
+
       pdList: [
         {
           type: 'number',
@@ -88,6 +91,8 @@ export const getSearchFormList = () => ({
     },
     {
       label: '生日',
+      labelWidth: '40px',
+
       type: 'date',
       prop: 'birthDay',
       width: '180px'
@@ -150,7 +155,7 @@ export const getSearchFormList = () => ({
       prop: 'examEquipment',
       width: '180px',
       loadOptFcn: 'loadExamEquipment',
-      filterable: !0,
+      filterable: false,
       opt: getdicitemlists('ExamEquipment')
     }
   ],
@@ -161,7 +166,7 @@ export const getSearchFormList = () => ({
       prop: 'serviceSectID',
       width: '180px',
       typeCode: 'ExamType',
-      filterable: !0,
+      filterable: false,
       opt: getDicmsgList('ExamType')
     },
     {
@@ -179,7 +184,7 @@ export const getSearchFormList = () => ({
       prop: 'examStatus',
       width: '180px',
       typeCode: 'ResultStatus_Exam',
-      filterable: !0,
+      filterable: false,
       opt: getDicmsgList('ResultStatus_Exam')
     },
     {

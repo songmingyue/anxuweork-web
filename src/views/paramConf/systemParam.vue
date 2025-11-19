@@ -501,6 +501,7 @@ function onZJSave(v: any) {
 }
 
 .title {
+  margin: 0 12px;
   font-size: 18px;
   color: var(--el-text-color-primary);
 }

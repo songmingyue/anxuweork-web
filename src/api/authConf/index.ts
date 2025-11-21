@@ -161,6 +161,7 @@ export const TaskTypeLabels = {
 
 export enum TaskTargetEnum {
   LocalStorage = 'LocalStorage',
+  LocalReport = 'LocalReport',
   CompanyCloud = 'CompanyCloud',
   ZheJiangRecognitionPlatform = 'ZheJiangRecognitionPlatform',
   IMCISCityPlatform = 'IMCISCityPlatform',
@@ -169,6 +170,7 @@ export enum TaskTargetEnum {
 
 export const TaskTargetLabels = {
   [TaskTargetEnum.LocalStorage]: '本地存储',
+  [TaskTargetEnum.LocalReport]: '本地报告',
   [TaskTargetEnum.CompanyCloud]: '云胶片',
   [TaskTargetEnum.ZheJiangRecognitionPlatform]: '浙江省平台',
   [TaskTargetEnum.IMCISCityPlatform]: '集成市平台',

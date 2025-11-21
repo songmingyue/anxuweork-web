@@ -82,7 +82,15 @@ function onCancel() {
 async function onConfirm() {
   const { isSuccess, message } = await editsysparametersingle({
     code: CodeName.ProvinceSXConfig,
-    value: JSON.stringify(form)
+    value: JSON.stringify({
+      ImageAppInfo: JSON.stringify(form.ImageAppInfo),
+      StorageInfo: JSON.stringify(form.StorageInfo),
+      filePath: form.filePath,
+      InterconnectDataConfig: form.InterconnectDataConfig,
+      RegisterServiceAddress: form.RegisterServiceAddress,
+      ProvinceAddress: form.ProvinceAddress,
+      LocalFileDirecotry: form.LocalFileDirecotry
+    })
   })
 
   if (isSuccess) {

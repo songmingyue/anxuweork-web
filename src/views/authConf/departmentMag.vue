@@ -60,6 +60,7 @@ const deptTypeOptions = ref<Array<{ label: string; value: string }>>([])
 // 加载机构（无分页）
 async function loadOrganizations() {
   orgLoading.value = true
+  console.log('orgQuery', orgQuery)
   try {
     const list = await getorganizationtree(orgQuery)
     orgList.value = list.data || []
@@ -236,6 +237,10 @@ const getDicmsgList = async () => {
   } catch (error) {
     console.error('获取字典数据失败', error)
   }
+}
+const confirms = () => {
+  dialogMsg.value.isShowDialog = false
+  loadOrganizations()
 }
 onMounted(() => {
   loadOrganizations()
@@ -442,12 +447,7 @@ onMounted(() => {
       v-model:visible="dialogMsg.isShowDialog"
       :isEdit="dialogMsg.isEdit"
       :EditData="dialogMsg.EditData"
-      @confirm="
-        () => {
-          dialogMsg.isShowDialog = false
-          loadOrganizations()
-        }
-      "
+      @confirm="confirms"
     />
     <DepartmentFormDialog
       v-model:visible="deptDialogVisible"

@@ -17,20 +17,20 @@ enum CStoreTypeEnum {
   JSRMYYCCommandSCP = 'JSRMYYCCommandSCP'
 }
 interface PacsConfig {
-  IsQRServiceOpen: boolean
+  IsQRServiceOpen: string
   QRServiceName: CStoreTypeEnum
   QRServicePort: string
-  IsFilmCStoreSCPOpen: boolean
+  IsFilmCStoreSCPOpen: string
   FilmCStoreSCPPort: string
-  IsImageCStoreSCPOpen: boolean
+  IsImageCStoreSCPOpen: string
   ImageCStoreSCPPort: string
-  IsGetDCMByOOSSCPOpen: boolean
+  IsGetDCMByOOSSCPOpen: string
   GetDCMByOOSSCPPort: string
-  IsFilmCStoreByCMoveSCPOpen: boolean
+  IsFilmCStoreByCMoveSCPOpen: string
   FilmCStoreByCMoveSCPPort: string
 }
 
-const props = defineProps<{ modelValue: boolean; model?: Partial<PacsConfig> }>()
+const props = defineProps<{ modelValue: boolean; model?: string }>()
 const emit = defineEmits<{
   (e: 'update:modelValue', v: boolean): void
   (e: 'save', v: PacsConfig): void
@@ -42,31 +42,31 @@ const visible = computed({
 })
 
 const form = reactive<PacsConfig>({
-  IsQRServiceOpen: true,
+  IsQRServiceOpen: 'true',
   QRServiceName: CStoreTypeEnum.CCommandSCP,
   QRServicePort: '105',
-  IsFilmCStoreSCPOpen: true,
+  IsFilmCStoreSCPOpen: 'true',
   FilmCStoreSCPPort: '11112',
-  IsImageCStoreSCPOpen: true,
+  IsImageCStoreSCPOpen: 'true',
   ImageCStoreSCPPort: '11113',
-  IsGetDCMByOOSSCPOpen: true,
+  IsGetDCMByOOSSCPOpen: 'true',
   GetDCMByOOSSCPPort: '11114',
-  IsFilmCStoreByCMoveSCPOpen: true,
+  IsFilmCStoreByCMoveSCPOpen: 'true',
   FilmCStoreByCMoveSCPPort: '11115'
 })
 
 watch(
-  () => props.model,
+  () => props.modelValue,
   (v) => {
     if (!v) return
-    Object.assign(form, v)
+    Object.assign(form, JSON.parse(props.model || ''))
   },
   { immediate: true, deep: true }
 )
 
 const boolOptions = [
-  { label: '是', value: true },
-  { label: '否', value: false }
+  { label: '是', value: 'true' },
+  { label: '否', value: 'false' }
 ]
 
 const cstoreOptions: Array<{ label: string; value: CStoreTypeEnum }> = [
@@ -106,12 +106,12 @@ async function onConfirm() {
         </ElSelect>
       </ElFormItem>
 
-      <ElFormItem label="CSTORE实现类" v-show="form.IsQRServiceOpen">
+      <ElFormItem label="CSTORE实现类" v-show="form.IsQRServiceOpen === 'true'">
         <ElSelect v-model="form.QRServiceName" placeholder="请选择">
           <ElOption v-for="o in cstoreOptions" :key="o.value" :label="o.label" :value="o.value" />
         </ElSelect>
       </ElFormItem>
-      <ElFormItem label="端口" v-show="form.IsQRServiceOpen">
+      <ElFormItem label="端口" v-show="form.IsQRServiceOpen === 'true'">
         <ElInput v-model="form.QRServicePort" placeholder="例如 105" />
       </ElFormItem>
 
@@ -125,7 +125,7 @@ async function onConfirm() {
           />
         </ElSelect>
       </ElFormItem>
-      <ElFormItem label="端口" v-show="form.IsFilmCStoreSCPOpen">
+      <ElFormItem label="端口" v-show="form.IsFilmCStoreSCPOpen === 'true'">
         <ElInput v-model="form.FilmCStoreSCPPort" placeholder="例如 11112" />
       </ElFormItem>
 
@@ -139,7 +139,7 @@ async function onConfirm() {
           />
         </ElSelect>
       </ElFormItem>
-      <ElFormItem label="端口" v-show="form.IsImageCStoreSCPOpen">
+      <ElFormItem label="端口" v-show="form.IsImageCStoreSCPOpen === 'true'">
         <ElInput v-model="form.ImageCStoreSCPPort" placeholder="例如 11113" />
       </ElFormItem>
 
@@ -153,7 +153,7 @@ async function onConfirm() {
           />
         </ElSelect>
       </ElFormItem>
-      <ElFormItem label="端口" v-show="form.IsGetDCMByOOSSCPOpen">
+      <ElFormItem label="端口" v-show="form.IsGetDCMByOOSSCPOpen === 'true'">
         <ElInput v-model="form.GetDCMByOOSSCPPort" placeholder="例如 11114" />
       </ElFormItem>
 
@@ -167,7 +167,7 @@ async function onConfirm() {
           />
         </ElSelect>
       </ElFormItem>
-      <ElFormItem label="端口" v-show="form.IsFilmCStoreByCMoveSCPOpen">
+      <ElFormItem label="端口" v-show="form.IsFilmCStoreByCMoveSCPOpen === 'true'">
         <ElInput v-model="form.FilmCStoreByCMoveSCPPort" placeholder="例如 11115" />
       </ElFormItem>
     </ElForm>

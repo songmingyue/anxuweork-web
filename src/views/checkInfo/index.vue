@@ -99,6 +99,13 @@
           </el-select>
         </el-form-item>
         <el-form-item>
+          <el-button size="small" class="btn-show" text type="primary" @click="toggleAdvance">
+            {{ showAdvance ? '收起' : '展开' }}
+            <el-icon style="margin-left: 6px">
+              <arrow-up v-if="showAdvance" />
+              <arrow-down v-else />
+            </el-icon>
+          </el-button>
           <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
           <el-button size="small" @click="onReset">重置</el-button>
           <el-button size="small" @click="upLoad">导出</el-button>
@@ -137,13 +144,6 @@
               </template>
             </el-dropdown>
           </div>
-          <el-button size="small" text type="primary" @click="toggleAdvance">
-            {{ showAdvance ? '收起' : '展开' }}
-            <el-icon style="margin-left: 6px">
-              <arrow-up v-if="showAdvance" />
-              <arrow-down v-else />
-            </el-icon>
-          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -670,21 +670,43 @@ const indexTime = ref(0)
 // 本地日期快捷项：点击时同时填充 formFirst 的开始/结束字段
 const dateShortcuts = [
   {
-    text: '今天',
+    text: '所有',
+    value() {
+      const end = new Date()
+      const start = new Date('1970-01-01')
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+      return [start]
+    }
+  },
+  {
+    text: '自定义',
     onClick() {
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = ''
+        formFirst.value[t.propEndTime] = ''
+      }
+    }
+  },
+  {
+    text: '今天',
+    value() {
       const end = new Date()
       const start = new Date()
-      // picker.$emit('pick', [start, end])
       const t = timeAlternative[indexTime.value]
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
       }
+      return [start]
     }
   },
   {
     text: '两天',
-    onClick() {
+    value() {
       const end = new Date()
       const start = new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000)
       const t = timeAlternative[indexTime.value]
@@ -692,11 +714,12 @@ const dateShortcuts = [
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
       }
+      return [start]
     }
   },
   {
     text: '三天',
-    onClick() {
+    value() {
       const end = new Date()
       const start = new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000)
       const t = timeAlternative[indexTime.value]
@@ -704,11 +727,12 @@ const dateShortcuts = [
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
       }
+      return [start]
     }
   },
   {
-    text: '一周',
-    onClick() {
+    text: '七天',
+    value() {
       const end = new Date()
       const start = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
       const t = timeAlternative[indexTime.value]
@@ -716,30 +740,51 @@ const dateShortcuts = [
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
       }
+      return [start]
     }
   },
   {
-    text: '一个月',
-    onClick() {
+    text: '本周',
+    value() {
       const end = new Date()
-      const start = new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)
+      const start = new Date()
+      const day = start.getDay() || 7 // 周日为0，转换为7
+      start.setDate(start.getDate() - day + 1) // 设置为本周一
       const t = timeAlternative[indexTime.value]
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
       }
+      return [start]
     }
   },
   {
-    text: '一年',
-    onClick() {
+    text: '本月',
+    value() {
       const end = new Date()
-      const start = new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000)
+      const start = new Date()
+      start.setDate(1) // 设置为本月1号
       const t = timeAlternative[indexTime.value]
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
       }
+      return [start]
+    }
+  },
+  {
+    text: '本年',
+    value() {
+      const end = new Date()
+      const start = new Date()
+      start.setMonth(0) // 设置为1月
+      start.setDate(1) // 设置为1号
+      const t = timeAlternative[indexTime.value]
+      if (t) {
+        formFirst.value[t.propStart] = formatDate(start, 'date')
+        formFirst.value[t.propEndTime] = formatDate(end, 'date')
+      }
+      return [start]
     }
   }
 ]
@@ -1771,5 +1816,10 @@ onBeforeUnmount(() => {
   min-width: 150px;
   align-items: center;
   padding: 2px 10px;
+}
+
+.btn-show {
+  margin-right: -12px;
+  margin-left: -12px;
 }
 </style>

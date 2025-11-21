@@ -14,15 +14,19 @@
         <ElRow :gutter="20">
           <ElCol :span="24">
             <ElFormItem prop="pluginName" label="任务名称" required>
-              <ElInput v-model="baseForm.pluginName" placeholder="请输入任务名称" />
+              <ElInput
+                v-model="baseForm.pluginName"
+                placeholder="请输入任务名称"
+                style="width: 450px"
+              />
             </ElFormItem>
           </ElCol>
           <ElCol :span="24">
             <ElFormItem prop="pluginUID" label="任务用途" required v-if="!pluginServiceMapUID">
               <ElSelect
+                style="width: 450px"
                 v-model="baseForm.pluginUID"
                 placeholder="请选择任务用途"
-                style="width: 100%"
                 @change="
                   () => {
                     const filterName = taskPurposeOptions.find(
@@ -117,7 +121,6 @@ import {
 import DynamicFormField from './DynamicFormField.vue'
 import BusinessFormRenderer from './BusinessFormRenderer.vue'
 import { createpluginservicemap, editpluginservicemap } from '@/api/plugConf'
-
 interface Props {
   modelValue: boolean
   title?: string
@@ -505,9 +508,40 @@ const validateAllRequiredOnSubmit = () => {
 // 处理步骤点击
 const handleStepClick = (index: number) => {
   stepActive.value = index + 1
-  console.log('点击步骤:', index)
-  formActiveSmall.value = [formActive.value[index]]
-  console.log(formActiveSmall.value, 'formActiveSmall')
+  if (index === 0 || index === 4) {
+    formActiveSmall.value = [formActive.value[index]]
+  }
+
+  if (index === 1) {
+    formActiveSmall.value = stepDataProcessing(
+      formActive.value[index],
+      formData.value.GainTypeModule.GainType
+    )
+  }
+  if (index === 2) {
+    formActiveSmall.value = stepDataProcessing(
+      formActive.value[index],
+      formData.value.GetTaskModule.ClassName
+    )
+  }
+  if (index === 3) {
+    formActiveSmall.value = stepDataProcessing(
+      formActive.value[index],
+      formData.value.GainTypeModule.GainType
+    )
+  }
+}
+
+const stepDataProcessing = (stepData, formValue) => {
+  const newData = JSON.parse(JSON.stringify(stepData))
+  const firstField = newData.fiedlInfos[0].defaultOpt?.length
+    ? newData.fiedlInfos[0].defaultOpt
+    : newData.fiedlInfos[0].opt || []
+  const lists = firstField.filter((item) => formValue.includes(item.modelFlag))
+  if (lists.length > 0) {
+    newData.fiedlInfos[0].opt = lists
+  }
+  return [newData]
 }
 
 const processFormActiveSmall = computed(() => {
@@ -523,8 +557,6 @@ const processFormActiveSmall = computed(() => {
   }
 
   const currentModule = formActiveSmall.value[0]
-  const isNeedProcess = currentModule.prop === 'GetTaskModule'
-  const isfileSaveType = currentModule.prop === 'SaveFileModule'
 
   // 安全获取选项数据
   const firstField = currentModule.fiedlInfos[0]
@@ -539,19 +571,9 @@ const processFormActiveSmall = computed(() => {
   }
 
   // 根据模块类型过滤选项
-  let filteredOptions = originalOptions
-  if (isNeedProcess && originalOptions.length > 4) {
-    filteredOptions = originalOptions.slice(0, 4)
-  } else if (isfileSaveType && originalOptions.length > 1) {
-    filteredOptions = originalOptions.slice(0, 1)
-  }
 
   // 创建新的对象避免直接修改原数据
   const newOptions = JSON.parse(JSON.stringify(formActiveSmall.value))
-  if (newOptions[0] && newOptions[0].fiedlInfos && newOptions[0].fiedlInfos[0]) {
-    newOptions[0].fiedlInfos[0].defaultOpt = filteredOptions
-    newOptions[0].fiedlInfos[0].opt = filteredOptions
-  }
 
   // 为所有字段的 prop 添加最外层模块名前缀
   const addModulePrefix = (fields: any[], prefix: string) => {
@@ -804,6 +826,34 @@ watch(
   }
 )
 
+watch(
+  () => formData.value.GainTypeModule?.GainType,
+  (val, oldval) => {
+    if (val && oldval) {
+      formData.value.GetTaskModule.ClassName = ''
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => formData.value.GetTaskModule?.ClassName,
+  (val, oldval) => {
+    if (val && oldval) {
+      formData.value.ReadFileModule.ClassName = ''
+    }
+  },
+  { immediate: true }
+)
+watch(
+  () => formData.value.ReadFileModule?.ClassName,
+  (val, oldval) => {
+    if (val && oldval) {
+      formData.value.SaveFileModule.ClassName = ''
+    }
+  },
+  { immediate: true }
+)
 // 当类型结构生成后，把编辑值合并进来
 watch(
   () => typeForm.value,
@@ -820,12 +870,13 @@ watch(
 .task-config-dialog {
   .el-dialog__body {
     height: 75vh;
-    overflow: auto;
+    overflow-y: auto;
   }
 
   .task-form-container {
     max-height: 70vh;
-    overflow-y: auto;
+
+    /* overflow-y: auto; */
   }
 
   .card-title {

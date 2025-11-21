@@ -17,10 +17,10 @@ const visible = computed({
 const boolVal = ref<boolean>(false)
 
 watch(
-  () => props.value,
+  () => props.modelValue,
   (v) => {
     if (v !== undefined) {
-      boolVal.value = v
+      boolVal.value = props.value || false
     }
   }
 )
@@ -35,7 +35,10 @@ function onCancel() {
 }
 async function onConfirm() {
   const { isSuccess, message } = await editsysparametersingle({
-    code: CodeName.ISDownloadReportInWebAuto,
+    code:
+      props.title === '浏览报告自动从云端下载'
+        ? CodeName.ISDownloadReportInWebAuto
+        : CodeName.IsCanRePrint,
     value: JSON.stringify(boolVal.value)
   })
   if (isSuccess) {

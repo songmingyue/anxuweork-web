@@ -107,7 +107,12 @@
         <el-form-item label="任务组名" label-width="80px" required>
           <el-input v-model="serviceModal.serviceName" placeholder="请输入服务名称" />
         </el-form-item>
-        <el-form-item label="运行状态" label-width="80px" required>
+        <el-form-item
+          label="运行状态"
+          v-if="serviceDlgTitle !== '编辑服务'"
+          label-width="80px"
+          required
+        >
           <el-select v-model="serviceModal.ifEnable">
             <el-option label="启用" :value="true" />
             <el-option label="停用" :value="false" />

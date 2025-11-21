@@ -41,6 +41,7 @@ const submitForm = async () => {
     // 新增逻辑
     const { isSuccess, message } = await createOrganization(req)
     ElMessage(message)
+    console.log(message, 'message')
     isSuccess ? emit('confirm', false) : ''
   }
 }
@@ -60,7 +61,7 @@ onMounted(() => {
     >
       <el-form :model="dialogForm" label-width="110px" :rules="rules" ref="formRef">
         <el-form-item label="机构编号" prop="searchOrganizationID" required>
-          <el-input v-model="dialogForm.searchOrganizationID" />
+          <el-input v-model="dialogForm.searchOrganizationID" :disabled="isEdit" />
         </el-form-item>
         <el-form-item label="机构名称" prop="organizationName" required>
           <el-input v-model="dialogForm.organizationName" />

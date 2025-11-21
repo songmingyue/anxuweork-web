@@ -53,10 +53,18 @@ async function onConfirm() {
         <ElInput v-model="form.Url" placeholder="http://..." />
       </ElFormItem>
       <ElFormItem label="厂商ID">
-        <ElInput v-model="form.ProviderID" placeholder="请输入厂商ID" />
+        <input type="text" style="display: none" autocomplete="username" />
+        <ElInput v-model="form.ProviderID" placeholder="请输入厂商ID" autocomplete="off" />
       </ElFormItem>
       <ElFormItem label="厂商密钥">
-        <ElInput type="password" v-model="form.ProviderKey" placeholder="请输入厂商密钥" />
+        <input type="password" style="display: none" autocomplete="new-password" />
+        <ElInput
+          type="password"
+          v-model="form.ProviderKey"
+          placeholder="请输入厂商密钥"
+          autocomplete="off"
+          show-password
+        />
       </ElFormItem>
     </ElForm>
     <template #footer>

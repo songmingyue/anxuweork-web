@@ -3,7 +3,7 @@ import { computed, reactive, watch } from 'vue'
 import { ElDialog, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElMessage } from 'element-plus'
 import { CodeName, editsysparametersingle } from '@/api/authConf'
 
-type ChargeValue = '1' | '0'
+type ChargeValue = string | '0' | '1'
 
 const props = defineProps<{ modelValue: boolean; value?: ChargeValue }>()
 const emit = defineEmits<{

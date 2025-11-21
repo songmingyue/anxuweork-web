@@ -143,8 +143,8 @@ function onConfirm() {
 <template>
   <ElDialog v-model="visible" title="拆分任务插入上传和推送表配置" width="720px" append-to-body>
     <div class="split-conf">
-      <ElForm label-position="left" label-width="240px">
-        <ElFormItem label="是否启用新任务配置">
+      <ElForm label-position="left" label-width="230px">
+        <ElFormItem label="是否启用新任务配置------------------------" label-width="255px">
           <ElSelect v-model="form.IsEnableNewConfig" placeholder="请选择">
             <ElOption
               v-for="o in boolOptions"
@@ -155,7 +155,7 @@ function onConfirm() {
           </ElSelect>
         </ElFormItem>
         <div class="section-sep"></div>
-        <ElFormItem label="是否插入上传任务">
+        <ElFormItem label="是否插入上传任务--------------------------" label-width="255px">
           <ElSelect v-model="form.IsInsertUploadTask" placeholder="请选择">
             <ElOption
               v-for="o in boolOptions"
@@ -165,7 +165,7 @@ function onConfirm() {
             />
           </ElSelect>
         </ElFormItem>
-        <div v-show="form.IsInsertUploadTask">
+        <div v-show="form.IsInsertUploadTask" style="margin-left: 25px">
           <ElFormItem label="是否插入检查上传任务">
             <ElSelect v-model="form.IsInsertExamUpload" placeholder="请选择">
               <ElOption
@@ -178,7 +178,7 @@ function onConfirm() {
           </ElFormItem>
 
           <ElFormItem label="插入检查上传任务自定义过滤条件" v-show="form.IsInsertExamUpload">
-            <ElInput v-model="form.UploadExamCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.UploadExamCondition" placeholder="请输入" />
           </ElFormItem>
 
           <ElFormItem label="是否插入报告上传任务">
@@ -193,7 +193,7 @@ function onConfirm() {
           </ElFormItem>
 
           <ElFormItem label="插入报告上传任务自定义过滤条件" v-show="form.IsInsertReportUpload">
-            <ElInput v-model="form.UploadReportCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.UploadReportCondition" placeholder="请输入" />
           </ElFormItem>
 
           <ElFormItem label="是否插入胶片上传任务">
@@ -207,7 +207,7 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入胶片上传任务自定义过滤条件" v-show="form.IsInsertFilmUpload">
-            <ElInput v-model="form.UploadFilmCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.UploadFilmCondition" placeholder="请输入" />
           </ElFormItem>
           <ElFormItem label="是否插入影像上传任务">
             <ElSelect v-model="form.IsInsertImageUpload" placeholder="请选择">
@@ -220,12 +220,12 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入影像上传任务自定义过滤条件" v-show="form.IsInsertImageUpload">
-            <ElInput v-model="form.UploadImageCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.UploadImageCondition" placeholder="请输入" />
           </ElFormItem>
         </div>
 
         <div class="section-sep"></div>
-        <ElFormItem label="是否插入推送任务">
+        <ElFormItem label="是否插入推送任务------------------------" label-width="255px">
           <ElSelect v-model="form.IsInsertPushTask" placeholder="请选择">
             <ElOption
               v-for="o in boolOptions"
@@ -235,7 +235,7 @@ function onConfirm() {
             />
           </ElSelect>
         </ElFormItem>
-        <div v-show="form.IsInsertPushTask">
+        <div v-show="form.IsInsertPushTask" style="margin-left: 25px">
           <ElFormItem label="是否插入检查推送任务">
             <ElSelect v-model="form.IsInsertExamPush" placeholder="请选择">
               <ElOption
@@ -247,7 +247,7 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入检查推送任务自定义过滤条件" v-show="form.IsInsertExamPush">
-            <ElInput v-model="form.PushExamCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.PushExamCondition" placeholder="请输入" />
           </ElFormItem>
           <ElFormItem label="是否插入报告推送任务">
             <ElSelect v-model="form.IsInsertReportPush" placeholder="请选择">
@@ -260,7 +260,7 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入报告推送任务自定义过滤条件" v-show="form.IsInsertReportPush">
-            <ElInput v-model="form.PushReportCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.PushReportCondition" placeholder="请输入" />
           </ElFormItem>
           <ElFormItem label="是否插入胶片推送任务">
             <ElSelect v-model="form.IsInsertFilmPush" placeholder="请选择">
@@ -273,7 +273,7 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入胶片推送任务自定义过滤条件" v-show="form.IsInsertFilmPush">
-            <ElInput v-model="form.PushFilmCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.PushFilmCondition" placeholder="请输入" />
           </ElFormItem>
           <ElFormItem label="是否插入影像推送任务">
             <ElSelect v-model="form.IsInsertImagePush" placeholder="请选择">
@@ -286,13 +286,13 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入影像推送任务自定义过滤条件" v-show="form.IsInsertImagePush">
-            <ElInput v-model="form.PushImageCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.PushImageCondition" placeholder="请输入" />
           </ElFormItem>
         </div>
 
         <div class="section-sep"></div>
 
-        <ElFormItem label="是否插入下载任务">
+        <ElFormItem label="是否插入下载任务--------------------------" label-width="255px">
           <ElSelect v-model="form.IsInsertDownTask" placeholder="请选择">
             <ElOption
               v-for="o in boolOptions"
@@ -302,7 +302,7 @@ function onConfirm() {
             />
           </ElSelect>
         </ElFormItem>
-        <div v-show="form.IsInsertDownTask">
+        <div v-show="form.IsInsertDownTask" style="margin-left: 25px">
           <ElFormItem label="是否插入报告下载任务">
             <ElSelect v-model="form.IsInsertReportDown" placeholder="请选择">
               <ElOption
@@ -314,7 +314,7 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入报告下载任务自定义过滤条件" v-show="form.IsInsertReportDown">
-            <ElInput v-model="form.DownReportCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.DownReportCondition" placeholder="请输入" />
           </ElFormItem>
 
           <ElFormItem label="是否插入胶片下载任务">
@@ -328,7 +328,7 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入胶片下载任务自定义过滤条件" v-show="form.IsInsertFilmDown">
-            <ElInput v-model="form.DownFilmCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.DownFilmCondition" placeholder="请输入" />
           </ElFormItem>
           <ElFormItem label="是否插入影像下载任务">
             <ElSelect v-model="form.IsInsertImageDown" placeholder="请选择">
@@ -341,7 +341,7 @@ function onConfirm() {
             </ElSelect>
           </ElFormItem>
           <ElFormItem label="插入影像下载任务自定义过滤条件" v-show="form.IsInsertImageDown">
-            <ElInput v-model="form.DownImageCondition" placeholder="请输入" />
+            <ElInput clearable v-model="form.DownImageCondition" placeholder="请输入" />
           </ElFormItem>
         </div>
       </ElForm>

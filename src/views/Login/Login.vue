@@ -80,7 +80,10 @@ onMounted(() => {
           </div>
           <Transition appear enter-active-class="animate__animated animate__bounceInRight">
             <div class="right-inner">
-              <div class="form-box">
+              <div
+                class="form-box"
+                :style="isLogin && organizationList.length > 0 ? 'width: 400px;' : 'width: 500px'"
+              >
                 <LoginForm
                   v-if="isLogin && organizationList.length > 0"
                   :organizationList="organizationList"
@@ -90,6 +93,14 @@ onMounted(() => {
 
                 <RegisterForm v-else class="form-card" @to-login="toLogin" />
                 <div class="class-message">{{ companyName }} {{ eword }} {{ version }}</div>
+              </div>
+              <div class="right-img" v-if="isLogin && organizationList.length > 0">
+                <img
+                  style="height: 250px; margin-top: 56px"
+                  src="@/assets/imgs/logo.png
+                  "
+                />
+                <h3 class="login-img">{{ underlineToHump(appStore.getTitle) }}</h3>
               </div>
             </div>
           </Transition>
@@ -111,8 +122,8 @@ onMounted(() => {
   padding-right: 10px;
   padding-left: 10px;
   overflow: auto;
-  // background: var(--login-bg-color);
-  background: url('../../assets/imgs/bac-login3.jpg') no-repeat;
+  background: var(--login-bg-color);
+  // background: url('../../assets/imgs/bac-login3.jpg') no-repeat;
   background-position: center;
   background-size: cover;
   // }
@@ -174,6 +185,7 @@ onMounted(() => {
 }
 
 .brand-title {
+  display: none;
   font-size: 20px;
   font-weight: bold;
 }
@@ -218,7 +230,7 @@ onMounted(() => {
 }
 
 .actions {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: flex-end;
 }
@@ -229,7 +241,7 @@ onMounted(() => {
 
 .right-inner {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   height: calc(100% - 60px);
@@ -239,7 +251,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 500px;
+  width: 417px;
   max-width: 100%;
 }
 
@@ -251,7 +263,7 @@ onMounted(() => {
   // 小于 xl 圆角+白底（light）
   // @media (width <= 1279px) {
   background: #fff;
-  border-radius: 20px;
+  border-radius: 0;
   // }header-row
 }
 
@@ -259,5 +271,23 @@ onMounted(() => {
   margin-top: 20px;
   color: #fff;
   text-align: center;
+}
+
+.right-img {
+  position: relative;
+  display: flex;
+  width: 345px;
+  height: 457px;
+  margin-top: -43px;
+  background: #fff;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-img {
+  position: absolute;
+  top: 26px;
+  right: 30px;
+  color: #666;
 }
 </style>

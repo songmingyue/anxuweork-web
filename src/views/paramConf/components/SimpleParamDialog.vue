@@ -25,14 +25,17 @@ const visible = computed({
 const state = reactive<{ val: string }>({ val: props.value ?? '' })
 
 watch(
-  () => props.value,
-  (v) => {
+  () => props.modelValue,
+  (value) => {
+    if (!value) {
+      return
+    }
     if (props.title === '节点接受数椐临时目录') {
-      state.val = (JSON.parse(v as any) as any).TemporaryDirectory
+      state.val = (JSON.parse(props.value as any) as any).TemporaryDirectory
     } else if (props.title === '消息系统配置') {
-      state.val = (JSON.parse(v as any) as any).Url
+      state.val = (JSON.parse(props.value as any) as any).Url
     } else {
-      state.val = v ?? ''
+      state.val = props.value ?? ''
     }
   }
 )

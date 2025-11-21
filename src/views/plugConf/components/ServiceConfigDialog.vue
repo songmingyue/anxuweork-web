@@ -166,10 +166,12 @@ function onCancel() {
       </ElFormItem>
 
       <ElFormItem prop="userId" label="数据库连接用户名">
+        <input type="text" style="display: none" autocomplete="username" />
         <ElInput v-model="form.userId" placeholder="请输入用户名" />
       </ElFormItem>
 
       <ElFormItem prop="password" label="数据库连接密码">
+        <input type="text" style="display: none" autocomplete="current-password" />
         <ElInput v-model="form.password" type="password" placeholder="请输入密码" show-password />
       </ElFormItem>
 

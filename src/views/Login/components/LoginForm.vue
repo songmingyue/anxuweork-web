@@ -4,7 +4,6 @@ import { Form, FormSchema } from '@/components/Form'
 import { ElCheckbox, ElButton } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { loginApi } from '@/api/login'
-import { useAppStore } from '@/store/modules/app'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OrganizationList, UserLoginTypes } from '@/api/login/types'
@@ -13,7 +12,6 @@ import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
 import { encryptWithPublicKey } from '@/utils/encrypt'
 import { getLoginKey } from '@/api/common'
-import { underlineToHump } from '@/utils'
 const publicKey = ref('')
 const { required } = useValidator()
 
@@ -23,7 +21,6 @@ const props = defineProps<{
 }>()
 
 console.log('传入的机构列表', props.organizationList)
-const appStore = useAppStore()
 
 const userStore = useUserStore()
 
@@ -44,13 +41,13 @@ const schema = reactive<FormSchema[]>([
     colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => <h2 class="form-title">{underlineToHump(appStore.getTitle)}登录</h2>
+        default: () => <h2 class="form-title">登录</h2>
       }
     }
   },
   {
     field: 'organizationID',
-    label: '机构',
+    label: '',
     component: 'Select',
     colProps: { span: 24 },
     componentProps: {
@@ -70,7 +67,7 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'account',
-    label: '用户名',
+    label: '',
     component: 'Input',
     colProps: { span: 24 },
     componentProps: {
@@ -80,7 +77,7 @@ const schema = reactive<FormSchema[]>([
   },
   {
     field: 'password',
-    label: '密码',
+    label: '',
     component: 'InputPassword',
     colProps: { span: 24 },
     componentProps: {

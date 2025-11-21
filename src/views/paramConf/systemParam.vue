@@ -16,20 +16,19 @@
         <div class="group-body">
           <el-row v-for="item in items[g.key]" :key="item.key" :gutter="40" class="cfg-item">
             <el-col :span="8" :xs="10" class="flex-col" @click="onConfig(item)">
-              <div class="name">
-                <el-tooltip class="box-item" effect="dark" content="设置" placement="top-start">
-                  <el-icon :size="25"><Setting /></el-icon>
-                </el-tooltip>
-
-                {{ item.name }}</div
-              ></el-col
-            >
-            <el-col :span="10" :xs="10" class="flex-col">
-              <div v-if="item.desc" class="desc">{{ item.desc }}</div>
+              <el-tooltip effect="dark" :content="item.name" placement="top">
+                <div class="name">
+                  <el-tooltip class="box-item" effect="dark" content="设置" placement="top-start">
+                    <el-icon :size="25"><Setting /></el-icon>
+                  </el-tooltip>
+                  <span class="name-text">{{ item.name }}</span>
+                </div>
+              </el-tooltip>
             </el-col>
-
-            <el-col :span="6" :xs="4" class="flex-col">
-              <div class="float-right"> </div>
+            <el-col :span="14" :xs="10" class="flex-col">
+              <el-tooltip v-if="item.desc" effect="dark" :content="item.desc" placement="top">
+                <div class="desc">{{ item.desc }}</div>
+              </el-tooltip>
             </el-col>
           </el-row>
         </div>
@@ -39,7 +38,7 @@
     <!-- 拆分任务插入上传和推送表配置 弹窗 -->
     <SplitTaskConfigDialog v-model="showSplitTaskDlg" :model="splitTaskModel" @save="onSplitSave" />
     <!-- 收费状态默认值配置 弹窗 -->
-    <ChargeStatusDefaultDialog v-model="showChargeDlg" />
+    <ChargeStatusDefaultDialog :value="editData.value || '0'" v-model="showChargeDlg" />
     <!-- 通用参数 弹窗 -->
     <SimpleParamDialog
       v-model="showSimpleDlg"
@@ -301,7 +300,8 @@ async function onConfig(item: CfgItem) {
   }
   // 检查（图4）分组的弹窗
   if (item.key === 'ISDownloadReportInWebAuto') {
-    autoCloudVal.value = Boolean((data as any)?.[0]?.value ?? false)
+    // autoCloudVal.value = Boolean((data as any)?.[0]?.value ?? false)
+    autoCloudVal.value = (data as any)?.[0]?.value === 'true'
     showAutoCloudDlg.value = true
     return
   }
@@ -311,7 +311,7 @@ async function onConfig(item: CfgItem) {
     return
   }
   if (item.key === 'IsCanRePrint') {
-    reprintVal.value = Boolean((data as any)?.[0]?.value ?? true)
+    reprintVal.value = (data as any)?.[0]?.value === 'true'
     showReprintDlg.value = true
     return
   }
@@ -338,10 +338,13 @@ async function onConfig(item: CfgItem) {
     const tableData = await getpreset({
       userInfo: userStore.getUserInfo
     })
+    console.log('tableData:', tableData)
     exportSelected.value = []
-    if (tableData.data && tableData.data[0]?.queryCondition) {
-      exportSelected.value = JSON.parse(tableData.data[0]?.queryCondition) || []
+    if (tableData.data && tableData.data.length > 0) {
+      exportSelected.value =
+        JSON.parse(tableData.data[tableData.data.length - 1]?.queryCondition) || []
     }
+
     showExportDlg.value = true
     return
   }
@@ -483,7 +486,7 @@ function onZJSave(v: any) {
 .sys-param {
   height: calc(100vh - 60px);
   padding: 12px 16px;
-  background: var(--app-content-bg-color);
+  background: var(--el-fill-color-blank);
 }
 
 /* 折叠标题 */
@@ -524,15 +527,28 @@ function onZJSave(v: any) {
 
 .cfg-item .name {
   display: flex;
+  max-width: 100%;
+  overflow: hidden;
   font-size: 15px;
-  gap: 8px;
   color: var(--el-text-color-primary);
+  gap: 8px;
+}
+
+.cfg-item .name .name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
 }
 
 .cfg-item .desc {
+  max-width: 100%;
   margin-top: 4px;
+  overflow: hidden;
   font-size: 12px;
   color: #909399;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .flex-col {

@@ -314,14 +314,22 @@ const updateFormData = (data: Record<string, any>) => {
 }
 
 // 处理字段更新
-const handleFieldUpdate = (data: { prop: string; value: any }) => {
+const handleFieldUpdate = (data: { prop: string; value: any; newFormValue: any }) => {
   console.log('字段更新:', data)
   let stepForm: any = { ...formData.value }
   if (typeForm.value !== 'step') {
     stepForm[data.prop] = data.value
   } else {
-    const { prop, value } = data
+    const { prop, value, newFormValue } = data
     const propList = prop.split('.')
+    for (const key in newFormValue) {
+      if (formData.value[key.split('.')[0]][key.split('.')[1]]) {
+        stepForm[key.split('.')[0]][key.split('.')[1]] =
+          formData.value[key.split('.')[0]][key.split('.')[1]]
+      } else {
+        stepForm[key.split('.')[0]][key.split('.')[1]] = newFormValue[key]
+      }
+    }
     stepForm = {
       ...stepForm,
       [processFormActiveSmall.value.prop]: {
@@ -353,7 +361,12 @@ const initFormData = (configData: any[]) => {
   // 遍历配置数据，设置默认值
   configData.forEach((config) => {
     if (config.dataDefault) {
-      formData.value[config.prop] = { ...config.dataDefault }
+      formData.value[config.prop] = {}
+      for (const i in config.dataDefault) {
+        if (config.dataDefault[i]) {
+          formData.value[config.prop][i] = config.dataDefault[i]
+        }
+      }
     }
   })
 }
@@ -371,9 +384,33 @@ const cancel = () => {
 
   visible.value = false
 }
+// step 处理
+const stepSubmit = () => {
+  if (!formData.value.GetTaskModule.ClassName) {
+    handleStepClick(1)
+    ElMessage.warning('请先选择任务获取方式')
+    return false
+  }
+  if (!formData.value.ReadFileModule.ClassName) {
+    handleStepClick(2)
+    ElMessage.warning('请先选择读取文件方式')
+    return false
+  }
+  if (!formData.value.SaveFileModule.ClassName) {
+    handleStepClick(3)
+    ElMessage.warning('请先选择保存文件方式')
+    return false
+  }
+  return true
+}
 
 // 提交处理
 const handleSubmit = async () => {
+  if (typeForm.value === 'step') {
+    if (stepSubmit() === false) {
+      return
+    }
+  }
   try {
     // 验证基础表单
     await baseFormRef.value?.validate()
@@ -478,26 +515,23 @@ const validateAllRequiredOnSubmit = () => {
     const value = prop.includes('.') ? getValueByPath(formData.value, prop) : formData.value[prop]
 
     if (isEmpty(value)) {
+      // 单独处理step
       if (prop.split('.')[0] === 'GetTaskModule') {
-        if (value === 'TaskCount') {
-          errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
-        }
+        errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
+        handleStepClick(1)
+        return errors
+      }
+      if (prop.split('.')[0] === 'SaveFileModule') {
+        errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
+        handleStepClick(3)
+        return errors
+      }
+      if (prop.split('.')[0] === 'ReadFileModule') {
+        handleStepClick(2)
+        errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
+        return errors
       } else {
-        // 单独处理step
-        if (prop.split('.')[0] === 'ReadFileModule') {
-          if (
-            (['IMCISAETitle', 'PeerAddress', 'PeerAETitle', 'PeerPort'].includes(value) &&
-              formData.value['ReadFileModule']?.ClassName === 'ReadIMGFileByCMOVE') ||
-            formData.value['ReadFileModule']?.ClassName === 'ReadIMGByCGET' ||
-            formData.value['ReadFileModule']?.ClassName === 'ReadFilmByCget' ||
-            formData.value['ReadFileModule']?.ClassName === 'ReadFilmByCMOVE' ||
-            formData.value['ReadFileModule']?.ClassName === 'ReadIMGFileByCMOVE'
-          ) {
-            errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
-          }
-        } else {
-          errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
-        }
+        errors.push({ prop, message: requiredRule.message || `请完善 ${prop}` })
       }
     }
   })
@@ -667,7 +701,11 @@ const changePlugin = (val) => {
           ) {
             formActiveSmall.value[0].fiedlInfos.forEach((field) => {
               if (field.prop && field.dataDefault !== undefined) {
-                defaultFormData[field.prop] = field.dataDefault
+                for (const i in field.dataDefault) {
+                  if (field.dataDefault[i]) {
+                    defaultFormData[i] = field.dataDefault[i]
+                  }
+                }
               }
             })
           }
@@ -831,6 +869,8 @@ watch(
   (val, oldval) => {
     if (val && oldval) {
       formData.value.GetTaskModule.ClassName = ''
+      formData.value.ReadFileModule.ClassName = ''
+      formData.value.SaveFileModule.ClassName = ''
     }
   },
   { immediate: true }
@@ -841,15 +881,6 @@ watch(
   (val, oldval) => {
     if (val && oldval) {
       formData.value.ReadFileModule.ClassName = ''
-    }
-  },
-  { immediate: true }
-)
-watch(
-  () => formData.value.ReadFileModule?.ClassName,
-  (val, oldval) => {
-    if (val && oldval) {
-      formData.value.SaveFileModule.ClassName = ''
     }
   },
   { immediate: true }

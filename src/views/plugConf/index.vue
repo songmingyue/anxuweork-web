@@ -152,7 +152,8 @@ import {
   ElSelect,
   ElOption,
   ElPagination,
-  ElDialog
+  ElDialog,
+  ElMessageBox
 } from 'element-plus'
 // Template dialog moved into TemplateDropdown component
 import {
@@ -185,7 +186,7 @@ const taskList = ref<Servicemaplist[]>([])
 const showServiceModal = ref(false)
 const serviceModal = ref<ServiceConfig>({
   serviceName: '',
-  ifEnable: false
+  ifEnable: true
 })
 const taskPurposeOptions = ref<any[]>([])
 const dlgTitle = ref('新增任务')
@@ -224,12 +225,20 @@ async function loadServices() {
 }
 
 const deletepluginservice = async (row: Servicemaplist) => {
+  ElMessageBox.confirm('确定删除该任务吗?', '提示', {})
+    .then(() => deletepluginserviceConfirmed(row))
+    .catch(() => {
+      /* 取消删除 */
+    })
+}
+const deletepluginserviceConfirmed = async (row: Servicemaplist) => {
   const { isSuccess, message } = await deletepluginservicemap(row)
+
   if (isSuccess) {
+    ElMessage.success(message || '任务删除成功')
     loadTasks()
-    ElMessage.success(message || '操作成功')
   } else {
-    ElMessage.warning(message || '操作失败')
+    ElMessage.error(message || '任务删除失败')
   }
 }
 // 下表：加载任务（不分页）
@@ -279,6 +288,19 @@ function onEditService(row: ServiceConfig) {
 }
 
 async function onDeleteService(row: ServiceConfig) {
+  ElMessageBox.confirm('确定删除该服务吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => deleteServiceConfirmed(row))
+    .catch(() => {
+      /* 取消删除 */
+    })
+
+  // TODO: 调用API删除服务
+}
+const deleteServiceConfirmed = async (row: ServiceConfig) => {
   const { isSuccess, message } = await deletepluginService(row)
 
   if (isSuccess) {
@@ -288,7 +310,6 @@ async function onDeleteService(row: ServiceConfig) {
   } else {
     ElMessage.error(message || '服务删除失败')
   }
-  // TODO: 调用API删除服务
 }
 
 function onCreateTask() {

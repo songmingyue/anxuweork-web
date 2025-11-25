@@ -89,6 +89,7 @@ axiosInstance.interceptors.response.use(
         // ElMessage.success(res.message || res.msg || '请求成功')
       } else {
         if (res.code !== 200 && res.code) {
+          // 这俩接口成功了
           if (config.url?.includes('doc/GetPushStatus')) {
             // ElMessage.success('请求成功')
           } else {

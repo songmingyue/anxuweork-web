@@ -41,7 +41,7 @@ const schema = reactive<FormSchema[]>([
     colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => <h2 class="form-title">登录</h2>
+        default: () => <h2 style="color:#666">登录</h2>
       }
     }
   },
@@ -234,7 +234,9 @@ const toRegister = () => {
   width: 100%;
   font-size: var(--el-font-size-extra-large);
   font-weight: 600;
-  color: var(--el-text-color-primary);
+  color: #666;
+
+  /* color: var(--el-text-color-primary); */
   text-align: center;
 }
 

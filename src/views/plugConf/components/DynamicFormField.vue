@@ -6,8 +6,12 @@
         shouldShowField
       "
       :prop="field.prop"
-      :label="field.fieldLabel || field.label"
     >
+      <template #label>
+        <el-tooltip effect="dark" :content="field.fieldLabel || field.label" placement="top">
+          <span class="ellipsis">{{ field.fieldLabel || field.label }}</span>
+        </el-tooltip>
+      </template>
       <ElSelect
         :model-value="fieldValue"
         :placeholder="`请选择${field.fieldLabel || field.label}`"
@@ -26,11 +30,13 @@
     </ElFormItem>
 
     <!-- 普通 input 输入框 -->
-    <ElFormItem
-      v-else-if="field.type === 'input' && shouldShowField"
-      :prop="field.prop"
-      :label="field.label || field.fieldLabel"
-    >
+    <ElFormItem v-else-if="field.type === 'input' && shouldShowField" :prop="field.prop">
+      <template #label>
+        <el-tooltip effect="dark" :content="field.fieldLabel || field.label" placement="top">
+          <span class="ellipsis">{{ field.fieldLabel || field.label }}</span>
+        </el-tooltip>
+      </template>
+      <input type="text" style="display: none" autocomplete="username" />
       <ElInput
         :model-value="fieldValue"
         :placeholder="`请输入${field.fieldLabel || field.label}`"
@@ -41,11 +47,12 @@
     </ElFormItem>
 
     <!-- password 密码框 -->
-    <ElFormItem
-      v-else-if="field.type === 'password' && shouldShowField"
-      :prop="field.prop"
-      :label="field.fieldLabel || field.label"
-    >
+    <ElFormItem v-else-if="field.type === 'password' && shouldShowField" :prop="field.prop">
+      <template #label>
+        <el-tooltip effect="dark" :content="field.fieldLabel || field.label" placement="top">
+          <span class="ellipsis">{{ field.fieldLabel || field.label }}</span>
+        </el-tooltip>
+      </template>
       <ElInput
         :model-value="fieldValue"
         type="password"
@@ -61,9 +68,13 @@
     <ElFormItem
       v-else-if="field.type === 'number' && shouldShowField"
       :prop="field.prop"
-      :label="field.fieldLabel || field.label"
       :rules="fieldRules"
     >
+      <template #label>
+        <el-tooltip effect="dark" :content="field.fieldLabel || field.label" placement="top">
+          <span class="ellipsis">{{ field.fieldLabel || field.label }}</span>
+        </el-tooltip>
+      </template>
       <ElInputNumber
         :model-value="fieldValue"
         :placeholder="`请输入${field.fieldLabel || field.label}`"
@@ -143,7 +154,8 @@ import {
   ElInput,
   ElInputNumber,
   ElTimePicker,
-  ElDatePicker
+  ElDatePicker,
+  ElTooltip
 } from 'element-plus'
 import TipsConfig from './TipsConfig.vue'
 
@@ -181,7 +193,7 @@ const changeField = ref<any[]>([])
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'update:model': [{ prop: string; value: any }]
+  'update:model': [{ prop: string; value: any; newFormValue?: any }]
 }>()
 
 // 控制 modelSelect 的展开收起状态
@@ -275,6 +287,7 @@ const shouldShowField = computed(() => {
 
 // 处理字段值变化
 const handleFieldChange = (value: any) => {
+  const newFormValue = {}
   // 对于 select 类型，查找选中选项的子字段
   if (
     props.field.type === 'select' ||
@@ -288,18 +301,21 @@ const handleFieldChange = (value: any) => {
 
     changeField.value = selectedOption?.fiedlInfos || []
     console.log('子字段:', changeField.value)
+    changeField.value.map((item) => {
+      newFormValue[item.prop] = ''
+    })
   }
 
   // 对于时间类型，直接传递值
   console.log('字段值变化:', props.field.prop, '新值:', value)
-  emit('update:model', { prop: props.field.prop, value })
+  emit('update:model', { prop: props.field.prop, value, newFormValue: newFormValue })
 
   // 如果当前字段变化，清空依赖此字段的子字段
   clearDependentFields(props.field.prop)
 }
 
 // 处理子字段更新
-const handleChildFieldUpdate = (event: { prop: string; value: any }) => {
+const handleChildFieldUpdate = (event: { prop: string; value: any; newFormValue: any }) => {
   emit('update:model', event)
 }
 
@@ -309,7 +325,7 @@ const clearDependentFields = (parentProp: string) => {
   const clearChildFields = (fields: FieldConfig[]) => {
     fields?.forEach((field) => {
       if (field.parentNode === parentProp) {
-        emit('update:model', { prop: field.prop, value: undefined })
+        emit('update:model', { prop: field.prop, value: undefined, newFormValue: {} })
         // 递归清空更深层的依赖
         clearChildFields(field.fiedlInfos || [])
       }
@@ -380,7 +396,7 @@ onMounted(() => {
           const defaultValue = firstOption.value || firstOption.key || firstOption.prop
           if (defaultValue !== undefined) {
             console.log('初始化选择器默认值:', defaultValue, '字段:', props.field.prop)
-            emit('update:model', { prop: props.field.prop, value: defaultValue })
+            emit('update:model', { prop: props.field.prop, value: defaultValue, newFormValue: {} })
           }
         }
       }
@@ -509,5 +525,14 @@ watch(
 :deep(.el-input),
 :deep(.el-select) {
   width: 100%;
+}
+
+.ellipsis {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
 }
 </style>

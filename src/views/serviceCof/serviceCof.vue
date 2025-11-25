@@ -115,13 +115,13 @@
                 <el-table
                   ref="scriptTableRef"
                   :data="scriptList"
-                  row-key="scriptId"
+                  row-key="scriptID"
                   @row-click="onScriptRowClick"
                   @selection-change="onSelectionChange"
                 >
                   <el-table-column type="selection" width="48" reserve-selection />
-                  <el-table-column prop="scriptId" label="脚本id" width="70" />
-                  <el-table-column prop="scriptMemo" label="程序版本" />
+                  <el-table-column prop="scriptID" label="脚本id" width="70" />
+                  <el-table-column prop="scriptMemo" label="程序版本" width="110px" />
                   <el-table-column prop="programVersion" label="脚本版本" />
                 </el-table>
                 <el-empty v-if="scriptList.length === 0" description="当前无可执行脚本" />
@@ -131,7 +131,7 @@
                 <template v-if="currentDetail">
                   <el-descriptions :column="1" size="small">
                     <el-descriptions-item label="版本id">{{
-                      currentDetail.scriptId
+                      currentDetail.scriptID
                     }}</el-descriptions-item>
                     <el-descriptions-item label="脚本版本号">{{
                       currentDetail.programVersion
@@ -282,7 +282,8 @@ import {
   ElEmpty,
   ElMessageBox,
   ElDescriptions,
-  ElDescriptionsItem
+  ElDescriptionsItem,
+  ElLoading
 } from 'element-plus'
 import {
   editservicelist,
@@ -420,11 +421,11 @@ const selectList = ref<number[]>([])
 // 根据“选中最大ID -> 自动勾选所有更小ID”的规则，规范化当前选择集
 const onSelectionChange = (selection: ScriptConfig[]) => {
   // 找最大的
-  const id: number = selection[selection.length - 1]?.scriptId || 0
+  const id: number = selection[selection.length - 1]?.scriptID || 0
   const shouldSelect = scriptList.value.filter(
-    (item: ScriptConfig) => (item.scriptId as number) <= id
+    (item: ScriptConfig) => (item.scriptID as number) <= id
   )
-  selectList.value = shouldSelect.map((s) => s.scriptId as number)
+  selectList.value = shouldSelect.map((s) => s.scriptID as number)
   const unShouldSelect = scriptList.value.filter(
     (item: ScriptConfig) => (item.scriptId as number) > id
   )
@@ -473,20 +474,30 @@ const getservice = async () => {
   }, 1000)
 }
 const executeScript = async () => {
-  console.log('selectList:', selectList.value)
+  if (!selectList.value || selectList.value.length === 0) {
+    ElMessage.warning('请先选择要执行的脚本')
+    return
+  }
   ElMessageBox.confirm(`确定要执行所选脚本吗？${selectList.value.join(', ')}`, '提示', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async (res) => {
     if (res) {
+      const loading = ElLoading.service({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       const { isSuccess, message } = await executeScriptBatch({
         scriptIDs: selectList.value.join(',')
       })
       if (isSuccess) {
         getScriptList()
+        loading.close()
         ElMessage.success(message || '操作成功')
       } else {
+        loading.close()
         ElMessage.error(message || '操作失败')
       }
     }
@@ -663,7 +674,7 @@ onMounted(() => {
 }
 
 .ddl-col {
-  width: 310px;
+  width: 350px;
   min-height: 360px;
 }
 

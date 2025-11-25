@@ -12,6 +12,12 @@ VITE_DROP_DEBUGGER=true
 
 # 是否删除console.log
 VITE_DROP_CONSOLE=true
+# 全局版本号
+VITE_HIDE_GLOBAL_VERSION="1.1.1.3155"
+# 标题
+VITE_APP_TITLE=数据集成平台
+# 公司名称
+VITE_APP_COMPANY_NAME=数据集成平台
 
 # 是否sourcemap
 VITE_SOURCEMAP=false

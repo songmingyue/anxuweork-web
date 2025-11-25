@@ -13,6 +13,7 @@ import {
   ElMessage
 } from 'element-plus'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { formStorageMedium } from '@/config'
 interface OrgOption {
   label: string
   value: string
@@ -70,7 +71,6 @@ const typeOptions = [
 const isCloud = computed(() => form.type === 'AmazonS3')
 const isLocal = computed(() => form.type === 'Virtual')
 const isShared = computed(() => isLocal.value && form.isSharePath === 'true')
-
 const requiredWhen = (predicate: () => boolean, message: string) => ({
   validator: (_: any, val: any, cb: any) => {
     if (predicate() && (!val || String(val).trim() === '')) cb(new Error(message))
@@ -102,7 +102,7 @@ async function loadOrgOptions() {
   form.organizationID = props.orgOptions[0]?.value || ''
   form.type = typeOptions[0].value
 
-  if (Object.keys(props.formData as any).length > 0) {
+  if (props.isEdit && props.formData) {
     form.host = ''
     form.accessID = ''
     form.accessKey = ''
@@ -116,6 +116,9 @@ async function loadOrgOptions() {
     } else {
       form.type = typeOptions.find((it) => it.label === form.type)?.value || 'AmazonS3'
     }
+  } else {
+    Object.assign(form, formStorageMedium)
+    form.userUID = userUID || ''
   }
 }
 
@@ -199,31 +202,66 @@ function onCancel() {
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-show="form.type === 'AmazonS3'" label="主机域名" prop="host" required>
+      <el-form-item
+        v-show="form.type === 'AmazonS3'"
+        label="主机域名"
+        prop="host"
+        :required="isCloud"
+      >
         <el-input v-model="form.host" />
       </el-form-item>
-      <el-form-item v-show="form.type === 'AmazonS3'" label="访问ID" prop="accessID" required>
+      <el-form-item
+        v-show="form.type === 'AmazonS3'"
+        label="访问ID"
+        prop="accessID"
+        :required="isCloud"
+      >
         <el-input v-model="form.accessID" />
       </el-form-item>
-      <el-form-item v-show="form.type === 'AmazonS3'" label="访问Key" prop="accessKey" required>
+      <el-form-item
+        v-show="form.type === 'AmazonS3'"
+        label="访问Key"
+        prop="accessKey"
+        :required="isCloud"
+      >
         <el-input v-model="form.accessKey" />
       </el-form-item>
-      <el-form-item v-if="form.type === 'AmazonS3'" label="子目录" prop="subDir" required>
+      <el-form-item
+        v-if="form.type === 'AmazonS3'"
+        label="子目录"
+        prop="subDir"
+        :required="isCloud"
+      >
         <el-input v-model="form.subDir" />
       </el-form-item>
-      <el-form-item v-if="form.type === 'AmazonS3'" label="用户UID" prop="userUID" required>
+      <el-form-item
+        v-if="form.type === 'AmazonS3'"
+        label="用户UID"
+        prop="userUID"
+        :required="isCloud"
+      >
         <el-input v-model="form.userUID" />
       </el-form-item>
       <el-form-item v-if="form.type === 'AmazonS3'" label="上传媒介UID" prop="uploadMediaUID">
         <el-input v-model="form.uploadMediaUID" />
       </el-form-item>
-      <el-form-item v-if="form.type === 'AmazonS3'" label="上传URL" prop="uploadURL" required>
+      <el-form-item
+        v-if="form.type === 'AmazonS3'"
+        label="上传URL"
+        prop="uploadURL"
+        :required="isCloud"
+      >
         <el-input v-model="form.uploadURL" />
       </el-form-item>
-      <el-form-item v-if="form.type === 'AmazonS3'" label="下载URL" prop="downloadURL">
+      <el-form-item
+        v-if="form.type === 'AmazonS3'"
+        label="下载URL"
+        prop="downloadURL"
+        :required="isCloud"
+      >
         <el-input v-model="form.downloadURL" />
       </el-form-item>
-      <el-form-item v-if="form.type === 'Virtual'" label="是否共享路径" prop="isSharePath" required>
+      <el-form-item v-if="form.type === 'Virtual'" label="是否共享路径" prop="isSharePath">
         <el-select v-model="form.isSharePath" placeholder="请选择">
           <el-option label="是" value="true" />
           <el-option label="否" value="false" />
@@ -232,7 +270,7 @@ function onCancel() {
       <el-form-item
         v-if="form.type === 'Virtual' && form.isSharePath === 'true'"
         label="共享路径"
-        required
+        :required="isShared"
         prop="shareAddress"
       >
         <el-input v-model="form.shareAddress" />
@@ -240,7 +278,7 @@ function onCancel() {
       <el-form-item
         v-if="form.type === 'Virtual' && form.isSharePath === 'true'"
         label="共享路径用户名"
-        required
+        :required="isShared"
         prop="shareUserName"
       >
         <el-input v-model="form.shareUserName" />
@@ -248,7 +286,7 @@ function onCancel() {
       <el-form-item
         v-if="form.type === 'Virtual' && form.isSharePath === 'true'"
         label="共享路径密码"
-        required
+        :required="isShared"
         prop="sharePassWord"
       >
         <el-input v-model="form.sharePassWord" />

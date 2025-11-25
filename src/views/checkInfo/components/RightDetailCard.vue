@@ -1,5 +1,5 @@
 <template>
-  <div class="right-detail" v-if="detail.isShowDialog">
+  <div class="right-detail" v-if="detail.isShowDialog && top.patientName">
     <div class="detail-top">
       <div class="top-left">
         <span v-if="top.abnormal" :class="top.abnormal === '阴性' ? 'abnormal' : 'redabnormal'"
@@ -290,6 +290,9 @@
         <el-button type="primary" :loading="loadingUpdate" @click="sureResampling">确认</el-button>
       </template>
     </el-dialog>
+  </div>
+  <div class="right-empty" v-else-if="detail.isShowDialog && !top.patientName">
+    <el-empty description="暂无患者信息" />
   </div>
   <div class="right-empty" v-else>
     <el-empty description="该检查已被锁定" />

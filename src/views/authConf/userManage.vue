@@ -27,7 +27,8 @@ import {
   RoleData,
   createUser,
   addUserRoles,
-  getroles
+  getroles,
+  editUser
 } from '@/api/userMessage'
 import { OrganizationList } from '@/api/login/types'
 import UserFormDialog from './components/UserFormDialog.vue'
@@ -218,7 +219,12 @@ const deptOptions = computed(() => {
 })
 
 const handleUserConfirm = async (formData: UserOnce) => {
-  const data = await createUser(formData)
+  let data = { message: '' }
+  if (!isEdit.value) {
+    data = await createUser(formData)
+  } else {
+    data = await editUser(formData)
+  }
   ElMessage.success(data.message || '操作成功')
   dialogVisible.value = false
   getUserList()

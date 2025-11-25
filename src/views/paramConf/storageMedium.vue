@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { ElMessage, ElPagination } from 'element-plus'
+import { ElMessage, ElMessageBox, ElPagination } from 'element-plus'
 import {
   ElTable,
   ElTableColumn,
@@ -55,6 +55,18 @@ function onEdit(row: CloudStorageConfig) {
 }
 
 async function onDelete(row: CloudStorageConfig) {
+  ElMessageBox.confirm('确定删除该存储媒介吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => deleteConfirmed(row))
+    .catch(() => {
+      /* 取消删除 */
+    })
+}
+
+const deleteConfirmed = async (row: CloudStorageConfig) => {
   const { isSuccess, message } = await storageDelete(row)
   if (isSuccess) {
     getStorageList()

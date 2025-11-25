@@ -54,13 +54,13 @@ watch(
   (val) => {
     if (val) {
       form.value = {
-        deptID: '',
         deptName: '',
         deptType: '',
         examClass: '',
         officePhoneNO: '',
         memo: '',
-        ...(props.formData || {})
+        ...(props.formData || {}),
+        deptID: props.isEdit ? props.formData?.deptCode : ''
       }
     }
   }
@@ -97,7 +97,7 @@ function onConfirm() {
   >
     <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
       <el-form-item label="科室编号" prop="deptID" required>
-        <el-input v-model="form.deptID" />
+        <el-input v-model="form.deptID" :disabled="props.isEdit" />
       </el-form-item>
       <el-form-item label="科室名称" prop="deptName" required>
         <el-input v-model="form.deptName" />
@@ -113,7 +113,7 @@ function onConfirm() {
         </el-select>
       </el-form-item>
       <el-form-item v-if="showExamClass" label="医技科室分类" prop="examClass">
-        <el-select v-model="form.examClass" placeholder="请选择">
+        <el-select v-model="form.examClass" placeholder="请选择" :disabled="props.isEdit">
           <el-option
             v-for="opt in props.examClassOptions || []"
             :key="opt.value"

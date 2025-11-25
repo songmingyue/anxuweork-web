@@ -13,7 +13,8 @@ import {
   ElMessage,
   ElRow,
   ElCol,
-  ElPagination
+  ElPagination,
+  ElMessageBox
 } from 'element-plus'
 import type { FormRules } from 'element-plus'
 import {
@@ -95,6 +96,17 @@ function handleEdit(row: ServiceAddress) {
   dialogVisible.value = true
 }
 async function handleDelete(row: ServiceAddress) {
+  ElMessageBox.confirm('确定删除该医疗结构吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => deleteConfirmed(row))
+    .catch(() => {
+      /* 取消删除 */
+    })
+}
+const deleteConfirmed = async (row: ServiceAddress) => {
   const { code, msg } = await deleteServiceAddress(row)
   if (code === 200) {
     ElMessage.success(msg || '删除成功')

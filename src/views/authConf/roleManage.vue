@@ -12,7 +12,8 @@ import {
   ElForm,
   ElFormItem,
   ElOption,
-  ElSelect
+  ElSelect,
+  ElMessageBox
 } from 'element-plus'
 import {
   deleteRole,
@@ -97,6 +98,7 @@ function submitRoleForm() {
     if (isSuccess) {
       ElMessage.success(message || '操作成功')
       roleDialogVisible.value = false
+      fetchRoles()
     } else {
       ElMessage.error(message || '操作失败')
     }
@@ -160,6 +162,18 @@ const handleRowClick = async (row?: RoleMstInputProto) => {
   }
 }
 const handleDelete = async (row: RoleMstInputProto) => {
+  ElMessageBox.confirm('确定删除该角色吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => deleteConfirmed(row))
+    .catch(() => {
+      /* 取消删除 */
+    })
+}
+
+const deleteConfirmed = async (row: RoleMstInputProto) => {
   const { message, isSuccess } = await deleteRole(row)
   if (isSuccess) {
     ElMessage.success(message || '操作成功')
@@ -215,11 +229,17 @@ onMounted(() => {
         v-loading="loadingRole"
         highlight-current-row
         @row-click="handleRowClick"
-        style="width: 100%"
+        :style="{ width: '100%' }"
         height="304"
       >
         <el-table-column prop="roleName" label="角色名称" min-width="160" sortable />
-        <el-table-column prop="organizationName" label="所属机构名称" min-width="160" sortable />
+        <el-table-column
+          prop="organizationName"
+          label="所属机构名称"
+          min-width="160"
+          sortable
+          show-overflow-tooltip
+        />
         <el-table-column prop="memo" label="备注" min-width="160" show-overflow-tooltip sortable />
         <el-table-column prop="createUserName" label="创建用户" min-width="140" sortable />
         <el-table-column prop="createDate" label="创建时间" min-width="180" sortable />
@@ -255,7 +275,7 @@ onMounted(() => {
         :data="permList"
         height="304"
         v-loading="loadingPerm"
-        style="width: 100%"
+        :style="{ width: '100%' }"
         ref="permTableRef"
         row-key="rightID"
         @selection-change="handleSelectionChange"

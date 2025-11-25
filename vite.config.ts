@@ -131,7 +131,9 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
             'vue-chunks': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
             'element-plus': ['element-plus'],
             'wang-editor': ['@wangeditor/editor', '@wangeditor/editor-for-vue'],
-            echarts: ['echarts', 'echarts-wordcloud']
+            echarts: ['echarts', 'echarts-wordcloud'],
+            // 单独拆出 config，确保生成 js/config-[hash].js
+            config: [pathResolve('src/config/index.ts')]
           },
           // JS 输出到 js 目录
           entryFileNames: 'js/[name]-[hash].js',

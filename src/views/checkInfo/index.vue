@@ -28,7 +28,7 @@
               v-model="formFirst[alternative[indexInput].prop]"
               placeholder="请输入"
               clearable
-              style="width: 120px"
+              style="width: 150px"
             />
           </div>
         </el-form-item>
@@ -38,7 +38,7 @@
             size="small"
             clearable
             placeholder="请输入"
-            style="width: 120px"
+            style="width: 150px"
           />
         </el-form-item>
         <el-form-item label="">
@@ -67,7 +67,7 @@
               type="date"
               value-format="YYYY-MM-DD"
               placeholder="开始时间"
-              style="width: 120px; margin-top: -5px"
+              style="width: 150px; margin-top: -5px"
               size="small"
               :shortcuts="dateShortcuts"
             />
@@ -76,7 +76,7 @@
               v-model="formFirst[timeAlternative[indexTime].propEndTime]"
               value-format="YYYY-MM-DD"
               type="date"
-              style="width: 120px; margin-top: -5px"
+              style="width: 150px; margin-top: -5px"
               placeholder="结束时间"
               size="small"
             />
@@ -87,7 +87,7 @@
             size="small"
             v-model="formFirst.organizationID"
             placeholder="请选择"
-            style="width: 120px"
+            style="width: 150px"
             clearable
           >
             <el-option
@@ -99,7 +99,14 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button size="small" class="btn-show" text type="primary" @click="toggleAdvance">
+          <el-button
+            size="small"
+            class="btn-show"
+            text
+            type="primary"
+            @click="toggleAdvance"
+            ref="btnClickShow"
+          >
             {{ showAdvance ? '收起' : '展开' }}
             <el-icon style="margin-left: 6px">
               <arrow-up v-if="showAdvance" />
@@ -801,6 +808,7 @@ const showAdvance = ref(false)
 
 // 面板控制
 const advanceCardRef = ref<HTMLElement | null>(null)
+const btnClickShow = ref<HTMLElement | null>(null)
 const toggleAdvance = () => {
   setTimeout(() => {
     showAdvance.value = !showAdvance.value
@@ -1009,7 +1017,18 @@ const onReset = () => {
 }
 function onResetAdvance(event: MouseEvent) {
   const cards = advanceCardRef.value
-  if (cards && !cards.contains(event?.target as Node)) {
+  const rawBtn = btnClickShow.value as any
+  // 兼容 ElementPlus 组件实例或原生 HTMLElement
+  const clickBtn: HTMLElement | null = rawBtn
+    ? rawBtn.$el
+      ? (rawBtn.$el as HTMLElement)
+      : (rawBtn as HTMLElement)
+    : null
+  const target = event?.target as Node
+  // 若点击在展开按钮自身或其子节点上，不执行关闭逻辑
+  if (clickBtn && typeof clickBtn.contains === 'function' && clickBtn.contains(target)) return
+  // 仅当点击区域既不在面板内部、也不在按钮上时才关闭
+  if (cards && !cards.contains(target)) {
     showAdvance.value = false
   }
   // Object.keys(advance).forEach((k) => ((advance as any)[k] = ''))

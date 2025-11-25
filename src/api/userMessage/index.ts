@@ -261,6 +261,16 @@ export const resetUser = (data: UserOnce): Promise<IResponse<[]>> => {
   })
 }
 
+export const editUser = (data: UserOnce): Promise<any> => {
+  return request.post({
+    url: 'user/edit',
+    data,
+    requestTem: {
+      requestTem: 'UserMstEntityInputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
 export const createUser = (data: UserOnce): Promise<any> => {
   return request.post({
     url: 'user/create',

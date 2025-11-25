@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { LoginForm, RegisterForm } from './components'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
-import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { underlineToHump } from '@/utils'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
@@ -75,7 +74,7 @@ onMounted(() => {
 
             <div class="actions">
               <ThemeSwitch />
-              <LocaleDropdown />
+              <!-- <LocaleDropdown /> -->
             </div>
           </div>
           <Transition appear enter-active-class="animate__animated animate__bounceInRight">
@@ -173,7 +172,7 @@ onMounted(() => {
 }
 
 .brand {
-  display: flex;
+  // display: flex;
   align-items: center;
   color: #fff;
 }
@@ -230,7 +229,7 @@ onMounted(() => {
 }
 
 .actions {
-  display: none;
+  // display: none;
   align-items: center;
   justify-content: flex-end;
 }
@@ -262,7 +261,7 @@ onMounted(() => {
 
   // 小于 xl 圆角+白底（light）
   // @media (width <= 1279px) {
-  background: #fff;
+  background-color: var(--app-content-bg-color);
   border-radius: 0;
   // }header-row
 }
@@ -279,7 +278,7 @@ onMounted(() => {
   width: 345px;
   height: 457px;
   margin-top: -43px;
-  background: #fff;
+  background-color: var(--app-content-bg-color);
   align-items: center;
   justify-content: center;
 }

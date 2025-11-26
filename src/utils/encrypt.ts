@@ -1,9 +1,11 @@
 import forge from 'node-forge'
 
-import protobuf from 'protobufjs'
+// import protobuf from 'protobufjs'
 import { ElMessage } from 'element-plus'
 import { useUserStoreWithOut } from '@/store/modules/user'
-const root = await protobuf.load('/storage.proto')
+// const root = await protobuf.load('/storage.proto')
+import * as StorageProto from '@/proto/storage.js'
+
 // 用指定公钥字符串加密明文，返回base64
 
 export function encryptWithPublicKey(text: string, pemPublicKey: string): string | null {
@@ -17,7 +19,7 @@ export function encryptWithPublicKey(text: string, pemPublicKey: string): string
 }
 
 export const decodeProtoMsg = (buffer: Uint8Array, protoType: string): any => {
-  const MessageType = root.lookupType('PageResponse')
+  const MessageType = StorageProto.PageResponse
   const message: any = MessageType.decode(new Uint8Array(buffer))
   const userStore = useUserStoreWithOut()
   if (!message.isSuccess) {
@@ -31,7 +33,11 @@ export const decodeProtoMsg = (buffer: Uint8Array, protoType: string): any => {
       }
       return message || {}
     }
-    const dataType = root.lookupType(protoType)
+    const dataType = (StorageProto as any)[protoType]
+    if (!dataType) {
+      ElMessage.error(`未知的 Proto 类型: ${protoType}`)
+      throw new Error(`Unknown proto type: ${protoType}`)
+    }
     if (message.data) {
       if (Array.isArray(message.data)) {
         message.data = message.data.map((item) => {
@@ -59,7 +65,10 @@ export const decodeProtoMsg = (buffer: Uint8Array, protoType: string): any => {
 }
 
 export const encodeProtoMsg = (obj: any, protoType: string): any => {
-  const MessageType = root.lookupType(protoType)
+  const MessageType = (StorageProto as any)[protoType]
+  if (!MessageType) {
+    throw new Error(`Unknown proto type: ${protoType}`)
+  }
   const message = MessageType.create(obj)
   const buffer: any = MessageType.encode(message).finish()
   const blobArray = new Blob([buffer], { type: 'application/octet-stream' })

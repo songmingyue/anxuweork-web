@@ -47,17 +47,7 @@ const form = reactive<DicomScpInfo>({})
 // 校验规则
 const formRules: FormRules = {
   orgCode: [{ required: true, message: '请输入设备机构标识', trigger: 'blur' }],
-  host: [
-    { required: true, message: '请输入设备主机地址', trigger: 'change' },
-    {
-      validator: (_: any, v: string, cb: (err?: Error) => void) => {
-        if (!v) return cb()
-        const ok = /^(https?:)\/\//i.test(v)
-        return ok ? cb() : cb(new Error('请输入以 http:// 或 https:// 开头的地址'))
-      },
-      trigger: 'blur'
-    }
-  ],
+  host: [{ required: true, message: '请输入设备主机地址', trigger: 'change' }],
   callingAE: [{ required: true, message: '请输入呼叫方AE', trigger: 'change' }],
   calledAE: [{ required: true, message: '请输入被叫方AE', trigger: 'change' }],
   port: [{ required: true, message: '请输入设备端口', trigger: 'change' }]

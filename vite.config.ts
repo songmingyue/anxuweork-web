@@ -36,7 +36,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // 自定义插件：将 .env 中的 VITE_ 前缀变量生成为运行时可加载的文件，而不是直接内联
       runtimeEnvPlugin(env),
       // 额外产出一份源码级 config.ts 到 dist 根目录
-      emitConfigSourcePlugin(),
       Vue({
         script: {
           // 开启defineModel
@@ -250,24 +249,6 @@ function runtimeEnvPlugin(env: Record<string, string>): Plugin {
         fileName: 'runtime-env.js',
         source: code
       })
-    }
-  }
-}
-
-// 在 dist 根目录额外生成一份未编译、未混淆的源码副本：config.ts
-function emitConfigSourcePlugin(): Plugin {
-  return {
-    name: 'emit-config-source',
-    apply: 'build',
-    enforce: 'post',
-    generateBundle() {
-      try {
-        const srcPath = pathResolve('src/config/index.ts')
-        const code = readFileSync(srcPath, 'utf-8')
-        this.emitFile({ type: 'asset', fileName: 'config.ts', source: code })
-      } catch (_) {
-        // ignore
-      }
     }
   }
 }

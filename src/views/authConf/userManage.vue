@@ -246,6 +246,7 @@ onMounted(() => {
           <el-select
             v-model="filters.organizationID"
             placeholder="请选择"
+            @change="() => (filters.deptID = '')"
             clearable
             style="width: 180px"
           >

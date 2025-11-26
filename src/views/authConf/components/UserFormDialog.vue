@@ -22,7 +22,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="机构" prop="organizationID" required>
-        <el-select v-model="form.organizationID" placeholder="请选择">
+        <el-select
+          v-model="form.organizationID"
+          placeholder="请选择"
+          @change="() => (form.deptID = '')"
+        >
           <el-option
             v-for="o in orgOptions.filter((item) => item.value !== '-1')"
             :key="o.value"

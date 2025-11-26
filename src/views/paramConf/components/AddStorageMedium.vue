@@ -13,7 +13,6 @@ import {
   ElMessage
 } from 'element-plus'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { formStorageMedium } from '@/config'
 interface OrgOption {
   label: string
   value: string
@@ -117,9 +116,18 @@ async function loadOrgOptions() {
       form.type = typeOptions.find((it) => it.label === form.type)?.value || 'AmazonS3'
     }
   } else {
-    Object.assign(form, formStorageMedium)
-    form.organizationID = props.orgOptions[0]?.value || ''
-    form.userUID = userUID || ''
+    // Object.assign(form, formStorageMedium)
+    fetch('/config.json')
+      .then((response) => response.text())
+      .then((data) => {
+        Object.assign(form, JSON.parse(data).formStorageMedium)
+        form.organizationID = props.orgOptions[0]?.value || ''
+        form.userUID = userUID || ''
+      })
+      .finally(() => {
+        form.organizationID = props.orgOptions[0]?.value || ''
+        form.userUID = userUID || ''
+      })
   }
 }
 

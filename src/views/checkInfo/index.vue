@@ -1068,14 +1068,26 @@ const getImageReport = async () => {
 
 const changeDocument = (documents: DocumentProto) => {
   if (Array.isArray(documents)) {
-    return documents[0].documentDtos.map((item) => {
+    const haveImg = documents[0].documentDtos.filter(
+      (item) => item['base64url'] && item['base64url'].length
+    )
+    if (haveImg.length === 0) {
+      return []
+    }
+    return haveImg.map((item) => {
       return {
         ...item,
         base64url: arrayBufferToBase64(item.base64url)
       }
     })
   }
-  return documents.documentDtos.map((item) => {
+  const haveImgs = documents.documentDtos.filter(
+    (item) => item['base64url'] && item['base64url'].length
+  )
+  if (haveImgs.length === 0) {
+    return []
+  }
+  return haveImgs.map((item) => {
     return {
       ...item,
       base64url: arrayBufferToBase64(item.base64url)

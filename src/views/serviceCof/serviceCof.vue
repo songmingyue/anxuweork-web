@@ -115,11 +115,17 @@
                 <el-table
                   ref="scriptTableRef"
                   :data="scriptList"
+                  highlight-current-row
                   row-key="scriptID"
                   @row-click="onScriptRowClick"
-                  @selection-change="onSelectionChange"
                 >
-                  <el-table-column type="selection" width="48" reserve-selection />
+                  <el-table-column width="70">
+                    <template #default="{ row }">
+                      <span :style="{ color: row.select ? '#67C23A' : '' }">{{
+                        row.select ? '✔' : ''
+                      }}</span>
+                    </template>
+                  </el-table-column>
                   <el-table-column prop="scriptID" label="脚本id" width="70" />
                   <el-table-column prop="scriptMemo" label="程序版本" width="110px" />
                   <el-table-column prop="programVersion" label="脚本版本" />
@@ -412,29 +418,39 @@ const editLogConfigList = async () => {
     }
   })
 }
+const selectList = ref<number[]>([])
 // 左侧表格行点击，展示右侧详情
 const onScriptRowClick = (row: ScriptConfig) => {
   selectedScript.value = row
+  scriptList.value.forEach((item) => {
+    item.select = Number(item.scriptID) <= Number(row.scriptID)
+  })
+  selectList.value = scriptList.value.filter((s) => s.select).map((s) => Number(s.scriptID))
 }
-const selectList = ref<number[]>([])
 
 // 根据“选中最大ID -> 自动勾选所有更小ID”的规则，规范化当前选择集
-const onSelectionChange = (selection: ScriptConfig[]) => {
-  // 找最大的
-  const id: number = selection[selection.length - 1]?.scriptID || 0
-  const shouldSelect = scriptList.value.filter(
-    (item: ScriptConfig) => (item.scriptID as number) <= id
-  )
-  selectList.value = shouldSelect.map((s) => s.scriptID as number)
-  const unShouldSelect = scriptList.value.filter(
-    (item: ScriptConfig) => (item.scriptId as number) > id
-  )
-  // 按要求：把 shouldSelect 里的都选中
-  if (scriptTableRef.value) {
-    shouldSelect.forEach((r) => scriptTableRef.value.toggleRowSelection(r, true))
-    unShouldSelect.forEach((r) => scriptTableRef.value.toggleRowSelection(r, false))
-  }
-}
+// const onSelectionChange = (selection: ScriptConfig[]) => {
+//   // 找最大的
+//   let id: any = 0
+//   if (selection.length && selection.length > selectList.value.length) {
+//     id = selection[selection.length - 1]?.scriptID || 0
+//   } else {
+//     const selectionIdList = selection.map((item) => item.scriptID)
+//     id = selectList.value.find((item) => !selectionIdList.includes(item))
+//   }
+//   const shouldSelect = scriptList.value.filter(
+//     (item: ScriptConfig) => (item.scriptID as number) <= id
+//   )
+//   selectList.value = shouldSelect.map((s) => s.scriptID as number)
+//   const unShouldSelect = scriptList.value.filter(
+//     (item: ScriptConfig) => (item.scriptID as number) > id
+//   )
+//   // 按要求：把 shouldSelect 里的都选中
+//   if (scriptTableRef.value) {
+//     shouldSelect.forEach((r) => scriptTableRef.value.toggleRowSelection(r, true))
+//     unShouldSelect.forEach((r) => scriptTableRef.value.toggleRowSelection(r, false))
+//   }
+// }
 // 归一化详情结构，兼容后端字段大小写及变体
 const currentDetail = computed(() => {
   return selectedScript.value
@@ -489,16 +505,20 @@ const executeScript = async () => {
         text: 'Loading',
         background: 'rgba(0, 0, 0, 0.7)'
       })
-      const { isSuccess, message } = await executeScriptBatch({
-        scriptIDs: selectList.value.join(',')
-      })
-      if (isSuccess) {
-        getScriptList()
+      try {
+        const { isSuccess, message } = await executeScriptBatch({
+          scriptIDs: selectList.value.join(',')
+        })
+        if (isSuccess) {
+          getScript()
+          loading.close()
+          ElMessage.success(message || '操作成功')
+        } else {
+          loading.close()
+          ElMessage.error(message || '操作失败')
+        }
+      } finally {
         loading.close()
-        ElMessage.success(message || '操作成功')
-      } else {
-        loading.close()
-        ElMessage.error(message || '操作失败')
       }
     }
   })

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { store } from '../index'
 import { UserLoginType, UserType } from '@/api/login/types'
 import { ElMessageBox } from 'element-plus'
-import { loginOutApi } from '@/api/login'
+import { userLogout } from '@/api/login'
 import { useTagsViewStore } from './tagsView'
 import router from '@/router'
 import { DictItemRow } from '@/api/authConf'
@@ -110,7 +110,7 @@ export const useUserStore = defineStore('user', {
         type: 'warning'
       })
         .then(async () => {
-          const res = await loginOutApi().catch(() => {})
+          const res = await userLogout().catch(() => {})
           if (res) {
             this.reset()
           }

@@ -156,7 +156,7 @@ onMounted(() => {
 <template>
   <div class="page">
     <el-card shadow="never" class="padding-none">
-      <el-form :inline="true" :model="query" label-width="120px">
+      <el-form :inline="true" :model="query" label-width="110px">
         <el-row>
           <el-form-item label="医疗机构标识">
             <el-input v-model="query.orgCode" placeholder="请输入" style="width: 200px" clearable />
@@ -174,8 +174,7 @@ onMounted(() => {
       <el-table
         :data="rows"
         v-loading="loading"
-        border
-        style="width: 100%"
+        :style="{ width: '100%' }"
         height="calc(100vh - 270px)"
       >
         <el-table-column prop="orgCode" label="设备机构标识" min-width="180" />
@@ -251,13 +250,13 @@ onMounted(() => {
 
 .dialog-footer {
   display: inline-flex;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
 }
 
 .pagination {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 12px;
 }
 </style>

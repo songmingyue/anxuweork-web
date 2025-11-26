@@ -1,7 +1,10 @@
 <script lang="tsx">
 import { defineComponent, computed, unref } from 'vue'
 import { ElIcon } from 'element-plus'
-import { Tools, Fold, Expand } from '@element-plus/icons-vue'
+import { Fold, Expand } from '@element-plus/icons-vue'
+
+import { ThemeSwitch } from '@/components/ThemeSwitch'
+
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
@@ -40,9 +43,6 @@ const toggleCollapse = () => {
 export default defineComponent({
   name: 'ToolHeader',
   setup() {
-    const openSettingDrawer = () => {
-      window.dispatchEvent(new Event('open-setting-drawer'))
-    }
     return () => (
       <div id={`${variables.namespace}-tool-header`} class={[prefixCls, 'tool-header']}>
         {layout.value !== 'top' ? (
@@ -71,11 +71,15 @@ export default defineComponent({
             ></LocaleDropdown>
           ) : undefined}
           {/* <span>主题</span> */}
-          <span class="custom-hover marginright" onClick={openSettingDrawer}>
+          {/* <span class="custom-hover marginright" onClick={openSettingDrawer}>
             <ElIcon color="var(--el-color-primary)">
               <Tools />
             </ElIcon>
-          </span>
+          </span> */}
+
+          <span style="font-size: 14px; margin-right: 5px">主题</span>
+          <ThemeSwitch></ThemeSwitch>
+          <span style="margin-right: 10px"></span>
           <UserInfo></UserInfo>
         </div>
       </div>

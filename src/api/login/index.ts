@@ -46,10 +46,9 @@ export const register = (data: any): Promise<IResponse<UserType>> => {
     }
   })
 }
-export const userLogout = (data: any): Promise<IResponse<UserType>> => {
+export const userLogout = (): Promise<IResponse<UserType>> => {
   return request.post({
     url: 'login/userlogout',
-    data,
     requestTem: {
       requestTem: 'AdminLoginInputProto',
       responseTem: 'AdminLoginUserInfoProto'

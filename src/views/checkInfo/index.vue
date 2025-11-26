@@ -1001,6 +1001,15 @@ async function onSearch() {
     }
     if (total.value) {
       onRowClick(list.value[0])
+    } else {
+      currentDetail.value = {
+        examResultStatus: false,
+        examWrittenStatus: false,
+        examFilmStatus: false,
+        examImgStatus: false,
+        documentDtos: [],
+        isShowDialog: true
+      }
     }
     // 默认选中第一条作为右侧详情
   } finally {

@@ -48,7 +48,7 @@
         highlight-current-row
         @row-click="onTopRowClick"
         height="calc(50vh - 207px)"
-        style="width: 100%"
+        :style="{ width: '100%' }"
       >
         <el-table-column prop="typeClass" sortable label="字典分类" min-width="140" />
         <el-table-column prop="typeCode" sortable label="类型代码" min-width="180" />
@@ -114,7 +114,7 @@
         :data="bottomList"
         v-loading="bottomLoading"
         height="calc(50vh - 207px)"
-        style="width: 100%"
+        :style="{ width: '100%' }"
         :empty-text="selectedType ? '暂无数据' : '请先在上方选择一个类型'"
       >
         <el-table-column prop="itemCode" label="字典代码" sortable min-width="85" />
@@ -332,7 +332,7 @@ function onItemSave() {
   display: flex;
   margin-top: 8px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .total {

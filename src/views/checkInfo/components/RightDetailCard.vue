@@ -401,8 +401,8 @@ watch(
       formUpdate.value.organizationName = (ui && ui.organizationName) || ''
       formUpdate.value.patientName =
         top.value.patientName || (props.detail && (props.detail as any).patientName) || ''
-      formUpdate.value.contactPhoneNO = ''
-      formUpdate.value.iDCardNo = ''
+      formUpdate.value.contactPhoneNO = props.detail.contactPhoneNO || ''
+      formUpdate.value.iDCardNo = props.detail.iDCardNo || ''
       formUpdate.value.editType = 0
     }
   }
@@ -489,10 +489,15 @@ const changeFileType = async (key: string) => {
           background: 'rgba(0, 0, 0, 0.7)'
         })
         try {
-          await reUploadCheckInfo({
+          const { isSuccess, message } = await reUploadCheckInfo({
             examUID: props.detail.examUID || '',
             type: key
           })
+          if (isSuccess) {
+            ElMessage.success(message || '操作成功')
+          } else {
+            ElMessage.error(message || '操作失败')
+          }
         } finally {
           loading.close()
         }
@@ -534,13 +539,20 @@ const updateMsg = async () => {
     ...details,
     contactPhoneNO: formUpdate.value.contactPhoneNO || '',
     iDCardNo: formUpdate.value.iDCardNo || '',
-    editType: formUpdate.value.editType || 0
+    editType: formUpdate.value.editType ? 1 : 0
   }
-  await UpdatePatientInfo(query as any)
-  loadingUpdate.value = false
-  isUpdatePatientInfo.value = false
+  const { code, msg } = await UpdatePatientInfo(query as any)
+  if (code === 200) {
+    ElMessage.success(msg || '操作成功')
+    isUpdatePatientInfo.value = false
+    loadingUpdate.value = false
+    emit('updated')
+  } else {
+    ElMessage.error(msg || '操作失败')
+    loadingUpdate.value = false
+  }
+
   // 通知父组件刷新
-  emit('updated')
 }
 const activeIcon = ref('reportText') // 当前激活的图标
 
@@ -680,9 +692,14 @@ const sureResampling = async () => {
   ElMessage.success('重采请求已发送')
 }
 const updateStatus = async () => {
-  await pePrintStatus({
+  const { isSuccess, message } = await pePrintStatus({
     examUID: props.detail.examUID || ''
   })
+  if (isSuccess) {
+    ElMessage.success(message || '更新成功')
+  } else {
+    ElMessage.error(message || '更新失败')
+  }
 }
 const isBig = ref(false) //最大状态
 const changeSize = (type: 'small' | 'big') => {

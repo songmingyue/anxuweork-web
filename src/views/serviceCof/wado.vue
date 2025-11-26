@@ -11,8 +11,6 @@ import {
   ElDialog,
   ElInputNumber,
   ElMessage,
-  ElRow,
-  ElCol,
   ElPagination,
   ElMessageBox
 } from 'element-plus'
@@ -165,36 +163,36 @@ onMounted(() => {
 <template>
   <div class="page">
     <el-card shadow="never" class="padding-none">
-      <el-form :inline="true" :model="query" label-width="120px">
-        <el-row>
-          <el-col :span="6">
-            <el-form-item label="医疗机构标识">
-              <el-input
-                v-model="query.retrieveAETitle"
-                placeholder="请输入"
-                style="width: 200px"
-                clearable
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="服务地址">
-              <el-input
-                style="width: 200px"
-                v-model="query.serviceAddress"
-                placeholder="请输入"
-                clearable
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-button type="primary" @click="handleCreate">新增</el-button>
-              <el-button type="primary" plain @click="handleSearch">搜索</el-button>
-              <el-button plain @click="handleViewStatus">查看状态</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
+      <el-form :inline="true" label-position="left" :model="query" label-width="99px">
+        <!-- <el-row> -->
+        <!-- <el-col :span="6"> -->
+        <el-form-item label="医疗机构标识">
+          <el-input
+            v-model="query.retrieveAETitle"
+            placeholder="请输入"
+            style="width: 200px"
+            clearable
+          />
+        </el-form-item>
+        <!-- </el-col> -->
+        <!-- <el-col :span="6"> -->
+        <el-form-item label="服务地址" label-width="70px">
+          <el-input
+            style="width: 200px"
+            v-model="query.serviceAddress"
+            placeholder="请输入"
+            clearable
+          />
+        </el-form-item>
+        <!-- </el-col>
+          <el-col :span="6"> -->
+        <el-form-item>
+          <el-button type="primary" @click="handleCreate">新增</el-button>
+          <el-button type="primary" plain @click="handleSearch">搜索</el-button>
+          <el-button plain @click="handleViewStatus">查看状态</el-button>
+        </el-form-item>
+        <!-- </el-col> -->
+        <!-- </el-row> -->
       </el-form>
     </el-card>
 
@@ -202,8 +200,7 @@ onMounted(() => {
       <el-table
         :data="rows"
         v-loading="loading"
-        border
-        style="width: 100%"
+        :style="{ width: '100%' }"
         height="calc(100vh - 230px)"
       >
         <el-table-column type="selection" width="48" />
@@ -275,7 +272,7 @@ onMounted(() => {
 
 .pagination {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 12px;
 }
 </style>

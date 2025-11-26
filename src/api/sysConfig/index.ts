@@ -24,6 +24,7 @@ export interface ScriptConfig {
   scriptId?: number // 兼容另一种命名
   scriptMemo: string // 备注
   scriptType: 'incremental' | string // 脚本类型（已知 incremental，保留扩展）
+  select?: boolean // 选择状态
 }
 
 export interface LogConfig {

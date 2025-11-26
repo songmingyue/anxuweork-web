@@ -3,13 +3,19 @@ syntax = "proto3";
 
 import "google/protobuf/any.proto";
 
+
 message AdminLoginInputProto {
   string account = 1;
   string password = 2;
   string organizationID = 3;
   string rememberMe = 4;
+  string workNO = 5;
+  int32 loginType = 6;
+  int32 userAgent = 7;
+  int32 userType = 8;
+  string key = 9;
+  string code = 10;
 }
-
 
 message PageResponse {
   bool isSuccess = 1;

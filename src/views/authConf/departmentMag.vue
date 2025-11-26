@@ -11,7 +11,8 @@ import {
   ElButton,
   ElForm,
   ElFormItem,
-  ElTag
+  ElTag,
+  ElDivider
 } from 'element-plus'
 import {
   deleteDepartment,
@@ -240,7 +241,9 @@ const getDicmsgList = async () => {
 }
 const confirms = () => {
   dialogMsg.value.isShowDialog = false
-  loadOrganizations()
+  setTimeout(() => {
+    loadOrganizations()
+  }, 10)
 }
 onMounted(() => {
   loadOrganizations()
@@ -283,7 +286,7 @@ onMounted(() => {
           row-key="searchOrganizationID"
           highlight-current-row
           @row-click="onOrgRowClick"
-          style="width: 100%"
+          :style="{ width: '100%' }"
           height="100%"
         >
           <el-table-column
@@ -372,7 +375,7 @@ onMounted(() => {
     </el-card>
     <el-card shadow="never" class="mb8 flex-card">
       <div class="table-wrap">
-        <el-table :data="deptList" v-loading="deptLoading" style="width: 100%" height="100%">
+        <el-table :data="deptList" v-loading="deptLoading" :style="{ width: '100%' }" height="100%">
           <el-table-column
             prop="deptID"
             label="科室编号"

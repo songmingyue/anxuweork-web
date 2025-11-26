@@ -118,6 +118,7 @@ async function loadOrgOptions() {
     }
   } else {
     Object.assign(form, formStorageMedium)
+    form.organizationID = props.orgOptions[0]?.value || ''
     form.userUID = userUID || ''
   }
 }

@@ -79,11 +79,13 @@ function handleSearch() {
 
 function handlePageChange(p: number) {
   currentPage.value = p
+  getUserList()
 }
 
 function handleSizeChange(s: number) {
   pageSize.value = s
   currentPage.value = 1
+  getUserList()
 }
 
 function handleCreate() {

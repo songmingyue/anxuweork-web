@@ -198,7 +198,7 @@ export interface RoleMsgOut {
 
 export const getUsers = async (data: UserListData): Promise<IResponse<UserOnce[]>> => {
   return await request.post({
-    url: 'user/getuserslist',
+    url: 'usermanagement/getuserslist',
     data,
     requestTem: {
       requestTem: 'UserMstInputProto',
@@ -209,7 +209,7 @@ export const getUsers = async (data: UserListData): Promise<IResponse<UserOnce[]
 // 获取用户角色
 export const getroles = (data: UserUID): Promise<IResponse<RoleData[]>> => {
   return request.post({
-    url: 'user/getroles',
+    url: 'userrole/check',
     data,
     requestTem: {
       requestTem: 'UserUIDInputProto',
@@ -220,7 +220,7 @@ export const getroles = (data: UserUID): Promise<IResponse<RoleData[]>> => {
 
 export const getRole = (data: UserUID): Promise<IResponse<RoleData[]>> => {
   return request.post({
-    url: 'user/getrolelist',
+    url: 'userrole/getroleslist',
     data,
     requestTem: {
       requestTem: 'OrganizationIDInputProto',
@@ -241,7 +241,7 @@ export const getorgList = (): Promise<any> => {
 
 export const disableUser = (userUID: string, status: boolean): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'user/disable',
+    url: 'usermanagement/disable',
     data: { userUID, status },
     requestTem: {
       requestTem: 'UserDisableInputProto',
@@ -252,7 +252,7 @@ export const disableUser = (userUID: string, status: boolean): Promise<IResponse
 
 export const resetUser = (data: UserOnce): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'user/reset',
+    url: 'usermanagement/reset',
     data,
     requestTem: {
       requestTem: 'UserResetInputProto',
@@ -262,8 +262,8 @@ export const resetUser = (data: UserOnce): Promise<IResponse<[]>> => {
 }
 
 export const editUser = (data: UserOnce): Promise<any> => {
-  return request.post({
-    url: 'user/edit',
+  return request.put({
+    url: 'usermanagement/edit',
     data,
     requestTem: {
       requestTem: 'UserMstEntityInputProto',
@@ -273,7 +273,7 @@ export const editUser = (data: UserOnce): Promise<any> => {
 }
 export const createUser = (data: UserOnce): Promise<any> => {
   return request.post({
-    url: 'user/create',
+    url: 'usermanagement/create',
     data,
     requestTem: {
       requestTem: 'UserMstEntityInputProto',
@@ -284,7 +284,7 @@ export const createUser = (data: UserOnce): Promise<any> => {
 
 export const getRolesList = (data: RoleRequest): Promise<IResponse<RoleMstInputProto[]>> => {
   return request.post({
-    url: 'role/getroleslist',
+    url: 'roles/getrolemstlist',
     data,
     requestTem: {
       requestTem: 'RoleMstInputProto',
@@ -295,7 +295,7 @@ export const getRolesList = (data: RoleRequest): Promise<IResponse<RoleMstInputP
 
 export const getRightsList = (data?: RoleMstInputProto): Promise<IResponse<RoleMstProto[]>> => {
   return request.post({
-    url: 'role/getrightslist',
+    url: 'roles/permissions',
     data,
     requestTem: {
       requestTem: 'RightInputProto',
@@ -306,8 +306,8 @@ export const getRightsList = (data?: RoleMstInputProto): Promise<IResponse<RoleM
 
 // 编辑角色用户权限
 export const editUserRight = (data: RoleEditProto): Promise<IResponse<[]>> => {
-  return request.post({
-    url: 'role/editUserRight',
+  return request.put({
+    url: 'roles/addpermissions',
     data,
     requestTem: {
       requestTem: 'EditUserRightInputProto',
@@ -319,7 +319,7 @@ export const editUserRight = (data: RoleEditProto): Promise<IResponse<[]>> => {
 // 删除角色
 export const deleteRole = (data: RoleMstInputProto): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'role/delete',
+    url: 'roles/delete',
     data,
     requestTem: {
       requestTem: 'RoleMstProto',
@@ -331,7 +331,7 @@ export const deleteRole = (data: RoleMstInputProto): Promise<IResponse<[]>> => {
 // 新增角色
 export const createRole = (data: RoleCreate): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'role/create',
+    url: 'roles/createrole',
     data,
     requestTem: {
       requestTem: 'RoleMstProto',
@@ -342,8 +342,8 @@ export const createRole = (data: RoleCreate): Promise<IResponse<[]>> => {
 
 // 编辑角色基础信息
 export const updateRole = (data: RoleEdit): Promise<IResponse<[]>> => {
-  return request.post({
-    url: 'role/edit',
+  return request.put({
+    url: 'roles/editrole',
     data,
     requestTem: {
       requestTem: 'RoleMstProto',
@@ -358,7 +358,7 @@ export const getorganizationtree = (
   data: Organizationtree
 ): Promise<IResponse<OrganizationTreeProto[]>> => {
   return request.post({
-    url: 'org/getorganizationtree',
+    url: 'org/getorgtree',
     data,
     requestTem: {
       requestTem: 'OrgInputProto',
@@ -369,7 +369,7 @@ export const getorganizationtree = (
 
 export const getDepartmentList = (data: DepSearch): Promise<IResponse<DeptOnce[]>> => {
   return request.post({
-    url: 'org/getDepartmentList',
+    url: 'org/getdeplist',
     data,
     requestTem: {
       requestTem: 'DeptMstInputProto',
@@ -379,8 +379,8 @@ export const getDepartmentList = (data: DepSearch): Promise<IResponse<DeptOnce[]
 }
 // 编辑机构
 export const editOrganization = (data: OrganizationTreeProto): Promise<IResponse<[]>> => {
-  return request.post({
-    url: 'org/editOrganization',
+  return request.put({
+    url: 'org/edit',
     data,
     requestTem: {
       requestTem: 'OrganizationTreeProto',
@@ -391,7 +391,7 @@ export const editOrganization = (data: OrganizationTreeProto): Promise<IResponse
 // 创建机构
 export const createOrganization = (data: CreateOrganization): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'org/createOrganization',
+    url: 'org/create',
     data,
     requestTem: {
       requestTem: 'OrganizationMstProto',
@@ -402,7 +402,7 @@ export const createOrganization = (data: CreateOrganization): Promise<IResponse<
 // 删除机构
 export const deleteOrganization = (data: OrganizationTreeProto): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'org/deleteOrganization',
+    url: 'org/delete',
     data,
     requestTem: {
       requestTem: 'DeptMstInputProto',
@@ -414,7 +414,7 @@ export const deleteOrganization = (data: OrganizationTreeProto): Promise<IRespon
 // 删除科室
 export const deleteDepartment = (data: DeptOnce): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'org/deleteDepartment',
+    url: 'org/deletedept',
     data,
     requestTem: {
       requestTem: 'DeptMstInputProto',
@@ -424,8 +424,8 @@ export const deleteDepartment = (data: DeptOnce): Promise<IResponse<[]>> => {
 }
 // 编辑科室
 export const editDepartment = (data: DeptOnce): Promise<IResponse<[]>> => {
-  return request.post({
-    url: 'org/editDepartment',
+  return request.put({
+    url: 'org/editdept',
     data,
     requestTem: {
       requestTem: 'DeptMstInfoProto',
@@ -437,7 +437,7 @@ export const editDepartment = (data: DeptOnce): Promise<IResponse<[]>> => {
 // 新增科室
 export const createDepartment = (data: DeptOnce): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'org/createDepartment',
+    url: 'org/createdept',
     data,
     requestTem: {
       requestTem: 'DeptMstInfoProto',
@@ -448,7 +448,7 @@ export const createDepartment = (data: DeptOnce): Promise<IResponse<[]>> => {
 // 获取科室类型
 export const getdicmsg = (data: DeptOnce): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'check/getdicmsg',
+    url: 'dic/getdicmsg',
     data,
     requestTem: {
       requestTem: 'DicItemMstInputProto',
@@ -462,8 +462,8 @@ export const addUserRoles = (data: {
   userUID: string
   right: RoleData[]
 }): Promise<IResponse<[]>> => {
-  return request.post({
-    url: 'user/addroles',
+  return request.put({
+    url: 'userrole/addroles',
     data,
     requestTem: {
       requestTem: 'AddRoleInputProto',

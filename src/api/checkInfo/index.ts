@@ -210,7 +210,7 @@ export interface RequestReportDetail {
 // 查询检查信息列表
 export const getcheckinfolist = (data: CheckInfoQuery): Promise<IResponse<CheckInfoRow[]>> => {
   return request.post({
-    url: 'check/getcheckinfolist',
+    url: 'check/infolist',
     data,
     requestTem: {
       requestTem: 'SearchInputProto',

@@ -113,7 +113,7 @@ function onConfirm() {
         </el-select>
       </el-form-item>
       <el-form-item v-if="showExamClass" label="医技科室分类" prop="examClass">
-        <el-select v-model="form.examClass" placeholder="请选择" :disabled="props.isEdit">
+        <el-select v-model="form.examClass" placeholder="请选择">
           <el-option
             v-for="opt in props.examClassOptions || []"
             :key="opt.value"

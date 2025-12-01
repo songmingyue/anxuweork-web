@@ -45,7 +45,7 @@ export const getStorage = (data: StorageList): Promise<IResponse<CloudStorageCon
 
 export const getDicmsg = (data): Promise<IResponse<any[]>> => {
   return request.post({
-    url: 'check/getdicmsg',
+    url: 'dic/getdicmsg',
     data,
     requestTem: {
       requestTem: 'DicItemMstInputProto',

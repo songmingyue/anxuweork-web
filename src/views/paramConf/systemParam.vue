@@ -121,7 +121,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 type ExportOption = { prop: string; label: string; sort: boolean; width: number }
 
 type CfgItem = { key: string; name: string; desc?: string }
-type GroupKey = 'plugin' | 'archive' | 'exam' | 'system' | 'province' | 'others'
+type GroupKey = 'plugin' | 'exam'
 interface Group {
   key: GroupKey
   title: string
@@ -130,91 +130,20 @@ interface Group {
 const dialogMsg = ref('')
 const groups: Group[] = [
   { key: 'plugin', title: '插件', icon: '#icon-a-bianzu23' },
-  { key: 'archive', title: '归档', icon: '#icon-guidang' },
-  { key: 'exam', title: '检查', icon: '#icon-jiancharenwufenpei' },
-  { key: 'system', title: '系统', icon: '#icon-xitong' },
-  { key: 'province', title: '省平台', icon: '#icon-yinhangcunguan' },
-  { key: 'others', title: '其他平台', icon: '#icon-a-106_other' }
+  { key: 'exam', title: '检查', icon: '#icon-jiancharenwufenpei' }
 ]
 
 const items: Record<GroupKey, CfgItem[]> = {
   // 插件（图2）
   plugin: [
-    {
-      key: 'InsertTaskInfo',
-      name: '拆分任务插入上传和推送表配置',
-      desc: '区分插入上传任务/推送任务，第三方调用检查推送接口采集(任务插入)也在此配置'
-    },
-    {
-      key: 'DigitalImageNeedDefaultValue',
-      name: '采集或推送接收收费状态默认值配置',
-      desc: '初次采集/推送，如果检查采集视图中收费状态为空；或者对方推送检查的时候收费状态为空，则此配置在不为空的情况下起作用，如果为空，则默认已经收费。如果后面采集同一个检查（数据库中已经存在同样检查记录），收费状态为空，则还是按照初次采集一样赋值收费状态，然后，再判断：如果不从his查询收费状态并且系统参数中默认值为空，则不更新收费状态。否则，更新。如果从his查询，则按照his的值来更新，如果his中的收费状态查出来为空，则按照初次采集一样赋值收费状态，然后更新收费状态。'
-    },
-    { key: 'GainServiceBaseAddress', name: '采集程序服务地址', desc: '采集程序根据这个地址启动' },
-    { key: 'GainServiceName', name: '采集服务安装名称', desc: '采集服务安装名称' },
-    { key: 'UploadServiceName', name: '上传服务安装名称', desc: '上传服务安装名称' },
-    { key: 'UploadServiceBaseAddress', name: '上传程序服务地址', desc: '上传程序服务地址' },
-    {
-      key: 'UploadServiceMappingAddress',
-      name: '上传程序经过网闸时的地址',
-      desc: '用于调用上传程序中的接口'
-    },
-    {
-      key: 'QrCodeUrl',
-      name: '集成端调二维吗地址配置',
-      desc: '集成前端二维码展示用的二维码地址配置'
-    },
-    {
-      key: 'WebAPIServiceBaseAddress',
-      name: '推送功能接收端地址',
-      desc: '接收检查、报告、影像、胶片推送的上级/集成API地址'
-    },
-    {
-      key: 'PodServiceBaseAddress',
-      name: '按需打印删除胶片接口地址',
-      desc: '需打印删除胶片接口地址'
-    },
-    { key: 'ConfigValuesRK', name: '瑞康医院二维码服务配置', desc: '瑞康医院二维码服务配置' },
-    { key: 'WebAPIServiceSelfAddress', name: '集成平台自身api地址', desc: '集成平台自身api地址' }
+    { key: 'GainServiceBaseAddress', name: '采集程序服务地址', desc: '采集程序根据这个地址启动' }
   ],
   // 归档（图3）
-  archive: [{ key: 'QRConfig', name: 'PACS相关功能配置', desc: 'cmove, cstore 等接收端配置' }],
+
   // 检查（图4）
   exam: [
-    {
-      key: 'ISDownloadReportInWebAuto',
-      name: '浏览报告自动从云端下载',
-      desc: '浏览报告时，是否自动从云端下载'
-    },
-    { key: 'IMCISAPIHost', name: '集成平台移动端地址', desc: '集成平台移动端地址' },
-    {
-      key: 'SuperiorServiceAddress',
-      name: '从云端下载报告的上级地址',
-      desc: '从云端下载报告的上级地址'
-    },
-    { key: 'ImageViewConfig', name: '影像浏览器读取配置', desc: '影像浏览器读取配置' },
-    {
-      key: 'IsCanRePrint',
-      name: '前端页面是否可以重复打印报告',
-      desc: '前端页面是否可以重复打印报告'
-    },
-    { key: 'RelatedExamConfig', name: '互联网互通配置', desc: '互联网互通配置' },
-    { key: 'ExamLockMethod', name: '检查锁定方式', desc: '检查锁定方式' },
     { key: 'CheckInfoTableConfig', name: '检查信息表格导出配置', desc: '检查信息表格导出配置' }
-  ],
-  // 系统（图5）
-  system: [
-    { key: 'HardDiskThreshold', name: '磁盘使用最高百分比', desc: '磁盘使用最高百分比' },
-    { key: 'PrintConfig', name: '打印相关配置', desc: '打印相关配置' },
-    { key: 'DicomSCPConfig', name: 'Dicom节点配置', desc: 'Dicom节点配置' }
-  ],
-  // 省平台（图6）
-  province: [
-    { key: 'ProvinceSXConfig', name: '浙江省平台相关配置' },
-    { key: 'HeNanProviceImageAppInfo', name: '河南省平台相关配置' }
-  ],
-  // 其他平台（图7）
-  others: [{ key: 'eWordMSNInfo', name: '消息系统配置', desc: '消息系统配置' }]
+  ]
 }
 
 // 默认选中的分组 Tab
@@ -341,8 +270,14 @@ async function onConfig(item: CfgItem) {
     console.log('tableData:', tableData)
     exportSelected.value = []
     if (tableData.data && tableData.data.length > 0) {
-      exportSelected.value =
-        JSON.parse(tableData.data[tableData.data.length - 1]?.queryCondition) || []
+      const newTable = tableData.data.filter(
+        (item) => item.queryType === 'CustomExportColumns' && item.userUID
+      )
+      if (newTable.length > 0) {
+        exportSelected.value = JSON.parse(newTable[0]?.queryCondition) || []
+      } else {
+        exportSelected.value = []
+      }
     }
 
     showExportDlg.value = true
@@ -387,50 +322,8 @@ async function onConfig(item: CfgItem) {
   }
   // 其余简单参数配置入口
   switch (item.key) {
-    case 'HardDiskThreshold':
-      openSimple('磁盘使用最高百分比', '0-100之间的整数')
-      return
-    case 'IMCISAPIHost':
-      openSimple('集成平台移动端地址', 'https://your.domain/path')
-      return
-    case 'SuperiorServiceAddress':
-      openSimple('从云端下载报告的上级地址', 'http://<host>:<port>/')
-      return
     case 'GainServiceBaseAddress':
       openSimple('采集程序服务地址', 'http://<host>:<port>/')
-      return
-    case 'DicomSCPConfig':
-      openSimple('节点接受数椐临时目录', '路径如：C:\temp 或 /Users/username/temp')
-      return
-    case 'eWordMSNInfo':
-      openSimple('消息系统配置', 'http://<host>:<port>/')
-      return
-    case 'GainServiceName':
-      openSimple('采集服务安装名称', '请输入服务名称')
-      return
-    case 'UploadServiceName':
-      openSimple('上传服务安装名称', '请输入服务名称')
-      return
-    case 'UploadServiceBaseAddress':
-      openSimple('上传程序服务地址', 'http://<host>:<port>/')
-      return
-    case 'UploadServiceMappingAddress':
-      openSimple('上传程序经过网闸映射地址', 'http://<gateway-host>:<port>/')
-      return
-    case 'QrCodeUrl':
-      openSimple('集成前端二维码地址配置', 'https://your.domain/path')
-      return
-    case 'WebAPIServiceBaseAddress':
-      openSimple('推送功能接收端地址', 'http://<host>:<port>/')
-      return
-    case 'PodServiceBaseAddress':
-      openSimple('按需打印删除胶片接口地址', 'http://<host>:<port>/FilmExam/DeleteFilmByAc')
-      return
-    case 'ConfigValuesRK':
-      openSimple('瑞康医院二维码服务配置', 'JSON，例如 {"QRCodeAddress":"..."}', true)
-      return
-    case 'WebAPIServiceSelfAddress':
-      openSimple('集成平台自身api地址', 'http://<host>:<port>/')
       return
   }
   ElMessage.info(`配置：${item.name}`)

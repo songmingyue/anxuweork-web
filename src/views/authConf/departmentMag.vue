@@ -61,7 +61,6 @@ const deptTypeOptions = ref<Array<{ label: string; value: string }>>([])
 // 加载机构（无分页）
 async function loadOrganizations() {
   orgLoading.value = true
-  console.log('orgQuery', orgQuery)
   try {
     const list = await getorganizationtree(orgQuery)
     orgList.value = list.data || []
@@ -242,6 +241,7 @@ const getDicmsgList = async () => {
 const confirms = () => {
   dialogMsg.value.isShowDialog = false
   setTimeout(() => {
+    console.log('message12121212')
     loadOrganizations()
   }, 10)
 }

@@ -1266,3 +1266,121 @@ message GetUploadRecordListOutputProto {
 message UserUIDInputProto {
   string userUID = 1;
 }
+
+message SMSSInputProto {
+  int32 currentPage = 1; // 当前页码
+  int32 pageSize = 2; // 每页大小
+  string accessionNumber = 3; // 检查号/登记号
+  string patientClass = 4; // 患者类别
+  string serviceSectId = 5; // 服务科室ID
+  string name = 6; // 姓名
+  string contactPhoneNo = 7; // 联系电话
+
+  // 时间范围查询字段
+  string startUploadTime = 8; // 上传时间开始范围
+  string endUploadTime = 9; // 上传时间结束范围
+  string startCreateTime = 10; // 创建时间开始范围
+  string endCreateTime = 11; // 创建时间结束范围
+  string startSendTime = 12; // 发送时间开始范围
+  string endSendTime = 13; // 发送时间结束范围
+  string startDeliveryTime = 14; // 送达时间开始范围
+  string endDeliveryTime = 15; // 送达时间结束范围
+
+  // 其他可能需要的查询条件
+  int32 sendState = 16; // 发送状态
+  string fileUid = 17; // 文件唯一标识
+}
+
+message SMSSProto {
+  string fileUid = 1; // 文件唯一标识
+  string accessionNumber = 2; // 检查号/登记号
+  string patientClass = 3; // 患者类别
+  string serviceSectId = 4; // 服务科室ID
+  string name = 5; // 患者姓名
+  string contactPhoneNo = 6; // 联系电话
+  string uploadTime = 7; // 上传时间 (格式: yyyy-MM-dd HH:mm:ss.fffffff)
+  string createTime = 8; // 创建时间 (格式: yyyy-MM-dd HH:mm:ss)
+  int32 sendState = 9; // 发送状态
+  string sendTime = 10; // 发送时间 (可为空)
+  string deliveryTime = 11; // 送达时间 (可为空)
+}
+message DocDBInputProto {
+int32 id = 1; //主键
+string accessionNumber = 2; //就诊号
+string name = 3; //姓名
+string organizationName = 4; // 医院名称
+string serviceSectID = 5; // 检查类型
+string patientClass = 6; // 就诊类别
+string mimeType = 7; // 文件类型
+string contactPhoneNo = 8; //手机号码
+string resultStatusCode = 9; //状态码
+string observationDateStart = 10; //检查时间开始
+string observationDateEnd = 11; //检查时间结束
+string typeCode = 12; //影像标志
+int32 lockFlag = 13; //数据状态
+int32 currentPage = 14; //页码
+int32 pageSize = 15; //行数
+}
+message DocDBProto {
+  int32 id = 1;
+string name = 2;
+string sex = 3;
+string age = 4;
+string ageUnit = 5;
+string birthDate = 6;
+string contactPhoneNo = 7;
+string organizationName = 8;
+string accessionNumber = 9;
+string serviceSectID = 10;
+string patientClass = 11;
+string procedureName = 12;
+string fileRelativePath = 13;
+string serviceUID = 14;
+string mimeType = 15;
+string fileCreateTime = 16;
+string typeCode = 17;
+int32 deleteFlag = 18;
+string medRecNO = 19;
+string organizationID = 20;
+string patientID = 21;
+string email = 22;
+int64 fileSize = 23;
+string businessType = 24;
+string classCode = 25;
+string identityID = 26;
+string idCardNO = 27;
+string insuranceID = 28;
+string healthCardNO = 29;
+string observationUID = 30;
+string observationDate = 31;
+string resultDate = 32;
+string uploadTime = 33;
+string visitUID = 34;
+string mediaUID = 35;
+string fileUID = 36;
+string resultSeq = 37;
+string observationID = 38;
+string imp = 39;
+string gdt = 40;
+string resultStatusCode = 41;
+string pidAssigningAuthority = 42;
+string addressDetail = 43;
+string mediaName = 44;
+string path = 45;
+string preliminaryDate = 46;
+string requestDeptName = 47;
+string resultPrincipalName = 48;
+string resultAssistantName = 49;
+string dataSource = 50;
+double charges = 51;
+double payments = 52;
+string abnormalFlags = 53;
+string studyInstanceUID = 54;
+int32 lockFlag = 55;
+string lockReason = 56;
+int32 filmCount = 57;
+string digitalImageNeed = 58;
+string expr1 = 59;
+string createdDate = 60;
+string modifiedDate = 61;
+}

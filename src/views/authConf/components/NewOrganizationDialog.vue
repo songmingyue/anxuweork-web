@@ -39,10 +39,15 @@ const submitForm = async () => {
     isSuccess ? emit('confirm', false) : ''
   } else {
     // 新增逻辑
-    const { isSuccess, message } = await createOrganization(req)
-    ElMessage(message)
-    console.log(message, 'message')
-    isSuccess ? emit('confirm', false) : ''
+    createOrganization(req).then(({ isSuccess, message }) => {
+      console.log(message, 'message12121212')
+      ElMessage(message)
+      isSuccess ? emit('confirm', false) : ''
+    })
+    // const { isSuccess, message } = await createOrganization(req)
+    // ElMessage(message)
+    // console.log(message, 'message')
+    // isSuccess ? emit('confirm', false) : ''
   }
 }
 onMounted(() => {

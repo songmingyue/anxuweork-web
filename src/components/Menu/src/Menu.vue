@@ -39,6 +39,10 @@ const menuIconList = reactive<
     icon: 'chajianpeizhi'
   },
   {
+    key: '/dataConf',
+    icon: 'shujutongji'
+  },
+  {
     key: '/serviceCof',
     icon: 'setting'
   },

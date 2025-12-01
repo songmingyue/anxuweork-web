@@ -218,7 +218,7 @@ export const getrolelist = (data: {
   size: number
 }): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'user/getrolelist',
+    url: 'userrole/getroleslist',
     data,
     requestTem: {
       requestTem: 'organizationIDInputProto',
@@ -256,7 +256,7 @@ export const editsysparametersingle = (data: {
 // 获取检查信息表格导出配置 表格
 export const getpreset = (data: Preset): Promise<IResponse<PresetList[]>> => {
   return request.post({
-    url: 'check/getpreset',
+    url: 'system/getpreset',
     data,
     requestTem: {
       requestTem: 'UserQuerySetInputProto',
@@ -267,7 +267,7 @@ export const getpreset = (data: Preset): Promise<IResponse<PresetList[]>> => {
 // 获取字典类型列表
 export const getdictypelist = (data: DictType): Promise<IResponse<DicItem[]>> => {
   return request.post({
-    url: 'dic/getdictypelist',
+    url: 'dic/getdictypemstlist',
     data,
     requestTem: {
       requestTem: 'DicTypeMstInputProto',
@@ -279,7 +279,7 @@ export const getdictypelist = (data: DictType): Promise<IResponse<DicItem[]>> =>
 // 获取字典项列表
 export const getdicitemlist = (data: DicItemZiDian): Promise<IResponse<DictItemRow[]>> => {
   return request.post({
-    url: 'dic/getdicitemlist',
+    url: 'dic/getdicitemmst',
     data,
     requestTem: {
       requestTem: 'DicItemMstProto',
@@ -301,7 +301,7 @@ export const createdicitem = (data: CreateDicitem): Promise<IResponse<[]>> => {
 }
 // 编辑字典项
 export const editdicitem = (data: CreateDicitem): Promise<IResponse<[]>> => {
-  return request.post({
+  return request.put({
     url: 'dic/edit',
     data,
     requestTem: {

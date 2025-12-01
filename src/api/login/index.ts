@@ -6,7 +6,7 @@ interface RoleParams {
 
 export const loginApi = (data: any): Promise<IResponse<UserType>> => {
   return request.post({
-    url: 'login/userlogin',
+    url: 'authorize/login',
     data,
     requestTem: {
       requestTem: 'AdminLoginInputProto',
@@ -28,7 +28,7 @@ export const changepwd = (data: any): Promise<IResponse<UserType>> => {
 }
 export const getOrganization = () => {
   return request.post({
-    url: 'register/organizations',
+    url: 'register/getorgbylogin',
     requestTem: {
       requestTem: 'OrganizationInputProto',
       responseTem: 'OrganizationDtoNewProto'
@@ -48,7 +48,7 @@ export const register = (data: any): Promise<IResponse<UserType>> => {
 }
 export const userLogout = (): Promise<IResponse<UserType>> => {
   return request.post({
-    url: 'login/userlogout',
+    url: 'authorize/UserLogout',
     requestTem: {
       requestTem: 'AdminLoginInputProto',
       responseTem: 'AdminLoginUserInfoProto'

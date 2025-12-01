@@ -171,7 +171,7 @@ function onCancel() {
       </ElFormItem>
 
       <ElFormItem prop="password" label="数据库连接密码">
-        <input type="text" style="display: none" autocomplete="current-password" />
+        <input type="text" style="display: none" autocomplete="password" />
         <ElInput v-model="form.password" type="password" placeholder="请输入密码" show-password />
       </ElFormItem>
 

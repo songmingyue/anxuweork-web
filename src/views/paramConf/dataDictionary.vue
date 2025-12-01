@@ -53,9 +53,9 @@
         <el-table-column prop="typeClass" sortable label="字典分类" min-width="140" />
         <el-table-column prop="typeCode" sortable label="类型代码" min-width="180" />
         <el-table-column prop="typeName" sortable label="类型名称" min-width="180" />
-        <el-table-column prop="allowCreateItem" sortable label="创建字典项" width="120" />
-        <el-table-column prop="allowUpdateItem" sortable label="修改字典项" width="120" />
-        <el-table-column prop="allowDeleteItem" sortable label="删除字典项" width="120" />
+        <el-table-column prop="allowCreateItem" sortable label="创建字典项" min-width="120" />
+        <el-table-column prop="allowUpdateItem" sortable label="修改字典项" min-width="120" />
+        <el-table-column prop="allowDeleteItem" sortable label="删除字典项" min-width="120" />
         <el-table-column prop="memo" label="备注" sortable min-width="240" show-overflow-tooltip />
       </el-table>
 

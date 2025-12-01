@@ -1,7 +1,7 @@
 import request from '@/axios'
 
 export const getLoginKey = async (): Promise<string> => {
-  const response = await request.post({ url: 'Login/key', responseType: 'json' })
+  const response = await request.get({ url: 'authorize/key', responseType: 'json' })
   return response.data.data
 }
 

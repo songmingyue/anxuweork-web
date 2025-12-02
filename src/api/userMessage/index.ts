@@ -471,3 +471,12 @@ export const addUserRoles = (data: {
     }
   })
 }
+
+export const authorizeBulkregist = (data?: FormData) => {
+  return request.post({
+    url: 'authorize/bulkregist',
+    data,
+    headers: data ? { 'Content-Type': 'multipart/form-data' } : undefined,
+    responseType: 'json'
+  })
+}

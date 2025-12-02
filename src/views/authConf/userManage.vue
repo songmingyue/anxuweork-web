@@ -13,7 +13,8 @@ import {
   ElButton,
   ElOption,
   ElPagination,
-  ElSwitch
+  ElSwitch,
+  ElUpload
 } from 'element-plus'
 import {
   getorgList,
@@ -30,6 +31,7 @@ import {
   getroles,
   editUser
 } from '@/api/userMessage'
+import { authorizeBulkregist } from '@/api/userMessage'
 import { OrganizationList } from '@/api/login/types'
 import UserFormDialog from './components/UserFormDialog.vue'
 import { OrganizationOnce } from '@/api/type'
@@ -91,6 +93,32 @@ function handleSizeChange(s: number) {
 function handleCreate() {
   isEdit.value = false
   dialogVisible.value = true
+}
+
+const uploading = ref(false)
+const handleBatchRegister = async (file: File) => {
+  if (!file) return
+  try {
+    await ElMessageBox.confirm('确认上传并执行批量注册？', '提示', { type: 'warning' })
+  } catch {
+    return
+  }
+  const formData = new FormData()
+  formData.append('file', file)
+  uploading.value = true
+  try {
+    const { isSuccess, message } = await authorizeBulkregist(formData)
+    if (isSuccess) {
+      ElMessage.success(message || '批量注册成功')
+      getUserList()
+    } else {
+      ElMessage.error(message || '批量注册失败')
+    }
+  } catch (e: any) {
+    ElMessage.error(e?.message || '批量注册失败')
+  } finally {
+    uploading.value = false
+  }
 }
 
 function handleEdit(row: UserOnce) {
@@ -279,6 +307,15 @@ onMounted(() => {
           <el-button type="primary" @click="handleSearch">检索</el-button>
           <el-button @click="resetFilters">重置</el-button>
           <el-button type="success" @click="handleCreate">新增用户</el-button>
+          <el-upload
+            style="margin-left: 10px"
+            :auto-upload="false"
+            :show-file-list="false"
+            :on-change="(file: any) => handleBatchRegister((file?.raw || file) as File)"
+            accept=".csv,.xlsx,.xls,.json"
+          >
+            <el-button type="primary" :loading="uploading">批量注册</el-button>
+          </el-upload>
         </el-form-item>
       </el-form>
     </el-card>
@@ -288,8 +325,8 @@ onMounted(() => {
         :data="tableData"
         v-loading="loading"
         highlight-current-row
-        height="calc(50vh - 160px)"
-        style="width: 100%"
+        :height="'calc(50vh - 160px)'"
+        :style="{ width: '100%' }"
         @current-change="handleCurrentChange"
       >
         <el-table-column sortable prop="name" label="姓名" min-width="100" show-overflow-tooltip />

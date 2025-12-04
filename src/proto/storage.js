@@ -37388,7 +37388,7 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
    * @property {string|null} [observationDateStart] DocDBInputProto observationDateStart
    * @property {string|null} [observationDateEnd] DocDBInputProto observationDateEnd
    * @property {string|null} [typeCode] DocDBInputProto typeCode
-   * @property {number|null} [lockFlag] DocDBInputProto lockFlag
+   * @property {string|null} [digitalImageNeed] DocDBInputProto digitalImageNeed
    * @property {number|null} [currentPage] DocDBInputProto currentPage
    * @property {number|null} [pageSize] DocDBInputProto pageSize
    */
@@ -37504,12 +37504,12 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
   DocDBInputProto.prototype.typeCode = ''
 
   /**
-   * DocDBInputProto lockFlag.
-   * @member {number} lockFlag
+   * DocDBInputProto digitalImageNeed.
+   * @member {string} digitalImageNeed
    * @memberof DocDBInputProto
    * @instance
    */
-  DocDBInputProto.prototype.lockFlag = 0
+  DocDBInputProto.prototype.digitalImageNeed = ''
 
   /**
    * DocDBInputProto currentPage.
@@ -37580,8 +37580,8 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
       writer.uint32(/* id 11, wireType 2 =*/ 90).string(message.observationDateEnd)
     if (message.typeCode != null && Object.hasOwnProperty.call(message, 'typeCode'))
       writer.uint32(/* id 12, wireType 2 =*/ 98).string(message.typeCode)
-    if (message.lockFlag != null && Object.hasOwnProperty.call(message, 'lockFlag'))
-      writer.uint32(/* id 13, wireType 0 =*/ 104).int32(message.lockFlag)
+    if (message.digitalImageNeed != null && Object.hasOwnProperty.call(message, 'digitalImageNeed'))
+      writer.uint32(/* id 13, wireType 2 =*/ 106).string(message.digitalImageNeed)
     if (message.currentPage != null && Object.hasOwnProperty.call(message, 'currentPage'))
       writer.uint32(/* id 14, wireType 0 =*/ 112).int32(message.currentPage)
     if (message.pageSize != null && Object.hasOwnProperty.call(message, 'pageSize'))
@@ -37670,7 +37670,7 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
           break
         }
         case 13: {
-          message.lockFlag = reader.int32()
+          message.digitalImageNeed = reader.string()
           break
         }
         case 14: {
@@ -37739,8 +37739,8 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
       if (!$util.isString(message.observationDateEnd)) return 'observationDateEnd: string expected'
     if (message.typeCode != null && message.hasOwnProperty('typeCode'))
       if (!$util.isString(message.typeCode)) return 'typeCode: string expected'
-    if (message.lockFlag != null && message.hasOwnProperty('lockFlag'))
-      if (!$util.isInteger(message.lockFlag)) return 'lockFlag: integer expected'
+    if (message.digitalImageNeed != null && message.hasOwnProperty('digitalImageNeed'))
+      if (!$util.isString(message.digitalImageNeed)) return 'digitalImageNeed: string expected'
     if (message.currentPage != null && message.hasOwnProperty('currentPage'))
       if (!$util.isInteger(message.currentPage)) return 'currentPage: integer expected'
     if (message.pageSize != null && message.hasOwnProperty('pageSize'))
@@ -37773,7 +37773,7 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
     if (object.observationDateEnd != null)
       message.observationDateEnd = String(object.observationDateEnd)
     if (object.typeCode != null) message.typeCode = String(object.typeCode)
-    if (object.lockFlag != null) message.lockFlag = object.lockFlag | 0
+    if (object.digitalImageNeed != null) message.digitalImageNeed = String(object.digitalImageNeed)
     if (object.currentPage != null) message.currentPage = object.currentPage | 0
     if (object.pageSize != null) message.pageSize = object.pageSize | 0
     return message
@@ -37804,7 +37804,7 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
       object.observationDateStart = ''
       object.observationDateEnd = ''
       object.typeCode = ''
-      object.lockFlag = 0
+      object.digitalImageNeed = ''
       object.currentPage = 0
       object.pageSize = 0
     }
@@ -37830,8 +37830,8 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
       object.observationDateEnd = message.observationDateEnd
     if (message.typeCode != null && message.hasOwnProperty('typeCode'))
       object.typeCode = message.typeCode
-    if (message.lockFlag != null && message.hasOwnProperty('lockFlag'))
-      object.lockFlag = message.lockFlag
+    if (message.digitalImageNeed != null && message.hasOwnProperty('digitalImageNeed'))
+      object.digitalImageNeed = message.digitalImageNeed
     if (message.currentPage != null && message.hasOwnProperty('currentPage'))
       object.currentPage = message.currentPage
     if (message.pageSize != null && message.hasOwnProperty('pageSize'))

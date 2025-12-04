@@ -61,7 +61,7 @@
 
         <el-table-column prop="" label="数据状态">
           <template #default="{ row }">
-            <el-tag v-if="row.lockFlag === 1" type="primary">未锁定</el-tag>
+            <el-tag v-if="row.digitalImageNeed === '1'" type="primary">未锁定</el-tag>
             <el-tag type="info" v-else>已锁定</el-tag>
           </template>
         </el-table-column>
@@ -69,7 +69,7 @@
           <template #default="{ row }">
             <el-button link type="danger" size="small" @click="deleteData(row)">删除</el-button>
             <el-button
-              v-if="row.lockFlag === 1"
+              v-if="row.digitalImageNeed === '1'"
               link
               type="warning"
               size="small"
@@ -143,16 +143,20 @@ const changeSelect = (key) => {
 }
 
 const lockAction = async (row) => {
-  await ElMessageBox.confirm(`确定${row.lockFlag === 1 ? '锁定' : '解锁'}该条数据吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
+  await ElMessageBox.confirm(
+    `确定${row.digitalImageNeed === '1' ? '锁定' : '解锁'}该条数据吗？`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
     .then(async () => {
       loadingRole.value = true
       const { isSuccess, message } = await updatelockDoc({
         ...row,
-        lockFlag: row.lockFlag === 1 ? 0 : 1
+        digitalImageNeed: row.digitalImageNeed === '1' ? '0' : '1'
       })
       loadingRole.value = false
       if (isSuccess) {

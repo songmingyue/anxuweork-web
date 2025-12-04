@@ -1317,7 +1317,7 @@ string resultStatusCode = 9; //状态码
 string observationDateStart = 10; //检查时间开始
 string observationDateEnd = 11; //检查时间结束
 string typeCode = 12; //影像标志
-int32 lockFlag = 13; //数据状态
+string digitalImageNeed = 13; //数据状态
 int32 currentPage = 14; //页码
 int32 pageSize = 15; //行数
 }

@@ -107,7 +107,8 @@ const handleBatchRegister = async (file: File) => {
   formData.append('file', file)
   uploading.value = true
   try {
-    const { isSuccess, message } = await authorizeBulkregist(formData)
+    const data = await authorizeBulkregist(formData)
+    const { isSuccess, message } = data.data || {}
     if (isSuccess) {
       ElMessage.success(message || '批量注册成功')
       getUserList()
@@ -320,20 +321,29 @@ onMounted(() => {
       </el-form>
     </el-card>
 
-    <el-card class="mt8" shadow="never">
+    <el-card class="mt8 card-table nopadding-card-top" shadow="never">
       <el-table
         :data="tableData"
         v-loading="loading"
         highlight-current-row
         :height="'calc(50vh - 160px)'"
         :style="{ width: '100%' }"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
         @current-change="handleCurrentChange"
       >
-        <el-table-column sortable prop="name" label="姓名" min-width="100" show-overflow-tooltip />
+        <el-table-column
+          sortable
+          prop="name"
+          label="姓名"
+          min-width="100"
+          align="center"
+          show-overflow-tooltip
+        />
         <el-table-column
           sortable
           prop="workNO"
           label="工号"
+          align="center"
           min-width="100"
           show-overflow-tooltip
         />
@@ -341,6 +351,7 @@ onMounted(() => {
           sortable
           prop="organizationName"
           label="机构"
+          align="center"
           min-width="120"
           show-overflow-tooltip
         />
@@ -348,12 +359,14 @@ onMounted(() => {
           sortable
           prop="deptName"
           label="科室"
+          align="center"
           min-width="120"
           show-overflow-tooltip
         />
         <el-table-column
           prop="officePhone"
           label="办公电话"
+          align="center"
           sortable
           min-width="120"
           show-overflow-tooltip
@@ -361,15 +374,24 @@ onMounted(() => {
         <el-table-column
           prop="privatePhone"
           label="个人电话"
+          align="center"
           sortable
           min-width="120"
           show-overflow-tooltip
         />
-        <el-table-column sortable prop="email" label="邮箱" min-width="160" show-overflow-tooltip />
+        <el-table-column
+          sortable
+          prop="email"
+          label="邮箱"
+          min-width="160"
+          align="center"
+          show-overflow-tooltip
+        />
         <el-table-column
           sortable
           prop="lastLogonTime"
           label="最后登录"
+          align="center"
           min-width="160"
           show-overflow-tooltip
         />
@@ -378,17 +400,26 @@ onMounted(() => {
           prop="createUserName"
           label="创建用户"
           min-width="120"
+          align="center"
           show-overflow-tooltip
         />
         <el-table-column
           sortable
           prop="createDate"
+          align="center"
           label="创建时间"
           min-width="160"
           show-overflow-tooltip
         />
-        <el-table-column sortable prop="memo" label="备注" min-width="140" show-overflow-tooltip />
-        <el-table-column label="状态" width="140">
+        <el-table-column
+          sortable
+          prop="memo"
+          align="center"
+          label="备注"
+          min-width="140"
+          show-overflow-tooltip
+        />
+        <el-table-column label="状态" align="center" width="140">
           <template #default="{ row }">
             <el-switch
               v-model="row.status"
@@ -401,7 +432,7 @@ onMounted(() => {
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="150">
+        <el-table-column label="操作" align="center" fixed="right" width="150">
           <template #default="{ row }">
             <el-button link size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
             <el-button link size="small" type="danger" @click="handlePassword(row)"
@@ -425,26 +456,40 @@ onMounted(() => {
       </div>
     </el-card>
 
-    <el-card class="mt8" shadow="never" header="角色列表">
+    <el-card
+      class="mt8 card-table nopadding-card nopadding-card-top"
+      shadow="never"
+      header="角色列表"
+    >
       <el-table
         :data="roleList"
         ref="roleTableRef"
         height="calc(50vh - 160px)"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
         row-key="roleUID"
         @selection-change="onRoleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55" align="center" />
         <el-table-column
           prop="roleName"
           label="角色"
+          align="center"
           min-width="160"
           show-overflow-tooltip
           sortable
         />
-        <el-table-column prop="memo" label="备注" min-width="140" show-overflow-tooltip sortable />
+        <el-table-column
+          prop="memo"
+          label="备注"
+          min-width="140"
+          align="center"
+          show-overflow-tooltip
+          sortable
+        />
         <el-table-column
           prop="organizationName"
           label="所属机构名称"
+          align="center"
           min-width="160"
           show-overflow-tooltip
           sortable
@@ -452,6 +497,7 @@ onMounted(() => {
         <el-table-column
           prop="createDate"
           label="添加时间"
+          align="center"
           min-width="160"
           show-overflow-tooltip
           sortable

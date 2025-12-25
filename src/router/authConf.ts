@@ -44,7 +44,7 @@ export const authConf = [
   {
     path: '/departmentMag',
     component: Layout,
-    name: 'departmentMag',
+    name: 'DepartmentMags',
     meta: {},
     children: [
       {

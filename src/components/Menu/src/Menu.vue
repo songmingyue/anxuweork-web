@@ -39,10 +39,6 @@ const menuIconList = reactive<
     icon: 'chajianpeizhi'
   },
   {
-    key: '/dataConf',
-    icon: 'shujutongji'
-  },
-  {
     key: '/serviceCof',
     icon: 'setting'
   },
@@ -55,7 +51,7 @@ const menuIconList = reactive<
     icon: 'zhenliao'
   },
   {
-    key: '/logConfig',
+    key: '/dataConf',
     icon: 'rizhi'
   },
   {
@@ -121,10 +117,8 @@ function renderMenu(list: any[]) {
               iconName
                 ? h(Icon as any, {
                     icon: iconName,
-                    size: 16,
-                    color: isAct
-                      ? 'var(--menu-icon-active-color, var(--left-menu-text-active-color))'
-                      : 'var(--left-menu-text-color)',
+                    size: 20,
+                    color: isAct ? '#fff' : '#bbb',
                     style: `${collapse.value ? 'margin-right:20px;' : 'margin-right:6px;'}`
                   })
                 : null,
@@ -142,10 +136,8 @@ function renderMenu(list: any[]) {
           iconName
             ? h(Icon as any, {
                 icon: iconName,
-                size: 16,
-                color: isAct
-                  ? 'var(--menu-icon-active-color, var(--left-menu-text-active-color))'
-                  : 'var(--left-menu-text-color)',
+                size: 20,
+                color: isAct ? '#fff' : '#bbb',
                 style: `${collapse.value ? 'margin-right:20px;' : 'margin-right:6px;'}`
               })
             : null,
@@ -160,7 +152,7 @@ function renderMenu(list: any[]) {
   <div class="el-scrollbar__wrap el-scrollbar__wrap--hidden-default">
     <div
       :id="prefixCls"
-      style="height: 100%; background-color: var(--left-menu-bg-color)"
+      style="height: 100%; background-color: #414549"
       :class="[
         `${prefixCls} ${prefixCls}__${menuMode}`,
         'menu-root',
@@ -173,9 +165,9 @@ function renderMenu(list: any[]) {
       <ElMenu
         :uniqueOpened="layout === 'top' ? false : uniqueOpened"
         :collapse="layout === 'top' || layout === 'cutMenu' ? false : collapse"
-        backgroundColor="var(--left-menu-bg-color)"
-        textColor="var(--left-menu-text-color)"
-        activeTextColor="var(--left-menu-text-active-color)"
+        backgroundColor="#414549"
+        textColor="#bbb"
+        activeTextColor="#fff"
         :default-active="activeMenu"
         mode="vertical"
         @select="handleMenuSelect"
@@ -197,7 +189,7 @@ function renderMenu(list: any[]) {
     height: 100%;
     overflow: hidden;
     flex-direction: column;
-    background: var(--left-menu-bg-color);
+    background: #414549;
   }
 
   .menu--min {
@@ -215,7 +207,7 @@ function renderMenu(list: any[]) {
     // 设置选中时子标题的颜色
     .is-active {
       & > .@{elNamespace}-sub-menu__title {
-        color: var(--left-menu-text-active-color) !important;
+        color: #fff !important;
       }
     }
 
@@ -223,18 +215,18 @@ function renderMenu(list: any[]) {
     .@{elNamespace}-sub-menu__title,
     .@{elNamespace}-menu-item {
       &:hover {
-        color: var(--left-menu-text-active-color) !important;
-        background-color: var(--left-menu-bg-color) !important;
+        color: #fff !important;
+        background-color: #414549 !important;
       }
     }
 
     // 设置选中时的高亮背景和高亮颜色
     .@{elNamespace}-menu-item.is-active {
-      color: var(--left-menu-text-active-color) !important;
-      background-color: var(--left-menu-bg-active-color) !important;
+      color: #fff !important;
+      background-color: #409eff !important;
 
       &:hover {
-        background-color: var(--left-menu-bg-active-color) !important;
+        background-color: #409eff !important;
       }
     }
 
@@ -246,7 +238,7 @@ function renderMenu(list: any[]) {
     .@{elNamespace}-menu {
       .@{elNamespace}-sub-menu__title,
       .@{elNamespace}-menu-item:not(.is-active) {
-        background-color: var(--left-menu-bg-light-color) !important;
+        background-color: #414549 !important;
       }
     }
   }
@@ -258,7 +250,7 @@ function renderMenu(list: any[]) {
     & > .is-active,
     & > .is-active > .@{elNamespace}-sub-menu__title {
       position: relative;
-      background-color: var(--left-menu-collapse-bg-active-color) !important;
+      background-color: #409eff !important;
     }
   }
 
@@ -310,7 +302,7 @@ function renderMenu(list: any[]) {
   // 设置选中时子标题的颜色
   .is-active {
     & > .el-sub-menu__title {
-      color: var(--left-menu-text-active-color) !important;
+      color: #fff !important;
     }
   }
 
@@ -318,18 +310,18 @@ function renderMenu(list: any[]) {
   .el-sub-menu__title,
   .el-menu-item {
     &:hover {
-      color: var(--left-menu-text-active-color) !important;
-      background-color: var(--left-menu-bg-color) !important;
+      color: #fff !important;
+      background-color: rgb(52 55 58) !important;
     }
   }
 
   // 设置选中时的高亮背景
   .el-menu-item.is-active {
     position: relative;
-    background-color: var(--left-menu-bg-active-color) !important;
+    background-color: #409eff !important;
 
     &:hover {
-      background-color: var(--left-menu-bg-active-color) !important;
+      background-color: #409eff !important;
     }
   }
 }

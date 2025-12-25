@@ -12,16 +12,23 @@ import {
   ElForm,
   ElFormItem,
   ElTag,
-  ElDivider
+  ElDivider,
+  ElDialog,
+  ElUpload,
+  ElIcon
 } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import {
   deleteDepartment,
   deleteOrganization,
   DepSearch,
   DeptOnce,
   getDepartmentList,
+  getOneOrg,
   getorganizationtree,
-  OrganizationTreeProto
+  OrganizationTreeProto,
+  uploadlogo,
+  orgUploadTheme
 } from '@/api/userMessage'
 import { createDepartment, editDepartment } from '@/api/userMessage'
 import NewOrganizationDialog from './components/NewOrganizationDialog.vue'
@@ -29,8 +36,12 @@ import DepartmentFormDialog from './components/DepartmentFormDialog.vue'
 import { getDicmsg } from '@/api/paramConf'
 // 上表：机构查询
 const orgQuery = reactive({ searchOrganizationID: '', organizationName: '' })
+const fileList = ref<Array<File>>([])
 const orgLoading = ref(false)
 const orgList = ref<OrganizationTreeProto[]>([])
+const uploadFormRef = ref()
+const imageUrl = ref<string>('')
+const uploadForm = ref<any>({})
 const activeOrg = ref<DepSearch>({
   pageSize: 10,
   currentPage: 1
@@ -45,10 +56,12 @@ const dialogMsg = ref({
 const deptQuery = reactive({ deptID: '', deptName: '' })
 const deptLoading = ref(false)
 const deptList = ref<DeptOnce[]>([])
+const rowMsg = ref<any>({})
 const deptTotal = ref(0)
 const deptPageSize = ref(10)
 const deptCurrent = ref(1)
-
+const uploadVisible = ref(false)
+const uploadTheme = ref(false)
 // 科室新增/编辑弹窗
 const deptDialogVisible = ref(false)
 const deptDialogIsEdit = ref(false)
@@ -152,6 +165,24 @@ async function onConfirmDept(payload: any) {
     ElMessage.error(message || '操作失败')
   }
 }
+const onUploadBackground = async (row) => {
+  const { data, isSuccess, message } = await getOneOrg({
+    searchOrganizationID: row.searchOrganizationID || row.organizationID
+  })
+  if (isSuccess) {
+    imageUrl.value = data[0]?.logoFile || ''
+    uploadVisible.value = true
+    rowMsg.value = row
+  } else {
+    ElMessage.error(message || '获取机构信息失败')
+    return
+  }
+}
+
+const onUploadTheme = (row) => {
+  rowMsg.value = row
+  uploadTheme.value = true
+}
 
 function onCreateOrgChild(row: any) {
   dialogMsg.value.EditData = {
@@ -160,10 +191,15 @@ function onCreateOrgChild(row: any) {
   dialogMsg.value.isShowDialog = true
   dialogMsg.value.isEdit = false
 }
-function onEditOrg(row: any) {
-  dialogMsg.value.EditData = {
-    parentOrganizationID: row.searchOrganizationID || row.organizationID,
-    ...row
+async function onEditOrg(row: any) {
+  const { data, isSuccess, message } = await getOneOrg({
+    searchOrganizationID: row.searchOrganizationID || row.organizationID
+  })
+  if (isSuccess) {
+    dialogMsg.value.EditData = data[0]
+  } else {
+    ElMessage.error(message || '获取机构信息失败')
+    return
   }
   dialogMsg.value.isShowDialog = true
   dialogMsg.value.isEdit = true
@@ -245,6 +281,65 @@ const confirms = () => {
     loadOrganizations()
   }, 10)
 }
+// 上传前校验文件类型与大小
+const beforeAvatarUpload = (rawFile: File) => {
+  const isImage = rawFile.type.startsWith('image/')
+  if (!isImage) {
+    ElMessage.error('仅支持上传图片文件')
+    return false
+  }
+  return true
+}
+
+// 选择图片后，缓存文件并生成预览
+const handleFileChange = (file: any) => {
+  uploadForm.value.logoFile = file?.raw || null
+  if (uploadForm.value.logoFile) {
+    imageUrl.value = URL.createObjectURL(uploadForm.value.logoFile)
+  }
+}
+const sureUpload = async () => {
+  if (!imageUrl.value) {
+    ElMessage.error('请先选择要上传的图片文件')
+    return
+  }
+  if (!uploadForm.value.logoFile) {
+    ElMessage.error('文件未更换')
+    return
+  }
+  // 仅在点击“确定”时以 FormData 上传
+  const formData = new FormData()
+  formData.append('organizationID', rowMsg.value.searchOrganizationID)
+  formData.append('file', uploadForm.value.logoFile)
+  const resp = await uploadlogo(formData)
+  // 若后端返回图片地址则回填
+
+  if (resp.data.isSuccess) {
+    uploadVisible.value = false
+    imageUrl.value = ''
+  } else {
+    ElMessage.error(resp.data.message)
+  }
+}
+const isLoadingUpload = ref(false)
+const handleChange = async (file) => {
+  isLoadingUpload.value = true
+  const formData = new FormData()
+  formData.append('organizationID', rowMsg.value.searchOrganizationID)
+  formData.append('file', file.raw)
+  try {
+    const data = await orgUploadTheme(formData)
+    if (data.data.isSuccess) {
+      uploadVisible.value = false
+      imageUrl.value = ''
+    } else {
+      ElMessage.error(data.data.message)
+    }
+    isLoadingUpload.value = false
+  } catch (error) {
+    isLoadingUpload.value = false
+  }
+}
 onMounted(() => {
   loadOrganizations()
   getDicmsgList()
@@ -277,7 +372,7 @@ onMounted(() => {
         </el-form-item>
       </el-form>
     </el-card>
-    <el-card shadow="never" class="mb8 flex-card">
+    <el-card shadow="never" class="mb8 flex-card card-table nopadding-card nopadding-card-top">
       <div class="table-wrap">
         <el-table
           :data="orgList"
@@ -287,6 +382,7 @@ onMounted(() => {
           highlight-current-row
           @row-click="onOrgRowClick"
           :style="{ width: '100%' }"
+          :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
           height="100%"
         >
           <el-table-column
@@ -295,37 +391,84 @@ onMounted(() => {
             min-width="220"
             fixed="left"
           />
-          <el-table-column prop="organizationName" label="机构名称" min-width="200" />
-          <el-table-column prop="organizationCode" label="组织机构代码" min-width="160" />
+          <el-table-column
+            prop="organizationName"
+            align="center"
+            label="机构名称"
+            min-width="200"
+          />
+          <el-table-column
+            prop="organizationCode"
+            align="center"
+            label="组织机构代码"
+            min-width="160"
+          />
           <el-table-column
             prop="createDate"
             label="创建时间"
             min-width="120"
+            align="center"
             show-overflow-tooltip
           />
-          <el-table-column prop="memo" label="备注" min-width="160" show-overflow-tooltip />
-          <el-table-column prop="alias" label="别名" min-width="160" />
-          <el-table-column prop="province" label="省份" min-width="160" />
-          <el-table-column prop="city" label="城市" min-width="160" show-overflow-tooltip />
-          <el-table-column prop="district" label="区县" min-width="160" show-overflow-tooltip />
           <el-table-column
-            prop="officePhoneNO"
-            label="电话"
+            prop="memo"
+            label="备注"
+            align="center"
             min-width="160"
             show-overflow-tooltip
           />
-          <el-table-column prop="email" label="邮箱" min-width="160" show-overflow-tooltip />
-          <el-table-column prop="defaultShareDuration" label="默认分享时间（小时）" min-width="170">
+          <el-table-column prop="alias" label="别名" align="center" min-width="160" />
+          <el-table-column prop="province" label="省份" align="center" min-width="160" />
+          <el-table-column
+            prop="city"
+            label="城市"
+            align="center"
+            min-width="160"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="district"
+            label="区县"
+            align="center"
+            min-width="160"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="officePhoneNO"
+            label="电话"
+            align="center"
+            min-width="160"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="email"
+            label="邮箱"
+            align="center"
+            min-width="160"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="defaultShareDuration"
+            label="默认分享时间（小时）"
+            align="center"
+            min-width="170"
+          >
             <template #default="{ row }">
               <el-tag>{{ row.defaultShareDuration || '0' }}小时</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="cardBackgroundColour" label="背景颜色" min-width="160" />
 
-          <el-table-column label="操作" width="220" fixed="right">
+          <el-table-column label="操作" width="310" fixed="right">
             <template #default="{ row }">
               <el-button size="small" link type="primary" @click.stop="onCreateOrgChild(row)"
                 >新增下级机构</el-button
+              >
+              <el-button size="small" link type="primary" @click.stop="onUploadBackground(row)"
+                >上传背景</el-button
+              >
+              <el-button size="small" link type="primary" @click.stop="onUploadTheme(row)"
+                >更换主题</el-button
               >
               <el-button size="small" link type="primary" @click.stop="onEditOrg(row)"
                 >编辑</el-button
@@ -373,12 +516,19 @@ onMounted(() => {
         </el-form-item>
       </el-form>
     </el-card>
-    <el-card shadow="never" class="mb8 flex-card">
+    <el-card shadow="never" class="mb8 flex-card nopadding-card-top card-table">
       <div class="table-wrap">
-        <el-table :data="deptList" v-loading="deptLoading" :style="{ width: '100%' }" height="100%">
+        <el-table
+          :data="deptList"
+          v-loading="deptLoading"
+          :style="{ width: '100%' }"
+          :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+          height="100%"
+        >
           <el-table-column
             prop="deptID"
             label="科室编号"
+            align="center"
             min-width="120"
             sortable
             show-overflow-tooltip
@@ -387,6 +537,7 @@ onMounted(() => {
             prop="deptName"
             label="科室名称"
             min-width="160"
+            align="center"
             sortable
             show-overflow-tooltip
           />
@@ -394,6 +545,7 @@ onMounted(() => {
             prop="deptTypeName"
             label="科室类型"
             min-width="120"
+            align="center"
             sortable
             show-overflow-tooltip
           />
@@ -402,12 +554,14 @@ onMounted(() => {
             label="医技科室分类"
             min-width="140"
             sortable
+            align="center"
             show-overflow-tooltip
           />
           <el-table-column
             prop="officePhoneNO"
             label="电话"
             min-width="140"
+            align="center"
             sortable
             show-overflow-tooltip
           />
@@ -415,10 +569,11 @@ onMounted(() => {
             prop="memo"
             label="备注"
             min-width="160"
+            align="center"
             show-overflow-tooltip
             sortable
           />
-          <el-table-column prop="deleteFlag" label="删除" width="80" sortable />
+          <el-table-column prop="deleteFlag" label="删除" width="90" align="center" sortable />
           <el-table-column label="操作" width="120" fixed="right">
             <template #default="{ row }">
               <el-button link size="small" type="primary" @click.stop="onEditDept(row)"
@@ -465,6 +620,45 @@ onMounted(() => {
         }
       "
     />
+    <el-dialog title="上传图片" v-model="uploadVisible" width="500px">
+      <el-form :model="uploadForm" label-width="110px" ref="uploadFormRef">
+        <el-form-item label="背景图" prop="file">
+          <el-upload
+            class="avatar-uploader"
+            :show-file-list="false"
+            :auto-upload="false"
+            :before-upload="beforeAvatarUpload"
+            :on-change="handleFileChange"
+            accept=".png"
+          >
+            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="uploadVisible = false">取消</el-button>
+        <el-button type="primary" @click="sureUpload">确定</el-button>
+      </template>
+    </el-dialog>
+    <el-dialog title="更换主题" v-model="uploadTheme" width="500px">
+      <el-form :model="uploadForm" label-width="0px" ref="uploadFormRef">
+        <el-form-item label="" prop="file">
+          <el-upload
+            :auto-upload="false"
+            v-model:file-list="fileList"
+            class="upload-demo"
+            :on-change="handleChange"
+            accept=".zip"
+          >
+            <el-button type="primary">更换主题</el-button>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button :loading="isLoadingUpload" @click="uploadTheme = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -509,5 +703,21 @@ onMounted(() => {
 .table-wrap {
   flex: 1 1 0;
   min-height: 0; /* 避免子元素高度塌陷 */
+}
+
+.avatar-uploader .avatar {
+  display: block;
+  width: 178px;
+  height: 178px;
+}
+
+/* 让“更换主题”已上传文件列表区域更高并可滚动 */
+.upload-demo :deep(.el-upload-list) {
+  max-height: 260px;
+  min-height: 140px;
+  padding: 8px;
+  overflow-y: auto;
+  border: 1px solid var(--el-border-color);
+  border-radius: 4px;
 }
 </style>

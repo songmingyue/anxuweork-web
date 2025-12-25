@@ -1,7 +1,5 @@
 <script lang="tsx">
-import { defineComponent, computed, unref } from 'vue'
-import { ElIcon } from 'element-plus'
-import { Fold, Expand } from '@element-plus/icons-vue'
+import { defineComponent, computed } from 'vue'
 
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 
@@ -11,7 +9,6 @@ import { UserInfo } from '@/components/UserInfo'
 import { Screenfull } from '@/components/Screenfull'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
-import { underlineToHump } from '@/utils'
 
 const { getPrefixCls, variables } = useDesign()
 
@@ -35,27 +32,12 @@ const layout = computed(() => appStore.getLayout)
 // 多语言图标
 const locale = computed(() => appStore.getLocale)
 
-const collapse = computed(() => appStore.getCollapse)
-const toggleCollapse = () => {
-  const collapsed = unref(collapse)
-  appStore.setCollapse(!collapsed)
-}
 export default defineComponent({
   name: 'ToolHeader',
   setup() {
     return () => (
       <div id={`${variables.namespace}-tool-header`} class={[prefixCls, 'tool-header']}>
-        {layout.value !== 'top' ? (
-          <div class="left">
-            <span class="header-icon" onClick={toggleCollapse}>
-              <ElIcon size={20}>{unref(collapse) ? <Expand /> : <Fold />}</ElIcon>
-            </span>
-            <span style="font-size: 14px; margin-left: 8px;">
-              {unref(collapse) && underlineToHump(appStore.getTitle)}(
-              {underlineToHump(appStore.getVersion)})
-            </span>
-          </div>
-        ) : undefined}
+        {layout.value !== 'top' ? <div class="left"></div> : undefined}
 
         <div class="right">
           {screenfull.value ? (
@@ -77,7 +59,6 @@ export default defineComponent({
             </ElIcon>
           </span> */}
 
-          <span style="font-size: 14px; margin-right: 5px">主题</span>
           <ThemeSwitch></ThemeSwitch>
           <span style="margin-right: 10px"></span>
           <UserInfo></UserInfo>
@@ -98,9 +79,11 @@ export default defineComponent({
 .tool-header {
   position: relative;
   display: flex;
+  width: 100%;
   height: var(--top-tool-height);
   padding-right: var(--top-tool-p-x);
   padding-left: var(--top-tool-p-x);
+  background-color: #414549;
   align-items: center;
   justify-content: space-between;
 }

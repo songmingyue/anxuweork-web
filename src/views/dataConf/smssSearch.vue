@@ -22,26 +22,32 @@
       </el-input>
       <el-button type="primary" @click="getSmsLists">搜索</el-button>
     </el-card>
-    <el-card class="mt8">
-      <el-table :data="roleList" v-loading="loadingRole" style="height: calc(100vh - 220px)">
-        <el-table-column prop="accessionNumber" label="检查号" />
-        <el-table-column prop="patientClass" label="就诊类别" />
-        <el-table-column prop="serviceSectId" label="检查类型">
+    <el-card class="mt8 card-table nopadding-card-top">
+      <el-table
+        :data="roleList"
+        v-loading="loadingRole"
+        style="height: calc(100vh - 220px)"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :row-style="{ textAlign: 'center' }"
+      >
+        <el-table-column prop="accessionNumber" label="检查号" align="center" />
+        <el-table-column prop="patientClass" label="就诊类别" align="center" />
+        <el-table-column prop="serviceSectId" label="检查类型" align="center">
           <template #default="{ row }">
             <el-tag type="primary">{{ row.serviceSectId }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="姓名" />
-        <el-table-column prop="contactPhoneNo" label="联系方式" min-width="110" />
-        <el-table-column prop="sendTime" label="发送时间" />
-        <el-table-column prop="deliveryTime" label="送达时间" />
-        <el-table-column prop="" label="发送状态">
+        <el-table-column prop="name" label="姓名" align="center" />
+        <el-table-column prop="contactPhoneNo" label="联系方式" min-width="110" align="center" />
+        <el-table-column prop="sendTime" label="发送时间" align="center" />
+        <el-table-column prop="deliveryTime" label="送达时间" align="center" />
+        <el-table-column prop="" label="发送状态" align="center">
           <template #default="{ row }">
             <el-tag type="success" v-if="row.sendState === 1">已发送</el-tag>
             <el-tag v-else type="info">未发送</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="操作">
+        <el-table-column prop="" label="操作" align="center">
           <template #default="{ row }">
             <el-button
               link

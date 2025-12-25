@@ -1,23 +1,10 @@
 import { DeptType, getdeptname } from '@/api/checkInfo'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { permissionsMsd } from '@/utils/permission'
 const userStore = useUserStoreWithOut()
 const userInfo = Array.isArray(userStore.getUserInfo)
   ? userStore.getUserInfo[0]
   : userStore.getUserInfo
 const { examInfo } = userInfo.UserRight
-const commonOptionList = [
-  { itemName: '未采集', prop: '100' },
-  { itemName: '已采集', prop: '200' },
-  { itemName: '未上传', prop: '300' },
-  { itemName: '已上传', prop: '400' }
-]
-
-const contStatus = [
-  { itemName: '已打印', prop: 'true' },
-  { itemName: '未打印', prop: 'false' }
-]
-
 const lockStatus = [
   { itemName: '已锁定', prop: 'true' },
   { itemName: '未锁定', prop: 'false' }
@@ -30,6 +17,7 @@ export const permiseListSearch = async () => {
   const { data: datas } = await getdeptname({
     deptType: DeptType.ClinicDept
   })
+  console.log('申请科室列表-----------', datas)
   listDephname = datas
   return datas
 }
@@ -55,7 +43,7 @@ export const getSearchFormList = () => ({
     {
       label: '性别',
       type: 'select',
-      prop: 'gender',
+      prop: 'sex',
       labelWidth: '40px',
       width: '180px',
       opt: [
@@ -68,7 +56,6 @@ export const getSearchFormList = () => ({
       type: 'double',
       label: '年龄',
       labelWidth: '40px',
-
       pdList: [
         {
           type: 'number',
@@ -94,7 +81,7 @@ export const getSearchFormList = () => ({
       labelWidth: '40px',
 
       type: 'date',
-      prop: 'birthDay',
+      prop: 'birthDate',
       width: '180px'
     }
   ],
@@ -112,8 +99,7 @@ export const getSearchFormList = () => ({
       label: '申请科室',
       type: 'muliSelect',
       multiple: !0,
-      vIf: permissionsMsd('examInfo', 'departmentVisible', 'False'),
-      prop: 'requestDeptID',
+      prop: 'requestDeptName',
       width: '180px',
       fcn: 'deptSelected',
       tipShow: !0,
@@ -131,16 +117,6 @@ export const getSearchFormList = () => ({
       }
     },
     {
-      label: '申请医生',
-      type: 'select',
-      prop: 'requestDocName',
-      vIf: permissionsMsd('examInfo', 'doctorVisible', 'False'),
-      width: '180px',
-      loadOptFcn: 'loadApplyDoc',
-      filterable: !0,
-      opt: getdicitemlists('RequestDocName')
-    },
-    {
       label: '审核医生',
       type: 'select',
       prop: 'resultPrincipalName',
@@ -149,15 +125,6 @@ export const getSearchFormList = () => ({
       loadOptFcn: 'loadAssessDoc',
       filterable: !0,
       opt: getdicitemlists('ResultPrincipalName')
-    },
-    {
-      label: '检查设备',
-      type: 'select',
-      prop: 'examEquipment',
-      width: '180px',
-      loadOptFcn: 'loadExamEquipment',
-      filterable: false,
-      opt: getdicitemlists('ExamEquipment')
     }
   ],
   checkMsg: [
@@ -197,56 +164,15 @@ export const getSearchFormList = () => ({
         { name: '有', value: 'true' },
         { name: '无', value: 'false' }
       ]
-    },
-    {
-      label: '影像诊断',
-      type: 'input',
-      prop: 'imagingDiagnosis',
-      width: '180px'
     }
   ],
   statusMsg: [
-    {
-      label: '影像状态',
-      type: 'select',
-      prop: 'ifHasImage',
-      width: '180px',
-      opt: commonOptionList
-    },
-    {
-      label: '报告状态',
-      type: 'select',
-      prop: 'ifHasReport',
-      width: '180px',
-      opt: commonOptionList
-    },
-    {
-      label: '胶片状态',
-      type: 'select',
-      prop: 'ifHasFilm',
-      width: '180px',
-      opt: commonOptionList
-    },
-    {
-      label: '打印报告',
-      type: 'select',
-      prop: 'resultPrintCount',
-      width: '180px',
-      opt: contStatus
-    },
     {
       label: '锁定状态',
       type: 'select',
       prop: 'lockFlag',
       width: '180px',
       opt: lockStatus
-    },
-    {
-      label: '统计标识',
-      type: 'select',
-      prop: 'statisticType',
-      width: '180px',
-      opt: [{ name: '影像创建时间', prop: 'ImageCreateTime' }]
     }
   ],
   inspectionResults: [
@@ -259,16 +185,6 @@ export const getSearchFormList = () => ({
         { name: '阴性', prop: '阴性' },
         { name: '阳性', prop: '阳性' },
         { name: '其他', prop: '其他' }
-      ]
-    },
-    {
-      label: '危机报告',
-      type: 'select',
-      prop: 'criticalValue',
-      width: '180px',
-      opt: [
-        { name: '有', prop: 'true' },
-        { name: '无', prop: 'false' }
       ]
     }
   ]

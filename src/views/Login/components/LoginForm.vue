@@ -4,6 +4,7 @@ import { Form, FormSchema } from '@/components/Form'
 import { ElCheckbox, ElButton } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { loginApi } from '@/api/login'
+import { underlineToHump } from '@/utils'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OrganizationList, UserLoginTypes } from '@/api/login/types'
@@ -12,6 +13,7 @@ import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
 import { encryptWithPublicKey } from '@/utils/encrypt'
 import { getLoginKey } from '@/api/common'
+import { useAppStore } from '@/store/modules/app'
 const publicKey = ref('')
 const { required } = useValidator()
 
@@ -23,7 +25,7 @@ const props = defineProps<{
 console.log('传入的机构列表', props.organizationList)
 
 const userStore = useUserStore()
-
+const appStore = useAppStore()
 const { currentRoute, push } = useRouter()
 
 const rules = {
@@ -52,7 +54,7 @@ const schema = reactive<FormSchema[]>([
     colProps: { span: 24 },
     componentProps: {
       autocomplete: 'off',
-      style: { width: '100%' },
+      style: { width: '100%', zIndex: 11 },
       placeholder: '请选择机构',
       options: props.organizationList.map((org) => ({
         label: org.label,
@@ -71,6 +73,7 @@ const schema = reactive<FormSchema[]>([
     component: 'Input',
     colProps: { span: 24 },
     componentProps: {
+      style: { zIndex: 11 },
       placeholder: '请输入用户名',
       autocomplete: 'username'
     }
@@ -81,7 +84,7 @@ const schema = reactive<FormSchema[]>([
     component: 'InputPassword',
     colProps: { span: 24 },
     componentProps: {
-      style: { width: '100%' },
+      style: { width: '100%', zIndex: 11 },
       placeholder: '请输入密码',
       autocomplete: 'off',
       onKeydown: (_e: any) => {
@@ -113,7 +116,7 @@ const schema = reactive<FormSchema[]>([
         default: () => (
           <>
             <BaseButton
-              style="width: 100%"
+              style="width: 100%; z-index: 11"
               loading={loading.value}
               type="primary"
               class="full-width"
@@ -182,6 +185,7 @@ const signIn = async () => {
         }
         const res = await loginApi(passwordEncrypted)
         console.log('登录返回的信息', res)
+        appStore.setCollapse(true)
         if (res) {
           // 是否记住我
           if (unref(remember)) {
@@ -218,15 +222,25 @@ const toRegister = () => {
 </script>
 
 <template>
-  <Form
-    :schema="schema"
-    :rules="rules"
-    label-position="top"
-    hide-required-asterisk
-    size="large"
-    class="themed-border"
-    @register="formRegister"
-  />
+  <div class="forms-box">
+    <Form
+      :schema="schema"
+      :rules="rules"
+      label-position="top"
+      hide-required-asterisk
+      size="large"
+      class="themed-border"
+      @register="formRegister"
+    />
+    <div>
+      <img
+        style="position: absolute; top: 93px; left: 431px; z-index: 10; height: 314px"
+        src="@/assets/imgs/logo.png
+                    "
+      />
+      <h3 class="login-img">{{ underlineToHump(appStore.getTitle) }}</h3>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -256,7 +270,8 @@ const toRegister = () => {
 }
 
 .themed-border {
-  border: 1px solid var(--el-border-color);
+  width: 393px;
+  height: 448px;
   border-radius: var(--el-border-radius-base);
 }
 
@@ -269,5 +284,20 @@ const toRegister = () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+.forms-box {
+  position: relative;
+  display: flex;
+  width: 776px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.login-img {
+  position: absolute;
+  top: 26px;
+  right: 30px;
+  color: #666;
 }
 </style>

@@ -1,27 +1,9 @@
 {
   "formStorageMedium": {
-    "mediaUID": "",
-    "isSharePath": false,
-    "name": "测试1",
-    "organizationID": "",
-    "path": "6f.eword.cn",
-    "type": "AmazonS3",
-    "host": " https://oos-nm2.ctyunapi.cn ",
-    "accessID": "c765bcfaa4747085cdfd",
-    "accessKey": "8bca31315848f45315688928c4610e4da3feb6a5",
-    "bucket": "2",
-    "subDir": "c765bcfaa4747085cdfd",
-    "userUID": "",
-    "uploadMediaUID": "ebd020c9-8376-11e9-b514-fa163e13176a",
-    "uploadURL": " https://101.91.206.249:8282/PutFileToOOS ",
-    "downloadURL": " https://101.91.206.249:8282/GetOOSFilesUrl ",
-    "customConfig": "",
-    "ifEnable": true,
-    "description": "",
-    "httpPath": "",
-    "shareAddress": "",
-    "sharePassWord": "",
-    "shareUserName": "",
-    "organizationName": ""
+"mediaUID": "A7E57B18-6CAB-4762-B248-C7B9A14DDA98",
+"mediaName": "https://eos-beijing-2.cmecloud.cn", 
+"pathType": "AmazonS3", 
+"mediaHost": "https://eos-beijing-2.cmecloud.cn", 
+"path": "new2025"
   }
 }

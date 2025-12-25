@@ -121,7 +121,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 type ExportOption = { prop: string; label: string; sort: boolean; width: number }
 
 type CfgItem = { key: string; name: string; desc?: string }
-type GroupKey = 'plugin' | 'exam'
+type GroupKey = 'plugin' | 'exam' | 'systemPath'
 interface Group {
   key: GroupKey
   title: string
@@ -130,7 +130,8 @@ interface Group {
 const dialogMsg = ref('')
 const groups: Group[] = [
   { key: 'plugin', title: '插件', icon: '#icon-a-bianzu23' },
-  { key: 'exam', title: '检查', icon: '#icon-jiancharenwufenpei' }
+  { key: 'exam', title: '检查', icon: '#icon-jiancharenwufenpei' },
+  { key: 'systemPath', title: '系统参数', icon: '#icon-jiancharenwufenpei' }
 ]
 
 const items: Record<GroupKey, CfgItem[]> = {
@@ -138,11 +139,12 @@ const items: Record<GroupKey, CfgItem[]> = {
   plugin: [
     { key: 'GainServiceBaseAddress', name: '采集程序服务地址', desc: '采集程序根据这个地址启动' }
   ],
-  // 归档（图3）
-
-  // 检查（图4）
   exam: [
     { key: 'CheckInfoTableConfig', name: '检查信息表格导出配置', desc: '检查信息表格导出配置' }
+  ],
+  systemPath: [
+    { key: 'UploadLogoMainPath', name: '上传logo绝对路径', desc: '上传logo绝对路径' },
+    { key: 'TokenConfig', name: '系统参数增加', desc: '系统参数增加' }
   ]
 }
 
@@ -324,6 +326,12 @@ async function onConfig(item: CfgItem) {
   switch (item.key) {
     case 'GainServiceBaseAddress':
       openSimple('采集程序服务地址', 'http://<host>:<port>/')
+      return
+    case 'UploadLogoMainPath':
+      openSimple('上传logo绝对路径', 'D:\\file')
+      return
+    case 'TokenConfig':
+      openSimple('系统参数增加', '请输入系统参数增加', true)
       return
   }
   ElMessage.info(`配置：${item.name}`)

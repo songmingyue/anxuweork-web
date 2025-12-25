@@ -158,8 +158,8 @@ export const listDoc = (data: DocQuery): Promise<IResponse<DocData[]>> => {
     url: 'doc/list', // 最终请求为 `/api/sms/list`
     data,
     requestTem: {
-      requestTem: 'DocDBInputProto',
-      responseTem: 'DocDBProto'
+      requestTem: 'PatientInfoInputProto',
+      responseTem: 'PatientInfoProto'
     }
   })
 }
@@ -170,7 +170,7 @@ export const deleteDoc = (data: DocQuery): Promise<IResponse<DocData[]>> => {
     url: 'doc/delete', // 最终请求为 `/api/sms/list`
     data,
     requestTem: {
-      requestTem: 'DocDBInputProto',
+      requestTem: 'PatientInfoInputProto',
       responseTem: 'DocDBProto'
     }
   })
@@ -181,7 +181,7 @@ export const updatelockDoc = (data: DocQuery): Promise<IResponse<DocData[]>> => 
     url: 'doc/updatelock', // 最终请求为 `/api/sms/list`
     data,
     requestTem: {
-      requestTem: 'DocDBInputProto',
+      requestTem: 'PatientInfoInputProto',
       responseTem: 'DocDBProto'
     }
   })

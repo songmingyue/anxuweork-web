@@ -377,13 +377,31 @@ export const getDepartmentList = (data: DepSearch): Promise<IResponse<DeptOnce[]
     }
   })
 }
+
+export const uploadlogo = (data: FormData) => {
+  return request.post({
+    url: 'org/uploadlogo',
+    data,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    responseType: 'json'
+  })
+}
+export const orgUploadTheme = (data: FormData) => {
+  return request.post({
+    url: 'org/uploadTheme',
+    data,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    responseType: 'json'
+  })
+}
+
 // 编辑机构
 export const editOrganization = (data: OrganizationTreeProto): Promise<IResponse<[]>> => {
   return request.put({
     url: 'org/edit',
     data,
     requestTem: {
-      requestTem: 'OrganizationTreeProto',
+      requestTem: 'OrganizationMstProto',
       responseTem: 'whitelist'
     }
   })
@@ -405,7 +423,7 @@ export const deleteOrganization = (data: OrganizationTreeProto): Promise<IRespon
     url: 'org/delete',
     data,
     requestTem: {
-      requestTem: 'DeptMstInputProto',
+      requestTem: 'OrganizationMstProto',
       responseTem: 'whitelist'
     }
   })
@@ -478,5 +496,18 @@ export const authorizeBulkregist = (data?: FormData) => {
     data,
     headers: data ? { 'Content-Type': 'multipart/form-data' } : undefined,
     responseType: 'json'
+  })
+}
+
+export const getOneOrg = (data: {
+  searchOrganizationID: string
+}): Promise<IResponse<OrganizationTreeProto>> => {
+  return request.post({
+    url: 'org/getoneorg',
+    data,
+    requestTem: {
+      requestTem: 'OrgInputProto',
+      responseTem: 'OrganizationMstProto'
+    }
   })
 }

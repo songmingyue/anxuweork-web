@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { LoginForm, RegisterForm } from './components'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
-import { underlineToHump } from '@/utils'
-import { useAppStore } from '@/store/modules/app'
+
 import { useDesign } from '@/hooks/web/useDesign'
 import { onMounted, ref, unref } from 'vue'
 import { ElScrollbar } from 'element-plus'
@@ -15,7 +14,6 @@ const { getPrefixCls } = useDesign()
 const version = ref('')
 const prefixCls = getPrefixCls('login')
 const organizationList = ref<OrganizationList[]>([])
-const appStore = useAppStore()
 const isLogin = ref(true)
 // 读取环境变量中的公司名称
 const companyName = (import.meta as any).env?.VITE_APP_COMPANY_NAME || ''
@@ -53,23 +51,14 @@ onMounted(() => {
         <div :class="`${prefixCls}__left left-pane`">
           <div class="brand">
             <!-- <img src="@/assets/imgs/logo.svg" alt="" class="logo" /> -->
-            <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span>
-          </div>
-          <div class="left-inner">
-            <TransitionGroup
-              appear
-              tag="div"
-              enter-active-class="animate__animated animate__bounceInLeft"
-            >
-              <img src="@/assets/svgs/login-box-bg.png" key="1" alt="" class="big-illustration" />
-            </TransitionGroup>
+            <!-- <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span> -->
           </div>
         </div>
         <div class="right-pane">
           <div class="header-row">
             <div class="brand-mini">
               <!-- <img src="@/assets/imgs/logo.svg" alt="" class="logo" /> -->
-              <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span>
+              <!-- <span class="brand-title">{{ underlineToHump(appStore.getTitle) }}</span> -->
             </div>
 
             <div class="actions">
@@ -77,32 +66,29 @@ onMounted(() => {
               <!-- <LocaleDropdown /> -->
             </div>
           </div>
-          <Transition appear enter-active-class="animate__animated animate__bounceInRight">
-            <div class="right-inner">
-              <div
-                class="form-box"
-                :style="isLogin && organizationList.length > 0 ? 'width: 400px;' : 'width: 500px'"
-              >
-                <LoginForm
-                  v-if="isLogin && organizationList.length > 0"
-                  :organizationList="organizationList"
-                  class="form-card"
-                  @to-register="toRegister"
-                />
+          <!-- <Transition appear enter-active-class="animate__animated animate__bounceInRight"> -->
+          <div class="right-inner">
+            <div
+              class="form-box"
+              :style="isLogin && organizationList.length > 0 ? 'width: 806px;' : 'width: 500px'"
+            >
+              <LoginForm
+                v-if="isLogin && organizationList.length > 0"
+                :organizationList="organizationList"
+                class="form-card"
+                @to-register="toRegister"
+              />
 
-                <RegisterForm v-else class="form-card" @to-login="toLogin" />
-                <div class="class-message">{{ companyName }} {{ eword }} {{ version }}</div>
-              </div>
-              <div class="right-img" v-if="isLogin && organizationList.length > 0">
-                <img
-                  style="height: 250px; margin-top: 56px"
-                  src="@/assets/imgs/logo.png
-                  "
-                />
-                <h3 class="login-img">{{ underlineToHump(appStore.getTitle) }}</h3>
-              </div>
+              <RegisterForm
+                v-else-if="!isLogin && organizationList.length > 0"
+                class="form-card"
+                @to-login="toLogin"
+              />
+              <div class="class-message">{{ companyName }} {{ eword }} {{ version }}</div>
             </div>
-          </Transition>
+            <!-- <div class="right-img" v-if="isLogin && organizationList.length > 0"> </div> -->
+          </div>
+          <!-- </Transition> -->
         </div>
       </div>
     </ElScrollbar>
@@ -250,7 +236,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 417px;
+  width: 730px;
   max-width: 100%;
 }
 
@@ -276,17 +262,11 @@ onMounted(() => {
   position: relative;
   display: flex;
   width: 345px;
-  height: 457px;
+  height: 455px;
   margin-top: -43px;
+  margin-left: -24px;
   background-color: var(--app-content-bg-color);
   align-items: center;
   justify-content: center;
-}
-
-.login-img {
-  position: absolute;
-  top: 26px;
-  right: 30px;
-  color: #666;
 }
 </style>

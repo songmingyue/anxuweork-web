@@ -22,36 +22,50 @@
       </el-input>
       <el-button type="primary" @click="getDataList">搜索</el-button>
     </el-card>
-    <el-card class="mt8">
-      <el-table :data="roleList" v-loading="loadingRole" :style="{ height: 'calc(100vh - 220px)' }">
+    <el-card class="mt8 card-table nopadding-card-top">
+      <el-table
+        :data="roleList"
+        v-loading="loadingRole"
+        :style="{ height: 'calc(100vh - 220px)' }"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :row-style="{ textAlign: 'center' }"
+      >
         <el-table-column
           prop="accessionNumber"
           sortable
           label="检查号"
           min-width="110px"
+          align="center"
           fixed="left"
         />
-        <el-table-column prop="name" label="姓名" />
+        <el-table-column prop="name" label="姓名" align="center" />
 
         <el-table-column
           prop="organizationName"
           label="医院名称"
           sortable
+          align="center"
           min-width="110px"
           show-overflow-tooltip
         />
-        <el-table-column prop="serviceSectID" label="检查类型" />
-        <el-table-column prop="patientClass" label="就诊类别" />
-        <el-table-column prop="mimeType" label="文件类型" min-width="100px" />
+        <el-table-column prop="serviceSectID" label="检查类型" align="center" />
+        <el-table-column prop="patientClass" label="就诊类别" align="center" />
+        <el-table-column prop="mimeType" label="文件类型" min-width="100px" align="center" />
         <el-table-column
           prop="contactPhoneNo"
           label="手机号码"
+          align="center"
           min-width="110px"
           show-overflow-tooltip
         />
-        <el-table-column prop="resultStatusCode" label="状态码" />
-        <el-table-column prop="observationDate" label="检查时间" show-overflow-tooltip />
-        <el-table-column prop="typeCode" label="影像标志">
+        <el-table-column prop="resultStatusCode" label="状态码" align="center" />
+        <el-table-column
+          prop="observationDate"
+          label="检查时间"
+          show-overflow-tooltip
+          align="center"
+        />
+        <el-table-column prop="typeCode" label="影像标志" align="center">
           <template #default="{ row }">
             <el-tag v-if="row.typeCode === 'ExamResult'" type="primary">报告</el-tag>
             <el-tag v-if="row.typeCode === 'ExamImage'" type="primary">影像</el-tag>
@@ -59,13 +73,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="" label="数据状态">
+        <el-table-column prop="" align="center" label="数据状态">
           <template #default="{ row }">
             <el-tag v-if="row.digitalImageNeed === '1'" type="primary">未锁定</el-tag>
             <el-tag type="info" v-else>已锁定</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="操作" width="120px" fixed="right">
+        <el-table-column prop="" label="操作" align="center" width="120px" fixed="right">
           <template #default="{ row }">
             <el-button link type="danger" size="small" @click="deleteData(row)">删除</el-button>
             <el-button

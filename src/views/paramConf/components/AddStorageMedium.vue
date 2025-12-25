@@ -10,7 +10,8 @@ import {
   ElOption,
   ElDialog,
   ElButton,
-  ElMessage
+  ElMessage,
+  ElSwitch
 } from 'element-plus'
 import { useUserStoreWithOut } from '@/store/modules/user'
 interface OrgOption {
@@ -36,31 +37,7 @@ const innerVisible = computed({
 })
 const userStore = useUserStoreWithOut()
 const formRef = ref<any>(null)
-const form = reactive<CloudStorageConfig>({
-  mediaUID: '',
-  isSharePath: 'false',
-  name: '测试',
-  organizationID: '',
-  path: '6f.eword.cn',
-  type: 'AmazonS3',
-  host: 'https://oos-nm2.ctyunapi.cn',
-  accessID: 'c765bcfaa4747085cdfd',
-  accessKey: '8bca31315848f45315688928c4610e4da3feb6a5',
-  bucket: '2',
-  subDir: 'c765bcfaa4747085cdfd',
-  userUID: '',
-  uploadMediaUID: 'ebd020c9-8376-11e9-b514-fa163e13176a',
-  uploadURL: 'https://101.91.206.249:8282/PutFileToOOS',
-  downloadURL: 'https://101.91.206.249:8282/GetOOSFilesUrl',
-  customConfig: '',
-  ifEnable: 'true',
-  description: '',
-  httpPath: '',
-  shareAddress: '',
-  sharePassWord: '',
-  shareUserName: '',
-  organizationName: ''
-})
+const form = reactive<CloudStorageConfig & Record<string, any>>({})
 
 const typeOptions = [
   { label: '云存储', value: 'AmazonS3' },
@@ -68,8 +45,6 @@ const typeOptions = [
 ]
 
 const isCloud = computed(() => form.type === 'AmazonS3')
-const isLocal = computed(() => form.type === 'Virtual')
-const isShared = computed(() => isLocal.value && form.isSharePath === 'true')
 const requiredWhen = (predicate: () => boolean, message: string) => ({
   validator: (_: any, val: any, cb: any) => {
     if (predicate() && (!val || String(val).trim() === '')) cb(new Error(message))
@@ -79,20 +54,13 @@ const requiredWhen = (predicate: () => boolean, message: string) => ({
 })
 
 const rules: Record<string, any[]> = {
-  name: [{ required: true, message: '请输入媒质名称', trigger: 'blur' }],
-  organizationID: [{ required: true, message: '请选择机构', trigger: 'change' }],
-  path: [{ required: true, message: '请输入地址', trigger: 'blur' }],
-  type: [{ required: true, message: '请选择路径类型', trigger: 'change' }],
+  mediaUID: [{ required: true, message: '请输入媒介UID', trigger: 'blur' }],
+  mediaName: [{ required: true, message: '请输入媒质名称', trigger: 'blur' }],
+  pathType: [{ required: true, message: '请选择路径类型', trigger: 'change' }],
   host: [requiredWhen(() => isCloud.value, '请输入主机域名')],
-  accessID: [requiredWhen(() => isCloud.value, '请输入访问ID')],
-  accessKey: [requiredWhen(() => isCloud.value, '请输入访问Key')],
-  subDir: [requiredWhen(() => isCloud.value, '请输入子目录')],
-  uploadURL: [requiredWhen(() => isCloud.value, '请输入上传URL')],
-  downloadURL: [requiredWhen(() => isCloud.value, '请输入下载URL')],
-  isSharePath: [requiredWhen(() => isLocal.value, '请选择是否共享路径')],
-  shareAddress: [requiredWhen(() => isShared.value, '请输入共享路径')],
-  shareUserName: [requiredWhen(() => isShared.value, '请输入共享路径用户名')],
-  sharePassWord: [requiredWhen(() => isShared.value, '请输入共享路径密码')]
+  accessKey: [requiredWhen(() => isCloud.value, '请输入访问密钥')],
+  mediaHost: [requiredWhen(() => isCloud.value, '请输入媒体主机地址')],
+  accessId: [requiredWhen(() => isCloud.value, '请输入访问ID')]
 }
 
 async function loadOrgOptions() {
@@ -138,7 +106,7 @@ function onConfirm() {
     if (!valid) return
     const org = props.orgOptions.find((o) => o.value === form.organizationID)
     form.organizationName = org?.label || form.organizationName
-    if (form.mediaUID) {
+    if (form.id) {
       const { isSuccess, message } = await storageEdit(form)
       if (isSuccess) {
         emit('confirm', { ...form })
@@ -147,17 +115,6 @@ function onConfirm() {
         ElMessage.error(message || '操作失败')
       }
     } else {
-      form.customConfig = JSON.stringify({
-        Host: form.host,
-        Bucket: form.bucket,
-        AccessID: form.accessID,
-        AccessKey: form.accessKey,
-        SubDir: form.subDir,
-        UserUID: form.userUID,
-        MediaUID: form.mediaUID,
-        UploadURL: form.uploadURL,
-        DownloadURL: form.downloadURL
-      })
       const { isSuccess, message } = await storageAdd(form)
       if (isSuccess) {
         emit('confirm', { ...form })
@@ -182,11 +139,14 @@ function onCancel() {
     width="720px"
   >
     <el-form ref="formRef" :model="form" :rules="rules" label-width="130px">
-      <el-form-item v-if="isEdit" label="上传媒介UID" prop="uploadMediaUID">
+      <el-form-item v-if="isEdit" label="媒介UID" prop="mediaUID">
         <span>{{ form.mediaUID }}</span>
       </el-form-item>
-      <el-form-item label="媒质名称" prop="name" required>
-        <el-input v-model="form.name" />
+      <el-form-item v-else label="媒介UID" prop="mediaUID">
+        <el-input v-model="form.mediaUID" />
+      </el-form-item>
+      <el-form-item label="媒质名称" prop="mediaName" required>
+        <el-input v-model="form.mediaName" />
       </el-form-item>
       <el-form-item label="机构名称" prop="organizationID" required>
         <el-select v-model="form.organizationID" placeholder="请选择">
@@ -198,11 +158,9 @@ function onCancel() {
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="地址" prop="path" required>
-        <el-input v-model="form.path" />
-      </el-form-item>
-      <el-form-item label="路径类型" prop="type" required>
-        <el-select v-model="form.type" placeholder="请选择">
+
+      <el-form-item label="路径类型" prop="pathType" required>
+        <el-select v-model="form.pathType" placeholder="请选择">
           <el-option
             v-for="opt in typeOptions"
             :key="opt.value"
@@ -211,100 +169,52 @@ function onCancel() {
           />
         </el-select>
       </el-form-item>
-      <el-form-item
-        v-show="form.type === 'AmazonS3'"
-        label="主机域名"
-        prop="host"
-        :required="isCloud"
-      >
-        <el-input v-model="form.host" />
+      <el-form-item label="地址" prop="path" required>
+        <el-input v-model="form.path" />
       </el-form-item>
       <el-form-item
-        v-show="form.type === 'AmazonS3'"
+        v-show="form.pathType === 'AmazonS3'"
+        label="媒体主机地址"
+        prop="mediaHost"
+        :required="isCloud"
+      >
+        <el-input v-model="form.mediaHost" />
+      </el-form-item>
+      <el-form-item v-show="form.pathType === 'AmazonS3'" label="当前使用标志" prop="currentFlag">
+        <el-switch v-model="form.currentFlag" active-value="true" inactive-value="false" />
+        <!-- <el-input v-model="form.currentFlag" /> -->
+      </el-form-item>
+      <el-form-item
+        v-show="form.pathType === 'AmazonS3'"
         label="访问ID"
-        prop="accessID"
+        prop="accessId"
         :required="isCloud"
       >
-        <el-input v-model="form.accessID" />
+        <el-input v-model="form.accessId" />
       </el-form-item>
       <el-form-item
-        v-show="form.type === 'AmazonS3'"
-        label="访问Key"
+        v-show="form.pathType === 'AmazonS3'"
+        label="访问密钥"
         prop="accessKey"
         :required="isCloud"
       >
         <el-input v-model="form.accessKey" />
       </el-form-item>
-      <el-form-item
-        v-if="form.type === 'AmazonS3'"
-        label="子目录"
-        prop="subDir"
-        :required="isCloud"
-      >
-        <el-input v-model="form.subDir" />
+      <el-form-item v-if="form.pathType === 'AmazonS3'" label="存储总容量" prop="storageSize">
+        <el-input v-model="form.storageSize" />
       </el-form-item>
-      <el-form-item
-        v-if="form.type === 'AmazonS3'"
-        label="用户UID"
-        prop="userUID"
-        :required="isCloud"
-      >
-        <el-input v-model="form.userUID" />
+      <el-form-item v-if="form.pathType === 'AmazonS3'" label="是否直连访问" prop="isDirect">
+        <el-switch v-model="form.isDirect" active-value="true" inactive-value="false" />
       </el-form-item>
-      <el-form-item v-if="form.type === 'AmazonS3'" label="上传媒介UID" prop="uploadMediaUID">
-        <el-input v-model="form.uploadMediaUID" />
+      <el-form-item v-if="form.pathType === 'AmazonS3'" label="对象存储ID" prop="ossId">
+        <el-input v-model="form.ossId" />
       </el-form-item>
-      <el-form-item
-        v-if="form.type === 'AmazonS3'"
-        label="上传URL"
-        prop="uploadURL"
-        :required="isCloud"
-      >
-        <el-input v-model="form.uploadURL" />
+      <el-form-item v-if="form.pathType === 'AmazonS3'" label="已使用容量" prop="usedSize">
+        <el-input v-model="form.usedSize" />
       </el-form-item>
-      <el-form-item
-        v-if="form.type === 'AmazonS3'"
-        label="下载URL"
-        prop="downloadURL"
-        :required="isCloud"
-      >
-        <el-input v-model="form.downloadURL" />
-      </el-form-item>
-      <el-form-item v-if="form.type === 'Virtual'" label="是否共享路径" prop="isSharePath">
-        <el-select v-model="form.isSharePath" placeholder="请选择">
-          <el-option label="是" value="true" />
-          <el-option label="否" value="false" />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        v-if="form.type === 'Virtual' && form.isSharePath === 'true'"
-        label="共享路径"
-        :required="isShared"
-        prop="shareAddress"
-      >
-        <el-input v-model="form.shareAddress" />
-      </el-form-item>
-      <el-form-item
-        v-if="form.type === 'Virtual' && form.isSharePath === 'true'"
-        label="共享路径用户名"
-        :required="isShared"
-        prop="shareUserName"
-      >
-        <el-input v-model="form.shareUserName" />
-      </el-form-item>
-      <el-form-item
-        v-if="form.type === 'Virtual' && form.isSharePath === 'true'"
-        label="共享路径密码"
-        :required="isShared"
-        prop="sharePassWord"
-      >
-        <el-input v-model="form.sharePassWord" />
-      </el-form-item>
-      <el-form-item label="网络路径" v-if="form.type === 'Virtual'" prop="httpPath">
-        <el-input v-model="form.httpPath" />
-      </el-form-item>
-      <el-form-item label="描述" prop="description">
-        <el-input v-model="form.description" type="textarea" :rows="3" />
+
+      <el-form-item label="备注" prop="memo">
+        <el-input v-model="form.memo" type="textarea" :rows="3" />
       </el-form-item>
     </el-form>
     <template #footer>

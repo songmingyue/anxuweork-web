@@ -61,13 +61,6 @@ const menuList = [
           requiresAuth: true,
           title: '角色管理'
         }
-      },
-      {
-        url: '/departmentMag',
-        meta: {
-          requiresAuth: true,
-          title: '机构管理'
-        }
       }
     ],
     meta: {

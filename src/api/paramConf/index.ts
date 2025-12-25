@@ -7,38 +7,34 @@ export interface StorageList {
 }
 
 export interface CloudStorageConfig {
-  accessID?: string // 访问ID（如API密钥ID）
-  accessKey?: string // 访问密钥（敏感信息，建议加密存储）
-  bucket?: string // 存储桶名称
-  customConfig?: string // 自定义配置（JSON字符串，需二次解析）
-  downloadURL?: string // 文件下载地址
-  host?: string // 服务主机地址
-  ifEnable?: string // 是否启用配置
-  mediaUID?: string // 媒体资源唯一标识
-  name?: string // 配置名称
+  mediaUID?: string // 媒体唯一标识符
+  mediaName?: string // 媒体名称
+  pathType?: string // 路径类型
+  mediaHost?: string // 媒体主机地址
+  path?: string // 存储路径
+  currentFlag?: boolean // 当前使用标志
+  createUserUID?: string // 创建用户ID
+  createUserName?: string // 创建用户姓名
+  createDate?: string // 创建时间
+  memo?: string // 备注
+  sortNO?: number // 排序序号
   organizationID?: string // 组织ID
+  accessId?: string // 访问ID
+  accessKey?: string // 访问密钥
   organizationName?: string // 组织名称
-  path?: string // 路径（如域名）
-  subDir?: string // 子目录路径
-  type?: string // 存储类型（如"云存储"）
-  uploadMediaUID?: string // 上传媒体资源唯一标识
-  uploadURL?: string // 文件上传地址
-  userUID?: string // 用户唯一标识
-  isSharePath?: string
-  description?: string
-  httpPath?: string
-  shareAddress?: string
-  sharePassWord?: string
-  shareUserName?: string
+  storageSize?: number // 存储总容量
+  isDirect?: boolean // 是否直连访问
+  ossId?: number // 对象存储ID
+  usedSize?: number // 已使用容量
 }
 
 export const getStorage = (data: StorageList): Promise<IResponse<CloudStorageConfig[]>> => {
   return request.post({
-    url: 'storage/getstoragelist',
+    url: 'store/getstoragelist',
     data,
     requestTem: {
-      requestTem: 'StorageInputProto',
-      responseTem: 'StorageTempProto'
+      requestTem: 'MediaMstProto',
+      responseTem: 'MediaMstProto'
     }
   })
 }
@@ -66,10 +62,10 @@ export const getOrg = (): Promise<IResponse<[]>> => {
 // 删除存储媒介
 export const storageDelete = (data: CloudStorageConfig): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'storage/delete',
+    url: 'store/delete',
     data,
     requestTem: {
-      requestTem: 'StorageDtoProto',
+      requestTem: 'MediaMstProto',
       responseTem: 'whitelist'
     }
   })
@@ -77,10 +73,10 @@ export const storageDelete = (data: CloudStorageConfig): Promise<IResponse<[]>> 
 // 编辑存储媒介&&启用停用存储媒介
 export const storageEdit = (data: CloudStorageConfig): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'storage/edit',
+    url: 'store/edit',
     data,
     requestTem: {
-      requestTem: 'StorageDtoProto',
+      requestTem: 'MediaMstProto',
       responseTem: 'whitelist'
     }
   })
@@ -88,10 +84,10 @@ export const storageEdit = (data: CloudStorageConfig): Promise<IResponse<[]>> =>
 // 新增存储媒介
 export const storageAdd = (data: CloudStorageConfig): Promise<IResponse<[]>> => {
   return request.post({
-    url: 'storage/create',
+    url: 'store/create',
     data,
     requestTem: {
-      requestTem: 'StorageDtoProto',
+      requestTem: 'MediaMstProto',
       responseTem: 'whitelist'
     }
   })

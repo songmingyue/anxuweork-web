@@ -41,13 +41,14 @@
     </el-card>
 
     <!-- 上表：有分页 -->
-    <el-card class="mt8" shadow="never">
+    <el-card class="mt8 card-table nopadding-card-top" shadow="never">
       <el-table
         :data="topList"
         v-loading="topLoading"
         highlight-current-row
         @row-click="onTopRowClick"
-        height="calc(50vh - 207px)"
+        height="calc(50vh - 170px)"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
         :style="{ width: '100%' }"
       >
         <el-table-column prop="typeClass" sortable label="字典分类" min-width="140" />
@@ -109,11 +110,12 @@
     </el-card>
 
     <!-- 下表：无分页，根据上表选中类型加载 -->
-    <el-card shadow="never" class="mt8">
+    <el-card shadow="never" class="mt8 card-table nopadding-card nopadding-card-top">
       <el-table
         :data="bottomList"
         v-loading="bottomLoading"
-        height="calc(50vh - 207px)"
+        height="calc(50vh - 130px)"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
         :style="{ width: '100%' }"
         :empty-text="selectedType ? '暂无数据' : '请先在上方选择一个类型'"
       >

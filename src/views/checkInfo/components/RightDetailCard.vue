@@ -12,14 +12,11 @@
         <span class="acc">{{ top.accession || '-' }}</span>
       </div>
       <div class="top-right">
-        <div
-          class="flex-status-money"
-          v-if="permissionsMsd('displayStyleRightInfo', 'chargeStatusVisible')"
-        >
+        <div class="flex-status-money">
           <span class="dot" :class="{ ok: detail.digitalimageneed === '是' }"></span>
           <span class="charged">{{ detail.digitalimageneed === '是' ? '已收费' : '未收费' }}</span>
         </div>
-        <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'manualPushVisible')">
+        <el-dropdown>
           <span class="el-dropdown-link">
             <!-- <img class="image-icon" src="@/assets/imgs/info/push.png" alt="imgs" /> -->
             <Icon class="image-icon" icon="svg-icon:feiji1" :size="18" />
@@ -36,18 +33,12 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-tooltip
-          class="box-item"
-          effect="dark"
-          content="相关检查"
-          placement="top"
-          v-if="permissionsMsd('displayStyleRightInfo', 'relatedExamVisible')"
-        >
+        <el-tooltip class="box-item" effect="dark" content="相关检查" placement="top">
           <a href="http://example.com" target="_blank" style="color: var(--el-text-color-regular)">
             <Icon class="image-icon icon-margin" icon="svg-icon:tingzhenqi1" :size="18" />
           </a>
         </el-tooltip>
-        <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'manualEditVisible')">
+        <el-dropdown>
           <span class="el-dropdown-link">
             <!-- <img class="image-icon" src="@/assets/imgs/info/updata-icon.png" alt="imgs" /> -->
             <Icon class="image-icon" icon="svg-icon:tianxie" :size="18" />
@@ -63,7 +54,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-dropdown v-if="permissionsMsd('displayStyleRightInfo', 'reGainRightFileVisible')">
+        <el-dropdown>
           <span class="el-dropdown-link">
             <!-- <img class="image-icon" src="@/assets/imgs/info/collect.png" alt="imgs" /> -->
             <Icon class="image-icon" icon="svg-icon:wenjianjiatianjia" :size="18" />
@@ -79,7 +70,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-dropdown @command="changeFileType" v-if="permissionsMsd('data', 'isOpenUpload')">
+        <el-dropdown @command="changeFileType">
           <span class="el-dropdown-link">
             <!-- <img class="image-icon" src="@/assets/imgs/info/upload.png" alt="imgs" /> -->
             <Icon class="image-icon" icon="svg-icon:yunshangchuan" :size="18" />
@@ -103,7 +94,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-dropdown v-if="permissionsMsd('data', 'reportVisible')">
+        <el-dropdown>
           <span class="el-dropdown-link">
             <Icon
               v-if="['reportImage', 'reportText'].includes(activeIcon)"
@@ -127,13 +118,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-tooltip
-          class="box-item"
-          effect="dark"
-          content="影像"
-          placement="top"
-          v-if="permissionsMsd('data', 'imageVisible')"
-        >
+        <el-tooltip class="box-item" effect="dark" content="影像" placement="top">
           <Icon
             @click="getPortrai"
             v-if="detail.ifHasImage === '有'"
@@ -156,13 +141,7 @@
             alt="imgs"
           /> -->
         </el-tooltip>
-        <el-tooltip
-          class="box-item"
-          effect="dark"
-          content="胶片"
-          placement="top"
-          v-if="permissionsMsd('examInfo', 'filmVisible')"
-        >
+        <el-tooltip class="box-item" effect="dark" content="胶片" placement="top">
           <Icon
             v-if="detail.examFilmStatus && activeIcon !== 'film'"
             @click="getFilm"
@@ -185,13 +164,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip
-          class="box-item"
-          effect="dark"
-          content="申请单"
-          placement="top"
-          v-if="permissionsMsd('data', 'requestVisible')"
-        >
+        <el-tooltip class="box-item" effect="dark" content="申请单" placement="top">
           <Icon
             v-if="activeIcon === 'requestReport'"
             class="image-icons icon-margin"
@@ -301,7 +274,6 @@
 
 <script setup lang="ts">
 import { PropType, computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { permissionsMsd } from '@/utils/permission'
 import {
   DocStatusProto,
   DocumentDtoProto,

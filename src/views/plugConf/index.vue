@@ -7,24 +7,31 @@
       <!-- 模板模块（已拆分为独立组件） -->
       <TemplateDropdown />
     </el-card>
-    <el-card shadow="never" class="mb8">
+    <el-card shadow="never" class="mb8 card-table nopadding-card-top">
       <el-table
         :data="serviceList"
         v-loading="svcLoading"
         highlight-current-row
         @row-click="onServiceRowClick"
-        height="calc(50vh - 150px)"
-        class="mt8"
+        height="calc(50vh - 110px)"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
       >
         <el-table-column
           prop="serviceUID"
           label="服务UID"
           sortable
+          align="center"
           min-width="200"
           show-overflow-tooltip
         />
-        <el-table-column prop="serviceName" label="任务组名" sortable min-width="200" />
-        <el-table-column prop="ifEnable" label="运行状态" min-width="130">
+        <el-table-column
+          prop="serviceName"
+          align="center"
+          label="任务组名"
+          sortable
+          min-width="200"
+        />
+        <el-table-column prop="ifEnable" label="运行状态" align="center" min-width="130">
           <template #default="{ row }">
             <el-switch
               v-model="row.ifEnable"
@@ -37,7 +44,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="160" fixed="right">
+        <el-table-column label="操作" align="center" width="160" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click.stop="onEditService(row)">编辑</el-button>
             <el-button link type="danger" @click.stop="onDeleteService(row)">删除</el-button>
@@ -60,27 +67,88 @@
     </el-card>
 
     <!-- 下：任务（不分页） -->
-    <el-card shadow="never">
-      <div class="flex" v-if="activeService?.serviceUID">
-        <el-button type="primary" @click="onCreateTask">新增任务</el-button>
+    <el-card shadow="never" class="card-table nopadding-car">
+      <div class="flex">
+        <el-button type="primary" @click="onCreateTask" :disabled="!activeService?.serviceUID"
+          >新增任务</el-button
+        >
         <span style="margin-left: 12px; color: #909399" v-if="activeService">
           当前服务：{{ activeService.serviceName }}（{{ activeService.serviceUID }}）
         </span>
       </div>
 
-      <el-table :data="taskList" v-loading="taskLoading" class="mt8" height="calc(50vh - 150px)">
-        <el-table-column prop="pluginUID" label="任务UID" min-width="300" sortable />
-        <el-table-column prop="pluginName" label="任务名称" min-width="200" sortable />
-        <el-table-column prop="triggerInternal" label="触发间隔" min-width="120" sortable />
-        <el-table-column prop="triggerTimes" label="触发次数" min-width="120" sortable />
-        <el-table-column prop="ifTriggerByDate" label="是否根据时间触发" min-width="180" sortable />
-        <el-table-column prop="triggerBeginTime" label="触发开始时间" min-width="140" sortable />
-        <el-table-column prop="triggerEndTime" label="触发结束时间" min-width="140" sortable />
-        <el-table-column prop="ifTriggerByDate" label="是否根据日期触发" min-width="180" sortable />
-        <el-table-column prop="triggerBeginDate" label="触发开始日期" min-width="160" sortable />
-        <el-table-column prop="triggerEndDate" label="触发结束日期" min-width="160" sortable />
-
-        <el-table-column prop="ifEnable" label="状态" width="150" fixed="right">
+      <el-table
+        :data="taskList"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        v-loading="taskLoading"
+        class="mt8"
+        height="calc(50vh - 155px)"
+      >
+        <el-table-column prop="pluginUID" label="任务UID" min-width="300" align="center" sortable />
+        <el-table-column
+          prop="pluginName"
+          label="任务名称"
+          min-width="200"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="triggerInternal"
+          label="触发间隔"
+          min-width="120"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="triggerTimes"
+          label="触发次数"
+          min-width="120"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="ifTriggerByDate"
+          label="是否根据时间触发"
+          min-width="180"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="triggerBeginTime"
+          label="触发开始时间"
+          min-width="150"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="triggerEndTime"
+          label="触发结束时间"
+          min-width="150"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="ifTriggerByDate"
+          label="是否根据日期触发"
+          min-width="180"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="triggerBeginDate"
+          label="触发开始日期"
+          min-width="160"
+          align="center"
+          sortable
+        />
+        <el-table-column
+          prop="triggerEndDate"
+          label="触发结束日期"
+          min-width="160"
+          align="center"
+          sortable
+        />
+        <el-table-column prop="ifEnable" label="状态" width="150" fixed="right" align="center">
           <template #default="{ row }">
             <el-switch
               @change="changeSwitch(row)"
@@ -91,7 +159,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="160" fixed="right">
+        <el-table-column label="操作" width="160" fixed="right" align="center">
           <template #default="{ row }">
             <el-button link type="primary" @click.stop="editPlugin(row)">编辑</el-button>
             <el-button link type="danger" @click.stop="deletepluginservice(row)">删除</el-button>
@@ -393,6 +461,7 @@ onMounted(() => {
 .flex {
   display: flex;
   align-items: center;
+  margin-left: 12px;
 }
 
 .new-modal {

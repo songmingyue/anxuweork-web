@@ -15283,6 +15283,12 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
    * @property {string|null} [cardBackgroundColour] OrganizationMstProto cardBackgroundColour
    * @property {string|null} [logoURL] OrganizationMstProto logoURL
    * @property {string|null} [backGroundURL] OrganizationMstProto backGroundURL
+   * @property {string|null} [organizationUrl] OrganizationMstProto organizationUrl
+   * @property {string|null} [themeColor] OrganizationMstProto themeColor
+   * @property {string|null} [logoPath] OrganizationMstProto logoPath
+   * @property {string|null} [cssPath1] OrganizationMstProto cssPath1
+   * @property {string|null} [cssPath2] OrganizationMstProto cssPath2
+   * @property {string|null} [logoFile] OrganizationMstProto logoFile
    */
 
   /**
@@ -15500,6 +15506,54 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
   OrganizationMstProto.prototype.backGroundURL = ''
 
   /**
+   * OrganizationMstProto organizationUrl.
+   * @member {string} organizationUrl
+   * @memberof OrganizationMstProto
+   * @instance
+   */
+  OrganizationMstProto.prototype.organizationUrl = ''
+
+  /**
+   * OrganizationMstProto themeColor.
+   * @member {string} themeColor
+   * @memberof OrganizationMstProto
+   * @instance
+   */
+  OrganizationMstProto.prototype.themeColor = ''
+
+  /**
+   * OrganizationMstProto logoPath.
+   * @member {string} logoPath
+   * @memberof OrganizationMstProto
+   * @instance
+   */
+  OrganizationMstProto.prototype.logoPath = ''
+
+  /**
+   * OrganizationMstProto cssPath1.
+   * @member {string} cssPath1
+   * @memberof OrganizationMstProto
+   * @instance
+   */
+  OrganizationMstProto.prototype.cssPath1 = ''
+
+  /**
+   * OrganizationMstProto cssPath2.
+   * @member {string} cssPath2
+   * @memberof OrganizationMstProto
+   * @instance
+   */
+  OrganizationMstProto.prototype.cssPath2 = ''
+
+  /**
+   * OrganizationMstProto logoFile.
+   * @member {string} logoFile
+   * @memberof OrganizationMstProto
+   * @instance
+   */
+  OrganizationMstProto.prototype.logoFile = ''
+
+  /**
    * Creates a new OrganizationMstProto instance using the specified properties.
    * @function create
    * @memberof OrganizationMstProto
@@ -15587,6 +15641,18 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
       writer.uint32(/* id 24, wireType 2 =*/ 194).string(message.logoURL)
     if (message.backGroundURL != null && Object.hasOwnProperty.call(message, 'backGroundURL'))
       writer.uint32(/* id 25, wireType 2 =*/ 202).string(message.backGroundURL)
+    if (message.organizationUrl != null && Object.hasOwnProperty.call(message, 'organizationUrl'))
+      writer.uint32(/* id 26, wireType 2 =*/ 210).string(message.organizationUrl)
+    if (message.themeColor != null && Object.hasOwnProperty.call(message, 'themeColor'))
+      writer.uint32(/* id 27, wireType 2 =*/ 218).string(message.themeColor)
+    if (message.logoPath != null && Object.hasOwnProperty.call(message, 'logoPath'))
+      writer.uint32(/* id 28, wireType 2 =*/ 226).string(message.logoPath)
+    if (message.cssPath1 != null && Object.hasOwnProperty.call(message, 'cssPath1'))
+      writer.uint32(/* id 29, wireType 2 =*/ 234).string(message.cssPath1)
+    if (message.cssPath2 != null && Object.hasOwnProperty.call(message, 'cssPath2'))
+      writer.uint32(/* id 30, wireType 2 =*/ 242).string(message.cssPath2)
+    if (message.logoFile != null && Object.hasOwnProperty.call(message, 'logoFile'))
+      writer.uint32(/* id 31, wireType 2 =*/ 250).string(message.logoFile)
     return writer
   }
 
@@ -15722,6 +15788,30 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
           message.backGroundURL = reader.string()
           break
         }
+        case 26: {
+          message.organizationUrl = reader.string()
+          break
+        }
+        case 27: {
+          message.themeColor = reader.string()
+          break
+        }
+        case 28: {
+          message.logoPath = reader.string()
+          break
+        }
+        case 29: {
+          message.cssPath1 = reader.string()
+          break
+        }
+        case 30: {
+          message.cssPath2 = reader.string()
+          break
+        }
+        case 31: {
+          message.logoFile = reader.string()
+          break
+        }
         default:
           reader.skipType(tag & 7)
           break
@@ -15810,6 +15900,18 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
       if (!$util.isString(message.logoURL)) return 'logoURL: string expected'
     if (message.backGroundURL != null && message.hasOwnProperty('backGroundURL'))
       if (!$util.isString(message.backGroundURL)) return 'backGroundURL: string expected'
+    if (message.organizationUrl != null && message.hasOwnProperty('organizationUrl'))
+      if (!$util.isString(message.organizationUrl)) return 'organizationUrl: string expected'
+    if (message.themeColor != null && message.hasOwnProperty('themeColor'))
+      if (!$util.isString(message.themeColor)) return 'themeColor: string expected'
+    if (message.logoPath != null && message.hasOwnProperty('logoPath'))
+      if (!$util.isString(message.logoPath)) return 'logoPath: string expected'
+    if (message.cssPath1 != null && message.hasOwnProperty('cssPath1'))
+      if (!$util.isString(message.cssPath1)) return 'cssPath1: string expected'
+    if (message.cssPath2 != null && message.hasOwnProperty('cssPath2'))
+      if (!$util.isString(message.cssPath2)) return 'cssPath2: string expected'
+    if (message.logoFile != null && message.hasOwnProperty('logoFile'))
+      if (!$util.isString(message.logoFile)) return 'logoFile: string expected'
     return null
   }
 
@@ -15854,6 +15956,12 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
       message.cardBackgroundColour = String(object.cardBackgroundColour)
     if (object.logoURL != null) message.logoURL = String(object.logoURL)
     if (object.backGroundURL != null) message.backGroundURL = String(object.backGroundURL)
+    if (object.organizationUrl != null) message.organizationUrl = String(object.organizationUrl)
+    if (object.themeColor != null) message.themeColor = String(object.themeColor)
+    if (object.logoPath != null) message.logoPath = String(object.logoPath)
+    if (object.cssPath1 != null) message.cssPath1 = String(object.cssPath1)
+    if (object.cssPath2 != null) message.cssPath2 = String(object.cssPath2)
+    if (object.logoFile != null) message.logoFile = String(object.logoFile)
     return message
   }
 
@@ -15895,6 +16003,12 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
       object.cardBackgroundColour = ''
       object.logoURL = ''
       object.backGroundURL = ''
+      object.organizationUrl = ''
+      object.themeColor = ''
+      object.logoPath = ''
+      object.cssPath1 = ''
+      object.cssPath2 = ''
+      object.logoFile = ''
     }
     if (message.searchOrganizationID != null && message.hasOwnProperty('searchOrganizationID'))
       object.searchOrganizationID = message.searchOrganizationID
@@ -15941,6 +16055,18 @@ export const OrganizationMstProto = ($root.OrganizationMstProto = (() => {
       object.logoURL = message.logoURL
     if (message.backGroundURL != null && message.hasOwnProperty('backGroundURL'))
       object.backGroundURL = message.backGroundURL
+    if (message.organizationUrl != null && message.hasOwnProperty('organizationUrl'))
+      object.organizationUrl = message.organizationUrl
+    if (message.themeColor != null && message.hasOwnProperty('themeColor'))
+      object.themeColor = message.themeColor
+    if (message.logoPath != null && message.hasOwnProperty('logoPath'))
+      object.logoPath = message.logoPath
+    if (message.cssPath1 != null && message.hasOwnProperty('cssPath1'))
+      object.cssPath1 = message.cssPath1
+    if (message.cssPath2 != null && message.hasOwnProperty('cssPath2'))
+      object.cssPath2 = message.cssPath2
+    if (message.logoFile != null && message.hasOwnProperty('logoFile'))
+      object.logoFile = message.logoFile
     return object
   }
 
@@ -37868,6 +37994,2047 @@ export const DocDBInputProto = ($root.DocDBInputProto = (() => {
   return DocDBInputProto
 })())
 
+export const PatientInfoInputProto = ($root.PatientInfoInputProto = (() => {
+  /**
+   * Properties of a PatientInfoInputProto.
+   * @exports IPatientInfoInputProto
+   * @interface IPatientInfoInputProto
+   * @property {string|null} [fileUID] PatientInfoInputProto fileUID
+   * @property {string|null} [accessionNumber] PatientInfoInputProto accessionNumber
+   * @property {string|null} [name] PatientInfoInputProto name
+   * @property {string|null} [organizationName] PatientInfoInputProto organizationName
+   * @property {string|null} [serviceSectID] PatientInfoInputProto serviceSectID
+   * @property {string|null} [patientClass] PatientInfoInputProto patientClass
+   * @property {string|null} [mimeType] PatientInfoInputProto mimeType
+   * @property {string|null} [contactPhoneNo] PatientInfoInputProto contactPhoneNo
+   * @property {string|null} [resultStatusCode] PatientInfoInputProto resultStatusCode
+   * @property {string|null} [observationDate] PatientInfoInputProto observationDate
+   * @property {string|null} [typeCode] PatientInfoInputProto typeCode
+   * @property {string|null} [digitalImageNeed] PatientInfoInputProto digitalImageNeed
+   * @property {string|null} [fileCreateTime] PatientInfoInputProto fileCreateTime
+   * @property {string|null} [uploadTime] PatientInfoInputProto uploadTime
+   * @property {number|null} [currentPage] PatientInfoInputProto currentPage
+   * @property {number|null} [pageSize] PatientInfoInputProto pageSize
+   * @property {string|null} [procedureName] PatientInfoInputProto procedureName
+   * @property {string|null} [medRecNO] PatientInfoInputProto medRecNO
+   * @property {string|null} [patientID] PatientInfoInputProto patientID
+   * @property {string|null} [healthCardNO] PatientInfoInputProto healthCardNO
+   * @property {string|null} [requestDeptName] PatientInfoInputProto requestDeptName
+   * @property {number|null} [order] PatientInfoInputProto order
+   * @property {string|null} [checkSystem] PatientInfoInputProto checkSystem
+   * @property {string|null} [organizationID] PatientInfoInputProto organizationID
+   */
+
+  /**
+   * Constructs a new PatientInfoInputProto.
+   * @exports PatientInfoInputProto
+   * @classdesc Represents a PatientInfoInputProto.
+   * @implements IPatientInfoInputProto
+   * @constructor
+   * @param {IPatientInfoInputProto=} [properties] Properties to set
+   */
+  function PatientInfoInputProto(properties) {
+    if (properties)
+      for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
+  }
+
+  /**
+   * PatientInfoInputProto fileUID.
+   * @member {string} fileUID
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.fileUID = ''
+
+  /**
+   * PatientInfoInputProto accessionNumber.
+   * @member {string} accessionNumber
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.accessionNumber = ''
+
+  /**
+   * PatientInfoInputProto name.
+   * @member {string} name
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.name = ''
+
+  /**
+   * PatientInfoInputProto organizationName.
+   * @member {string} organizationName
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.organizationName = ''
+
+  /**
+   * PatientInfoInputProto serviceSectID.
+   * @member {string} serviceSectID
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.serviceSectID = ''
+
+  /**
+   * PatientInfoInputProto patientClass.
+   * @member {string} patientClass
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.patientClass = ''
+
+  /**
+   * PatientInfoInputProto mimeType.
+   * @member {string} mimeType
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.mimeType = ''
+
+  /**
+   * PatientInfoInputProto contactPhoneNo.
+   * @member {string} contactPhoneNo
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.contactPhoneNo = ''
+
+  /**
+   * PatientInfoInputProto resultStatusCode.
+   * @member {string} resultStatusCode
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.resultStatusCode = ''
+
+  /**
+   * PatientInfoInputProto observationDate.
+   * @member {string} observationDate
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.observationDate = ''
+
+  /**
+   * PatientInfoInputProto typeCode.
+   * @member {string} typeCode
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.typeCode = ''
+
+  /**
+   * PatientInfoInputProto digitalImageNeed.
+   * @member {string} digitalImageNeed
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.digitalImageNeed = ''
+
+  /**
+   * PatientInfoInputProto fileCreateTime.
+   * @member {string} fileCreateTime
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.fileCreateTime = ''
+
+  /**
+   * PatientInfoInputProto uploadTime.
+   * @member {string} uploadTime
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.uploadTime = ''
+
+  /**
+   * PatientInfoInputProto currentPage.
+   * @member {number} currentPage
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.currentPage = 0
+
+  /**
+   * PatientInfoInputProto pageSize.
+   * @member {number} pageSize
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.pageSize = 0
+
+  /**
+   * PatientInfoInputProto procedureName.
+   * @member {string} procedureName
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.procedureName = ''
+
+  /**
+   * PatientInfoInputProto medRecNO.
+   * @member {string} medRecNO
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.medRecNO = ''
+
+  /**
+   * PatientInfoInputProto patientID.
+   * @member {string} patientID
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.patientID = ''
+
+  /**
+   * PatientInfoInputProto healthCardNO.
+   * @member {string} healthCardNO
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.healthCardNO = ''
+
+  /**
+   * PatientInfoInputProto requestDeptName.
+   * @member {string} requestDeptName
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.requestDeptName = ''
+
+  /**
+   * PatientInfoInputProto order.
+   * @member {number} order
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.order = 0
+
+  /**
+   * PatientInfoInputProto checkSystem.
+   * @member {string} checkSystem
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.checkSystem = ''
+
+  /**
+   * PatientInfoInputProto organizationID.
+   * @member {string} organizationID
+   * @memberof PatientInfoInputProto
+   * @instance
+   */
+  PatientInfoInputProto.prototype.organizationID = ''
+
+  /**
+   * Creates a new PatientInfoInputProto instance using the specified properties.
+   * @function create
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {IPatientInfoInputProto=} [properties] Properties to set
+   * @returns {PatientInfoInputProto} PatientInfoInputProto instance
+   */
+  PatientInfoInputProto.create = function create(properties) {
+    return new PatientInfoInputProto(properties)
+  }
+
+  /**
+   * Encodes the specified PatientInfoInputProto message. Does not implicitly {@link PatientInfoInputProto.verify|verify} messages.
+   * @function encode
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {IPatientInfoInputProto} message PatientInfoInputProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  PatientInfoInputProto.encode = function encode(message, writer) {
+    if (!writer) writer = $Writer.create()
+    if (message.fileUID != null && Object.hasOwnProperty.call(message, 'fileUID'))
+      writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.fileUID)
+    if (message.accessionNumber != null && Object.hasOwnProperty.call(message, 'accessionNumber'))
+      writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.accessionNumber)
+    if (message.name != null && Object.hasOwnProperty.call(message, 'name'))
+      writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.name)
+    if (message.organizationName != null && Object.hasOwnProperty.call(message, 'organizationName'))
+      writer.uint32(/* id 4, wireType 2 =*/ 34).string(message.organizationName)
+    if (message.serviceSectID != null && Object.hasOwnProperty.call(message, 'serviceSectID'))
+      writer.uint32(/* id 5, wireType 2 =*/ 42).string(message.serviceSectID)
+    if (message.patientClass != null && Object.hasOwnProperty.call(message, 'patientClass'))
+      writer.uint32(/* id 6, wireType 2 =*/ 50).string(message.patientClass)
+    if (message.mimeType != null && Object.hasOwnProperty.call(message, 'mimeType'))
+      writer.uint32(/* id 7, wireType 2 =*/ 58).string(message.mimeType)
+    if (message.contactPhoneNo != null && Object.hasOwnProperty.call(message, 'contactPhoneNo'))
+      writer.uint32(/* id 8, wireType 2 =*/ 66).string(message.contactPhoneNo)
+    if (message.resultStatusCode != null && Object.hasOwnProperty.call(message, 'resultStatusCode'))
+      writer.uint32(/* id 9, wireType 2 =*/ 74).string(message.resultStatusCode)
+    if (message.observationDate != null && Object.hasOwnProperty.call(message, 'observationDate'))
+      writer.uint32(/* id 10, wireType 2 =*/ 82).string(message.observationDate)
+    if (message.typeCode != null && Object.hasOwnProperty.call(message, 'typeCode'))
+      writer.uint32(/* id 11, wireType 2 =*/ 90).string(message.typeCode)
+    if (message.digitalImageNeed != null && Object.hasOwnProperty.call(message, 'digitalImageNeed'))
+      writer.uint32(/* id 12, wireType 2 =*/ 98).string(message.digitalImageNeed)
+    if (message.fileCreateTime != null && Object.hasOwnProperty.call(message, 'fileCreateTime'))
+      writer.uint32(/* id 13, wireType 2 =*/ 106).string(message.fileCreateTime)
+    if (message.uploadTime != null && Object.hasOwnProperty.call(message, 'uploadTime'))
+      writer.uint32(/* id 14, wireType 2 =*/ 114).string(message.uploadTime)
+    if (message.currentPage != null && Object.hasOwnProperty.call(message, 'currentPage'))
+      writer.uint32(/* id 15, wireType 0 =*/ 120).int32(message.currentPage)
+    if (message.pageSize != null && Object.hasOwnProperty.call(message, 'pageSize'))
+      writer.uint32(/* id 16, wireType 0 =*/ 128).int32(message.pageSize)
+    if (message.procedureName != null && Object.hasOwnProperty.call(message, 'procedureName'))
+      writer.uint32(/* id 17, wireType 2 =*/ 138).string(message.procedureName)
+    if (message.medRecNO != null && Object.hasOwnProperty.call(message, 'medRecNO'))
+      writer.uint32(/* id 18, wireType 2 =*/ 146).string(message.medRecNO)
+    if (message.patientID != null && Object.hasOwnProperty.call(message, 'patientID'))
+      writer.uint32(/* id 19, wireType 2 =*/ 154).string(message.patientID)
+    if (message.healthCardNO != null && Object.hasOwnProperty.call(message, 'healthCardNO'))
+      writer.uint32(/* id 20, wireType 2 =*/ 162).string(message.healthCardNO)
+    if (message.requestDeptName != null && Object.hasOwnProperty.call(message, 'requestDeptName'))
+      writer.uint32(/* id 21, wireType 2 =*/ 170).string(message.requestDeptName)
+    if (message.order != null && Object.hasOwnProperty.call(message, 'order'))
+      writer.uint32(/* id 22, wireType 0 =*/ 176).int32(message.order)
+    if (message.checkSystem != null && Object.hasOwnProperty.call(message, 'checkSystem'))
+      writer.uint32(/* id 23, wireType 2 =*/ 186).string(message.checkSystem)
+    if (message.organizationID != null && Object.hasOwnProperty.call(message, 'organizationID'))
+      writer.uint32(/* id 24, wireType 2 =*/ 194).string(message.organizationID)
+    return writer
+  }
+
+  /**
+   * Encodes the specified PatientInfoInputProto message, length delimited. Does not implicitly {@link PatientInfoInputProto.verify|verify} messages.
+   * @function encodeDelimited
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {IPatientInfoInputProto} message PatientInfoInputProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  PatientInfoInputProto.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.encode(message, writer).ldelim()
+  }
+
+  /**
+   * Decodes a PatientInfoInputProto message from the specified reader or buffer.
+   * @function decode
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @param {number} [length] Message length if known beforehand
+   * @returns {PatientInfoInputProto} PatientInfoInputProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  PatientInfoInputProto.decode = function decode(reader, length, error) {
+    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+    let end = length === undefined ? reader.len : reader.pos + length,
+      message = new $root.PatientInfoInputProto()
+    while (reader.pos < end) {
+      let tag = reader.uint32()
+      if (tag === error) break
+      switch (tag >>> 3) {
+        case 1: {
+          message.fileUID = reader.string()
+          break
+        }
+        case 2: {
+          message.accessionNumber = reader.string()
+          break
+        }
+        case 3: {
+          message.name = reader.string()
+          break
+        }
+        case 4: {
+          message.organizationName = reader.string()
+          break
+        }
+        case 5: {
+          message.serviceSectID = reader.string()
+          break
+        }
+        case 6: {
+          message.patientClass = reader.string()
+          break
+        }
+        case 7: {
+          message.mimeType = reader.string()
+          break
+        }
+        case 8: {
+          message.contactPhoneNo = reader.string()
+          break
+        }
+        case 9: {
+          message.resultStatusCode = reader.string()
+          break
+        }
+        case 10: {
+          message.observationDate = reader.string()
+          break
+        }
+        case 11: {
+          message.typeCode = reader.string()
+          break
+        }
+        case 12: {
+          message.digitalImageNeed = reader.string()
+          break
+        }
+        case 13: {
+          message.fileCreateTime = reader.string()
+          break
+        }
+        case 14: {
+          message.uploadTime = reader.string()
+          break
+        }
+        case 15: {
+          message.currentPage = reader.int32()
+          break
+        }
+        case 16: {
+          message.pageSize = reader.int32()
+          break
+        }
+        case 17: {
+          message.procedureName = reader.string()
+          break
+        }
+        case 18: {
+          message.medRecNO = reader.string()
+          break
+        }
+        case 19: {
+          message.patientID = reader.string()
+          break
+        }
+        case 20: {
+          message.healthCardNO = reader.string()
+          break
+        }
+        case 21: {
+          message.requestDeptName = reader.string()
+          break
+        }
+        case 22: {
+          message.order = reader.int32()
+          break
+        }
+        case 23: {
+          message.checkSystem = reader.string()
+          break
+        }
+        case 24: {
+          message.organizationID = reader.string()
+          break
+        }
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  }
+
+  /**
+   * Decodes a PatientInfoInputProto message from the specified reader or buffer, length delimited.
+   * @function decodeDelimited
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @returns {PatientInfoInputProto} PatientInfoInputProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  PatientInfoInputProto.decodeDelimited = function decodeDelimited(reader) {
+    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+    return this.decode(reader, reader.uint32())
+  }
+
+  /**
+   * Verifies a PatientInfoInputProto message.
+   * @function verify
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {Object.<string,*>} message Plain object to verify
+   * @returns {string|null} `null` if valid, otherwise the reason why it is not
+   */
+  PatientInfoInputProto.verify = function verify(message) {
+    if (typeof message !== 'object' || message === null) return 'object expected'
+    if (message.fileUID != null && message.hasOwnProperty('fileUID'))
+      if (!$util.isString(message.fileUID)) return 'fileUID: string expected'
+    if (message.accessionNumber != null && message.hasOwnProperty('accessionNumber'))
+      if (!$util.isString(message.accessionNumber)) return 'accessionNumber: string expected'
+    if (message.name != null && message.hasOwnProperty('name'))
+      if (!$util.isString(message.name)) return 'name: string expected'
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      if (!$util.isString(message.organizationName)) return 'organizationName: string expected'
+    if (message.serviceSectID != null && message.hasOwnProperty('serviceSectID'))
+      if (!$util.isString(message.serviceSectID)) return 'serviceSectID: string expected'
+    if (message.patientClass != null && message.hasOwnProperty('patientClass'))
+      if (!$util.isString(message.patientClass)) return 'patientClass: string expected'
+    if (message.mimeType != null && message.hasOwnProperty('mimeType'))
+      if (!$util.isString(message.mimeType)) return 'mimeType: string expected'
+    if (message.contactPhoneNo != null && message.hasOwnProperty('contactPhoneNo'))
+      if (!$util.isString(message.contactPhoneNo)) return 'contactPhoneNo: string expected'
+    if (message.resultStatusCode != null && message.hasOwnProperty('resultStatusCode'))
+      if (!$util.isString(message.resultStatusCode)) return 'resultStatusCode: string expected'
+    if (message.observationDate != null && message.hasOwnProperty('observationDate'))
+      if (!$util.isString(message.observationDate)) return 'observationDate: string expected'
+    if (message.typeCode != null && message.hasOwnProperty('typeCode'))
+      if (!$util.isString(message.typeCode)) return 'typeCode: string expected'
+    if (message.digitalImageNeed != null && message.hasOwnProperty('digitalImageNeed'))
+      if (!$util.isString(message.digitalImageNeed)) return 'digitalImageNeed: string expected'
+    if (message.fileCreateTime != null && message.hasOwnProperty('fileCreateTime'))
+      if (!$util.isString(message.fileCreateTime)) return 'fileCreateTime: string expected'
+    if (message.uploadTime != null && message.hasOwnProperty('uploadTime'))
+      if (!$util.isString(message.uploadTime)) return 'uploadTime: string expected'
+    if (message.currentPage != null && message.hasOwnProperty('currentPage'))
+      if (!$util.isInteger(message.currentPage)) return 'currentPage: integer expected'
+    if (message.pageSize != null && message.hasOwnProperty('pageSize'))
+      if (!$util.isInteger(message.pageSize)) return 'pageSize: integer expected'
+    if (message.procedureName != null && message.hasOwnProperty('procedureName'))
+      if (!$util.isString(message.procedureName)) return 'procedureName: string expected'
+    if (message.medRecNO != null && message.hasOwnProperty('medRecNO'))
+      if (!$util.isString(message.medRecNO)) return 'medRecNO: string expected'
+    if (message.patientID != null && message.hasOwnProperty('patientID'))
+      if (!$util.isString(message.patientID)) return 'patientID: string expected'
+    if (message.healthCardNO != null && message.hasOwnProperty('healthCardNO'))
+      if (!$util.isString(message.healthCardNO)) return 'healthCardNO: string expected'
+    if (message.requestDeptName != null && message.hasOwnProperty('requestDeptName'))
+      if (!$util.isString(message.requestDeptName)) return 'requestDeptName: string expected'
+    if (message.order != null && message.hasOwnProperty('order'))
+      if (!$util.isInteger(message.order)) return 'order: integer expected'
+    if (message.checkSystem != null && message.hasOwnProperty('checkSystem'))
+      if (!$util.isString(message.checkSystem)) return 'checkSystem: string expected'
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      if (!$util.isString(message.organizationID)) return 'organizationID: string expected'
+    return null
+  }
+
+  /**
+   * Creates a PatientInfoInputProto message from a plain object. Also converts values to their respective internal types.
+   * @function fromObject
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {Object.<string,*>} object Plain object
+   * @returns {PatientInfoInputProto} PatientInfoInputProto
+   */
+  PatientInfoInputProto.fromObject = function fromObject(object) {
+    if (object instanceof $root.PatientInfoInputProto) return object
+    let message = new $root.PatientInfoInputProto()
+    if (object.fileUID != null) message.fileUID = String(object.fileUID)
+    if (object.accessionNumber != null) message.accessionNumber = String(object.accessionNumber)
+    if (object.name != null) message.name = String(object.name)
+    if (object.organizationName != null) message.organizationName = String(object.organizationName)
+    if (object.serviceSectID != null) message.serviceSectID = String(object.serviceSectID)
+    if (object.patientClass != null) message.patientClass = String(object.patientClass)
+    if (object.mimeType != null) message.mimeType = String(object.mimeType)
+    if (object.contactPhoneNo != null) message.contactPhoneNo = String(object.contactPhoneNo)
+    if (object.resultStatusCode != null) message.resultStatusCode = String(object.resultStatusCode)
+    if (object.observationDate != null) message.observationDate = String(object.observationDate)
+    if (object.typeCode != null) message.typeCode = String(object.typeCode)
+    if (object.digitalImageNeed != null) message.digitalImageNeed = String(object.digitalImageNeed)
+    if (object.fileCreateTime != null) message.fileCreateTime = String(object.fileCreateTime)
+    if (object.uploadTime != null) message.uploadTime = String(object.uploadTime)
+    if (object.currentPage != null) message.currentPage = object.currentPage | 0
+    if (object.pageSize != null) message.pageSize = object.pageSize | 0
+    if (object.procedureName != null) message.procedureName = String(object.procedureName)
+    if (object.medRecNO != null) message.medRecNO = String(object.medRecNO)
+    if (object.patientID != null) message.patientID = String(object.patientID)
+    if (object.healthCardNO != null) message.healthCardNO = String(object.healthCardNO)
+    if (object.requestDeptName != null) message.requestDeptName = String(object.requestDeptName)
+    if (object.order != null) message.order = object.order | 0
+    if (object.checkSystem != null) message.checkSystem = String(object.checkSystem)
+    if (object.organizationID != null) message.organizationID = String(object.organizationID)
+    return message
+  }
+
+  /**
+   * Creates a plain object from a PatientInfoInputProto message. Also converts values to other types if specified.
+   * @function toObject
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {PatientInfoInputProto} message PatientInfoInputProto
+   * @param {$protobuf.IConversionOptions} [options] Conversion options
+   * @returns {Object.<string,*>} Plain object
+   */
+  PatientInfoInputProto.toObject = function toObject(message, options) {
+    if (!options) options = {}
+    let object = {}
+    if (options.defaults) {
+      object.fileUID = ''
+      object.accessionNumber = ''
+      object.name = ''
+      object.organizationName = ''
+      object.serviceSectID = ''
+      object.patientClass = ''
+      object.mimeType = ''
+      object.contactPhoneNo = ''
+      object.resultStatusCode = ''
+      object.observationDate = ''
+      object.typeCode = ''
+      object.digitalImageNeed = ''
+      object.fileCreateTime = ''
+      object.uploadTime = ''
+      object.currentPage = 0
+      object.pageSize = 0
+      object.procedureName = ''
+      object.medRecNO = ''
+      object.patientID = ''
+      object.healthCardNO = ''
+      object.requestDeptName = ''
+      object.order = 0
+      object.checkSystem = ''
+      object.organizationID = ''
+    }
+    if (message.fileUID != null && message.hasOwnProperty('fileUID'))
+      object.fileUID = message.fileUID
+    if (message.accessionNumber != null && message.hasOwnProperty('accessionNumber'))
+      object.accessionNumber = message.accessionNumber
+    if (message.name != null && message.hasOwnProperty('name')) object.name = message.name
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      object.organizationName = message.organizationName
+    if (message.serviceSectID != null && message.hasOwnProperty('serviceSectID'))
+      object.serviceSectID = message.serviceSectID
+    if (message.patientClass != null && message.hasOwnProperty('patientClass'))
+      object.patientClass = message.patientClass
+    if (message.mimeType != null && message.hasOwnProperty('mimeType'))
+      object.mimeType = message.mimeType
+    if (message.contactPhoneNo != null && message.hasOwnProperty('contactPhoneNo'))
+      object.contactPhoneNo = message.contactPhoneNo
+    if (message.resultStatusCode != null && message.hasOwnProperty('resultStatusCode'))
+      object.resultStatusCode = message.resultStatusCode
+    if (message.observationDate != null && message.hasOwnProperty('observationDate'))
+      object.observationDate = message.observationDate
+    if (message.typeCode != null && message.hasOwnProperty('typeCode'))
+      object.typeCode = message.typeCode
+    if (message.digitalImageNeed != null && message.hasOwnProperty('digitalImageNeed'))
+      object.digitalImageNeed = message.digitalImageNeed
+    if (message.fileCreateTime != null && message.hasOwnProperty('fileCreateTime'))
+      object.fileCreateTime = message.fileCreateTime
+    if (message.uploadTime != null && message.hasOwnProperty('uploadTime'))
+      object.uploadTime = message.uploadTime
+    if (message.currentPage != null && message.hasOwnProperty('currentPage'))
+      object.currentPage = message.currentPage
+    if (message.pageSize != null && message.hasOwnProperty('pageSize'))
+      object.pageSize = message.pageSize
+    if (message.procedureName != null && message.hasOwnProperty('procedureName'))
+      object.procedureName = message.procedureName
+    if (message.medRecNO != null && message.hasOwnProperty('medRecNO'))
+      object.medRecNO = message.medRecNO
+    if (message.patientID != null && message.hasOwnProperty('patientID'))
+      object.patientID = message.patientID
+    if (message.healthCardNO != null && message.hasOwnProperty('healthCardNO'))
+      object.healthCardNO = message.healthCardNO
+    if (message.requestDeptName != null && message.hasOwnProperty('requestDeptName'))
+      object.requestDeptName = message.requestDeptName
+    if (message.order != null && message.hasOwnProperty('order')) object.order = message.order
+    if (message.checkSystem != null && message.hasOwnProperty('checkSystem'))
+      object.checkSystem = message.checkSystem
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      object.organizationID = message.organizationID
+    return object
+  }
+
+  /**
+   * Converts this PatientInfoInputProto to JSON.
+   * @function toJSON
+   * @memberof PatientInfoInputProto
+   * @instance
+   * @returns {Object.<string,*>} JSON object
+   */
+  PatientInfoInputProto.prototype.toJSON = function toJSON() {
+    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+  }
+
+  /**
+   * Gets the default type url for PatientInfoInputProto
+   * @function getTypeUrl
+   * @memberof PatientInfoInputProto
+   * @static
+   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+   * @returns {string} The default type url
+   */
+  PatientInfoInputProto.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+    if (typeUrlPrefix === undefined) {
+      typeUrlPrefix = 'type.googleapis.com'
+    }
+    return typeUrlPrefix + '/PatientInfoInputProto'
+  }
+
+  return PatientInfoInputProto
+})())
+
+export const PatientInfoProto = ($root.PatientInfoProto = (() => {
+  /**
+   * Properties of a PatientInfoProto.
+   * @exports IPatientInfoProto
+   * @interface IPatientInfoProto
+   * @property {string|null} [fileUID] PatientInfoProto fileUID
+   * @property {string|null} [accessionNumber] PatientInfoProto accessionNumber
+   * @property {string|null} [name] PatientInfoProto name
+   * @property {string|null} [organizationName] PatientInfoProto organizationName
+   * @property {string|null} [serviceSectID] PatientInfoProto serviceSectID
+   * @property {string|null} [patientClass] PatientInfoProto patientClass
+   * @property {string|null} [mimeType] PatientInfoProto mimeType
+   * @property {string|null} [contactPhoneNo] PatientInfoProto contactPhoneNo
+   * @property {string|null} [resultStatusCode] PatientInfoProto resultStatusCode
+   * @property {string|null} [observationDate] PatientInfoProto observationDate
+   * @property {string|null} [typeCode] PatientInfoProto typeCode
+   * @property {string|null} [digitalImageNeed] PatientInfoProto digitalImageNeed
+   * @property {string|null} [fileCreateTime] PatientInfoProto fileCreateTime
+   * @property {string|null} [uploadTime] PatientInfoProto uploadTime
+   * @property {string|null} [procedureName] PatientInfoProto procedureName
+   * @property {string|null} [medRecNO] PatientInfoProto medRecNO
+   * @property {string|null} [patientID] PatientInfoProto patientID
+   * @property {string|null} [healthCardNO] PatientInfoProto healthCardNO
+   * @property {string|null} [requestDeptName] PatientInfoProto requestDeptName
+   */
+
+  /**
+   * Constructs a new PatientInfoProto.
+   * @exports PatientInfoProto
+   * @classdesc Represents a PatientInfoProto.
+   * @implements IPatientInfoProto
+   * @constructor
+   * @param {IPatientInfoProto=} [properties] Properties to set
+   */
+  function PatientInfoProto(properties) {
+    if (properties)
+      for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
+  }
+
+  /**
+   * PatientInfoProto fileUID.
+   * @member {string} fileUID
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.fileUID = ''
+
+  /**
+   * PatientInfoProto accessionNumber.
+   * @member {string} accessionNumber
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.accessionNumber = ''
+
+  /**
+   * PatientInfoProto name.
+   * @member {string} name
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.name = ''
+
+  /**
+   * PatientInfoProto organizationName.
+   * @member {string} organizationName
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.organizationName = ''
+
+  /**
+   * PatientInfoProto serviceSectID.
+   * @member {string} serviceSectID
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.serviceSectID = ''
+
+  /**
+   * PatientInfoProto patientClass.
+   * @member {string} patientClass
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.patientClass = ''
+
+  /**
+   * PatientInfoProto mimeType.
+   * @member {string} mimeType
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.mimeType = ''
+
+  /**
+   * PatientInfoProto contactPhoneNo.
+   * @member {string} contactPhoneNo
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.contactPhoneNo = ''
+
+  /**
+   * PatientInfoProto resultStatusCode.
+   * @member {string} resultStatusCode
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.resultStatusCode = ''
+
+  /**
+   * PatientInfoProto observationDate.
+   * @member {string} observationDate
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.observationDate = ''
+
+  /**
+   * PatientInfoProto typeCode.
+   * @member {string} typeCode
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.typeCode = ''
+
+  /**
+   * PatientInfoProto digitalImageNeed.
+   * @member {string} digitalImageNeed
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.digitalImageNeed = ''
+
+  /**
+   * PatientInfoProto fileCreateTime.
+   * @member {string} fileCreateTime
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.fileCreateTime = ''
+
+  /**
+   * PatientInfoProto uploadTime.
+   * @member {string} uploadTime
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.uploadTime = ''
+
+  /**
+   * PatientInfoProto procedureName.
+   * @member {string} procedureName
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.procedureName = ''
+
+  /**
+   * PatientInfoProto medRecNO.
+   * @member {string} medRecNO
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.medRecNO = ''
+
+  /**
+   * PatientInfoProto patientID.
+   * @member {string} patientID
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.patientID = ''
+
+  /**
+   * PatientInfoProto healthCardNO.
+   * @member {string} healthCardNO
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.healthCardNO = ''
+
+  /**
+   * PatientInfoProto requestDeptName.
+   * @member {string} requestDeptName
+   * @memberof PatientInfoProto
+   * @instance
+   */
+  PatientInfoProto.prototype.requestDeptName = ''
+
+  /**
+   * Creates a new PatientInfoProto instance using the specified properties.
+   * @function create
+   * @memberof PatientInfoProto
+   * @static
+   * @param {IPatientInfoProto=} [properties] Properties to set
+   * @returns {PatientInfoProto} PatientInfoProto instance
+   */
+  PatientInfoProto.create = function create(properties) {
+    return new PatientInfoProto(properties)
+  }
+
+  /**
+   * Encodes the specified PatientInfoProto message. Does not implicitly {@link PatientInfoProto.verify|verify} messages.
+   * @function encode
+   * @memberof PatientInfoProto
+   * @static
+   * @param {IPatientInfoProto} message PatientInfoProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  PatientInfoProto.encode = function encode(message, writer) {
+    if (!writer) writer = $Writer.create()
+    if (message.fileUID != null && Object.hasOwnProperty.call(message, 'fileUID'))
+      writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.fileUID)
+    if (message.accessionNumber != null && Object.hasOwnProperty.call(message, 'accessionNumber'))
+      writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.accessionNumber)
+    if (message.name != null && Object.hasOwnProperty.call(message, 'name'))
+      writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.name)
+    if (message.organizationName != null && Object.hasOwnProperty.call(message, 'organizationName'))
+      writer.uint32(/* id 4, wireType 2 =*/ 34).string(message.organizationName)
+    if (message.serviceSectID != null && Object.hasOwnProperty.call(message, 'serviceSectID'))
+      writer.uint32(/* id 5, wireType 2 =*/ 42).string(message.serviceSectID)
+    if (message.patientClass != null && Object.hasOwnProperty.call(message, 'patientClass'))
+      writer.uint32(/* id 6, wireType 2 =*/ 50).string(message.patientClass)
+    if (message.mimeType != null && Object.hasOwnProperty.call(message, 'mimeType'))
+      writer.uint32(/* id 7, wireType 2 =*/ 58).string(message.mimeType)
+    if (message.contactPhoneNo != null && Object.hasOwnProperty.call(message, 'contactPhoneNo'))
+      writer.uint32(/* id 8, wireType 2 =*/ 66).string(message.contactPhoneNo)
+    if (message.resultStatusCode != null && Object.hasOwnProperty.call(message, 'resultStatusCode'))
+      writer.uint32(/* id 9, wireType 2 =*/ 74).string(message.resultStatusCode)
+    if (message.observationDate != null && Object.hasOwnProperty.call(message, 'observationDate'))
+      writer.uint32(/* id 10, wireType 2 =*/ 82).string(message.observationDate)
+    if (message.typeCode != null && Object.hasOwnProperty.call(message, 'typeCode'))
+      writer.uint32(/* id 11, wireType 2 =*/ 90).string(message.typeCode)
+    if (message.digitalImageNeed != null && Object.hasOwnProperty.call(message, 'digitalImageNeed'))
+      writer.uint32(/* id 12, wireType 2 =*/ 98).string(message.digitalImageNeed)
+    if (message.fileCreateTime != null && Object.hasOwnProperty.call(message, 'fileCreateTime'))
+      writer.uint32(/* id 13, wireType 2 =*/ 106).string(message.fileCreateTime)
+    if (message.uploadTime != null && Object.hasOwnProperty.call(message, 'uploadTime'))
+      writer.uint32(/* id 14, wireType 2 =*/ 114).string(message.uploadTime)
+    if (message.procedureName != null && Object.hasOwnProperty.call(message, 'procedureName'))
+      writer.uint32(/* id 15, wireType 2 =*/ 122).string(message.procedureName)
+    if (message.medRecNO != null && Object.hasOwnProperty.call(message, 'medRecNO'))
+      writer.uint32(/* id 16, wireType 2 =*/ 130).string(message.medRecNO)
+    if (message.patientID != null && Object.hasOwnProperty.call(message, 'patientID'))
+      writer.uint32(/* id 17, wireType 2 =*/ 138).string(message.patientID)
+    if (message.healthCardNO != null && Object.hasOwnProperty.call(message, 'healthCardNO'))
+      writer.uint32(/* id 18, wireType 2 =*/ 146).string(message.healthCardNO)
+    if (message.requestDeptName != null && Object.hasOwnProperty.call(message, 'requestDeptName'))
+      writer.uint32(/* id 19, wireType 2 =*/ 154).string(message.requestDeptName)
+    return writer
+  }
+
+  /**
+   * Encodes the specified PatientInfoProto message, length delimited. Does not implicitly {@link PatientInfoProto.verify|verify} messages.
+   * @function encodeDelimited
+   * @memberof PatientInfoProto
+   * @static
+   * @param {IPatientInfoProto} message PatientInfoProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  PatientInfoProto.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.encode(message, writer).ldelim()
+  }
+
+  /**
+   * Decodes a PatientInfoProto message from the specified reader or buffer.
+   * @function decode
+   * @memberof PatientInfoProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @param {number} [length] Message length if known beforehand
+   * @returns {PatientInfoProto} PatientInfoProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  PatientInfoProto.decode = function decode(reader, length, error) {
+    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+    let end = length === undefined ? reader.len : reader.pos + length,
+      message = new $root.PatientInfoProto()
+    while (reader.pos < end) {
+      let tag = reader.uint32()
+      if (tag === error) break
+      switch (tag >>> 3) {
+        case 1: {
+          message.fileUID = reader.string()
+          break
+        }
+        case 2: {
+          message.accessionNumber = reader.string()
+          break
+        }
+        case 3: {
+          message.name = reader.string()
+          break
+        }
+        case 4: {
+          message.organizationName = reader.string()
+          break
+        }
+        case 5: {
+          message.serviceSectID = reader.string()
+          break
+        }
+        case 6: {
+          message.patientClass = reader.string()
+          break
+        }
+        case 7: {
+          message.mimeType = reader.string()
+          break
+        }
+        case 8: {
+          message.contactPhoneNo = reader.string()
+          break
+        }
+        case 9: {
+          message.resultStatusCode = reader.string()
+          break
+        }
+        case 10: {
+          message.observationDate = reader.string()
+          break
+        }
+        case 11: {
+          message.typeCode = reader.string()
+          break
+        }
+        case 12: {
+          message.digitalImageNeed = reader.string()
+          break
+        }
+        case 13: {
+          message.fileCreateTime = reader.string()
+          break
+        }
+        case 14: {
+          message.uploadTime = reader.string()
+          break
+        }
+        case 15: {
+          message.procedureName = reader.string()
+          break
+        }
+        case 16: {
+          message.medRecNO = reader.string()
+          break
+        }
+        case 17: {
+          message.patientID = reader.string()
+          break
+        }
+        case 18: {
+          message.healthCardNO = reader.string()
+          break
+        }
+        case 19: {
+          message.requestDeptName = reader.string()
+          break
+        }
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  }
+
+  /**
+   * Decodes a PatientInfoProto message from the specified reader or buffer, length delimited.
+   * @function decodeDelimited
+   * @memberof PatientInfoProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @returns {PatientInfoProto} PatientInfoProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  PatientInfoProto.decodeDelimited = function decodeDelimited(reader) {
+    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+    return this.decode(reader, reader.uint32())
+  }
+
+  /**
+   * Verifies a PatientInfoProto message.
+   * @function verify
+   * @memberof PatientInfoProto
+   * @static
+   * @param {Object.<string,*>} message Plain object to verify
+   * @returns {string|null} `null` if valid, otherwise the reason why it is not
+   */
+  PatientInfoProto.verify = function verify(message) {
+    if (typeof message !== 'object' || message === null) return 'object expected'
+    if (message.fileUID != null && message.hasOwnProperty('fileUID'))
+      if (!$util.isString(message.fileUID)) return 'fileUID: string expected'
+    if (message.accessionNumber != null && message.hasOwnProperty('accessionNumber'))
+      if (!$util.isString(message.accessionNumber)) return 'accessionNumber: string expected'
+    if (message.name != null && message.hasOwnProperty('name'))
+      if (!$util.isString(message.name)) return 'name: string expected'
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      if (!$util.isString(message.organizationName)) return 'organizationName: string expected'
+    if (message.serviceSectID != null && message.hasOwnProperty('serviceSectID'))
+      if (!$util.isString(message.serviceSectID)) return 'serviceSectID: string expected'
+    if (message.patientClass != null && message.hasOwnProperty('patientClass'))
+      if (!$util.isString(message.patientClass)) return 'patientClass: string expected'
+    if (message.mimeType != null && message.hasOwnProperty('mimeType'))
+      if (!$util.isString(message.mimeType)) return 'mimeType: string expected'
+    if (message.contactPhoneNo != null && message.hasOwnProperty('contactPhoneNo'))
+      if (!$util.isString(message.contactPhoneNo)) return 'contactPhoneNo: string expected'
+    if (message.resultStatusCode != null && message.hasOwnProperty('resultStatusCode'))
+      if (!$util.isString(message.resultStatusCode)) return 'resultStatusCode: string expected'
+    if (message.observationDate != null && message.hasOwnProperty('observationDate'))
+      if (!$util.isString(message.observationDate)) return 'observationDate: string expected'
+    if (message.typeCode != null && message.hasOwnProperty('typeCode'))
+      if (!$util.isString(message.typeCode)) return 'typeCode: string expected'
+    if (message.digitalImageNeed != null && message.hasOwnProperty('digitalImageNeed'))
+      if (!$util.isString(message.digitalImageNeed)) return 'digitalImageNeed: string expected'
+    if (message.fileCreateTime != null && message.hasOwnProperty('fileCreateTime'))
+      if (!$util.isString(message.fileCreateTime)) return 'fileCreateTime: string expected'
+    if (message.uploadTime != null && message.hasOwnProperty('uploadTime'))
+      if (!$util.isString(message.uploadTime)) return 'uploadTime: string expected'
+    if (message.procedureName != null && message.hasOwnProperty('procedureName'))
+      if (!$util.isString(message.procedureName)) return 'procedureName: string expected'
+    if (message.medRecNO != null && message.hasOwnProperty('medRecNO'))
+      if (!$util.isString(message.medRecNO)) return 'medRecNO: string expected'
+    if (message.patientID != null && message.hasOwnProperty('patientID'))
+      if (!$util.isString(message.patientID)) return 'patientID: string expected'
+    if (message.healthCardNO != null && message.hasOwnProperty('healthCardNO'))
+      if (!$util.isString(message.healthCardNO)) return 'healthCardNO: string expected'
+    if (message.requestDeptName != null && message.hasOwnProperty('requestDeptName'))
+      if (!$util.isString(message.requestDeptName)) return 'requestDeptName: string expected'
+    return null
+  }
+
+  /**
+   * Creates a PatientInfoProto message from a plain object. Also converts values to their respective internal types.
+   * @function fromObject
+   * @memberof PatientInfoProto
+   * @static
+   * @param {Object.<string,*>} object Plain object
+   * @returns {PatientInfoProto} PatientInfoProto
+   */
+  PatientInfoProto.fromObject = function fromObject(object) {
+    if (object instanceof $root.PatientInfoProto) return object
+    let message = new $root.PatientInfoProto()
+    if (object.fileUID != null) message.fileUID = String(object.fileUID)
+    if (object.accessionNumber != null) message.accessionNumber = String(object.accessionNumber)
+    if (object.name != null) message.name = String(object.name)
+    if (object.organizationName != null) message.organizationName = String(object.organizationName)
+    if (object.serviceSectID != null) message.serviceSectID = String(object.serviceSectID)
+    if (object.patientClass != null) message.patientClass = String(object.patientClass)
+    if (object.mimeType != null) message.mimeType = String(object.mimeType)
+    if (object.contactPhoneNo != null) message.contactPhoneNo = String(object.contactPhoneNo)
+    if (object.resultStatusCode != null) message.resultStatusCode = String(object.resultStatusCode)
+    if (object.observationDate != null) message.observationDate = String(object.observationDate)
+    if (object.typeCode != null) message.typeCode = String(object.typeCode)
+    if (object.digitalImageNeed != null) message.digitalImageNeed = String(object.digitalImageNeed)
+    if (object.fileCreateTime != null) message.fileCreateTime = String(object.fileCreateTime)
+    if (object.uploadTime != null) message.uploadTime = String(object.uploadTime)
+    if (object.procedureName != null) message.procedureName = String(object.procedureName)
+    if (object.medRecNO != null) message.medRecNO = String(object.medRecNO)
+    if (object.patientID != null) message.patientID = String(object.patientID)
+    if (object.healthCardNO != null) message.healthCardNO = String(object.healthCardNO)
+    if (object.requestDeptName != null) message.requestDeptName = String(object.requestDeptName)
+    return message
+  }
+
+  /**
+   * Creates a plain object from a PatientInfoProto message. Also converts values to other types if specified.
+   * @function toObject
+   * @memberof PatientInfoProto
+   * @static
+   * @param {PatientInfoProto} message PatientInfoProto
+   * @param {$protobuf.IConversionOptions} [options] Conversion options
+   * @returns {Object.<string,*>} Plain object
+   */
+  PatientInfoProto.toObject = function toObject(message, options) {
+    if (!options) options = {}
+    let object = {}
+    if (options.defaults) {
+      object.fileUID = ''
+      object.accessionNumber = ''
+      object.name = ''
+      object.organizationName = ''
+      object.serviceSectID = ''
+      object.patientClass = ''
+      object.mimeType = ''
+      object.contactPhoneNo = ''
+      object.resultStatusCode = ''
+      object.observationDate = ''
+      object.typeCode = ''
+      object.digitalImageNeed = ''
+      object.fileCreateTime = ''
+      object.uploadTime = ''
+      object.procedureName = ''
+      object.medRecNO = ''
+      object.patientID = ''
+      object.healthCardNO = ''
+      object.requestDeptName = ''
+    }
+    if (message.fileUID != null && message.hasOwnProperty('fileUID'))
+      object.fileUID = message.fileUID
+    if (message.accessionNumber != null && message.hasOwnProperty('accessionNumber'))
+      object.accessionNumber = message.accessionNumber
+    if (message.name != null && message.hasOwnProperty('name')) object.name = message.name
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      object.organizationName = message.organizationName
+    if (message.serviceSectID != null && message.hasOwnProperty('serviceSectID'))
+      object.serviceSectID = message.serviceSectID
+    if (message.patientClass != null && message.hasOwnProperty('patientClass'))
+      object.patientClass = message.patientClass
+    if (message.mimeType != null && message.hasOwnProperty('mimeType'))
+      object.mimeType = message.mimeType
+    if (message.contactPhoneNo != null && message.hasOwnProperty('contactPhoneNo'))
+      object.contactPhoneNo = message.contactPhoneNo
+    if (message.resultStatusCode != null && message.hasOwnProperty('resultStatusCode'))
+      object.resultStatusCode = message.resultStatusCode
+    if (message.observationDate != null && message.hasOwnProperty('observationDate'))
+      object.observationDate = message.observationDate
+    if (message.typeCode != null && message.hasOwnProperty('typeCode'))
+      object.typeCode = message.typeCode
+    if (message.digitalImageNeed != null && message.hasOwnProperty('digitalImageNeed'))
+      object.digitalImageNeed = message.digitalImageNeed
+    if (message.fileCreateTime != null && message.hasOwnProperty('fileCreateTime'))
+      object.fileCreateTime = message.fileCreateTime
+    if (message.uploadTime != null && message.hasOwnProperty('uploadTime'))
+      object.uploadTime = message.uploadTime
+    if (message.procedureName != null && message.hasOwnProperty('procedureName'))
+      object.procedureName = message.procedureName
+    if (message.medRecNO != null && message.hasOwnProperty('medRecNO'))
+      object.medRecNO = message.medRecNO
+    if (message.patientID != null && message.hasOwnProperty('patientID'))
+      object.patientID = message.patientID
+    if (message.healthCardNO != null && message.hasOwnProperty('healthCardNO'))
+      object.healthCardNO = message.healthCardNO
+    if (message.requestDeptName != null && message.hasOwnProperty('requestDeptName'))
+      object.requestDeptName = message.requestDeptName
+    return object
+  }
+
+  /**
+   * Converts this PatientInfoProto to JSON.
+   * @function toJSON
+   * @memberof PatientInfoProto
+   * @instance
+   * @returns {Object.<string,*>} JSON object
+   */
+  PatientInfoProto.prototype.toJSON = function toJSON() {
+    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+  }
+
+  /**
+   * Gets the default type url for PatientInfoProto
+   * @function getTypeUrl
+   * @memberof PatientInfoProto
+   * @static
+   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+   * @returns {string} The default type url
+   */
+  PatientInfoProto.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+    if (typeUrlPrefix === undefined) {
+      typeUrlPrefix = 'type.googleapis.com'
+    }
+    return typeUrlPrefix + '/PatientInfoProto'
+  }
+
+  return PatientInfoProto
+})())
+
+export const ExamInputProto = ($root.ExamInputProto = (() => {
+  /**
+   * Properties of an ExamInputProto.
+   * @exports IExamInputProto
+   * @interface IExamInputProto
+   * @property {string|null} [accessionNumber] ExamInputProto accessionNumber
+   * @property {string|null} [medRecNO] ExamInputProto medRecNO
+   * @property {string|null} [visitUID] ExamInputProto visitUID
+   * @property {string|null} [patientId] ExamInputProto patientId
+   * @property {string|null} [iDCardNo] ExamInputProto iDCardNo
+   * @property {string|null} [contactPhoneNO] ExamInputProto contactPhoneNO
+   * @property {string|null} [insuranceID] ExamInputProto insuranceID
+   * @property {string|null} [name] ExamInputProto name
+   * @property {string|null} [organizationName] ExamInputProto organizationName
+   * @property {string|null} [organizationID] ExamInputProto organizationID
+   * @property {string|null} [sex] ExamInputProto sex
+   * @property {string|null} [birthDate] ExamInputProto birthDate
+   * @property {number|null} [age] ExamInputProto age
+   * @property {string|null} [ageUnit] ExamInputProto ageUnit
+   * @property {string|null} [patientClass] ExamInputProto patientClass
+   * @property {string|null} [requestDeptName] ExamInputProto requestDeptName
+   * @property {string|null} [serviceSectID] ExamInputProto serviceSectID
+   * @property {string|null} [resultAssistantName] ExamInputProto resultAssistantName
+   * @property {string|null} [resultPrincipalName] ExamInputProto resultPrincipalName
+   * @property {string|null} [examStatus] ExamInputProto examStatus
+   * @property {string|null} [digitalimageneed] ExamInputProto digitalimageneed
+   * @property {number|null} [lockFlag] ExamInputProto lockFlag
+   * @property {string|null} [abnormalFlags] ExamInputProto abnormalFlags
+   * @property {string|null} [fileCreateTime] ExamInputProto fileCreateTime
+   * @property {string|null} [observationDate] ExamInputProto observationDate
+   * @property {string|null} [uploadTime] ExamInputProto uploadTime
+   * @property {string|null} [preliminaryDate] ExamInputProto preliminaryDate
+   * @property {number|null} [currentPage] ExamInputProto currentPage
+   * @property {number|null} [pageSize] ExamInputProto pageSize
+   */
+
+  /**
+   * Constructs a new ExamInputProto.
+   * @exports ExamInputProto
+   * @classdesc Represents an ExamInputProto.
+   * @implements IExamInputProto
+   * @constructor
+   * @param {IExamInputProto=} [properties] Properties to set
+   */
+  function ExamInputProto(properties) {
+    if (properties)
+      for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
+  }
+
+  /**
+   * ExamInputProto accessionNumber.
+   * @member {string} accessionNumber
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.accessionNumber = ''
+
+  /**
+   * ExamInputProto medRecNO.
+   * @member {string} medRecNO
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.medRecNO = ''
+
+  /**
+   * ExamInputProto visitUID.
+   * @member {string} visitUID
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.visitUID = ''
+
+  /**
+   * ExamInputProto patientId.
+   * @member {string} patientId
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.patientId = ''
+
+  /**
+   * ExamInputProto iDCardNo.
+   * @member {string} iDCardNo
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.iDCardNo = ''
+
+  /**
+   * ExamInputProto contactPhoneNO.
+   * @member {string} contactPhoneNO
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.contactPhoneNO = ''
+
+  /**
+   * ExamInputProto insuranceID.
+   * @member {string} insuranceID
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.insuranceID = ''
+
+  /**
+   * ExamInputProto name.
+   * @member {string} name
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.name = ''
+
+  /**
+   * ExamInputProto organizationName.
+   * @member {string} organizationName
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.organizationName = ''
+
+  /**
+   * ExamInputProto organizationID.
+   * @member {string} organizationID
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.organizationID = ''
+
+  /**
+   * ExamInputProto sex.
+   * @member {string} sex
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.sex = ''
+
+  /**
+   * ExamInputProto birthDate.
+   * @member {string} birthDate
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.birthDate = ''
+
+  /**
+   * ExamInputProto age.
+   * @member {number} age
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.age = 0
+
+  /**
+   * ExamInputProto ageUnit.
+   * @member {string} ageUnit
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.ageUnit = ''
+
+  /**
+   * ExamInputProto patientClass.
+   * @member {string} patientClass
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.patientClass = ''
+
+  /**
+   * ExamInputProto requestDeptName.
+   * @member {string} requestDeptName
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.requestDeptName = ''
+
+  /**
+   * ExamInputProto serviceSectID.
+   * @member {string} serviceSectID
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.serviceSectID = ''
+
+  /**
+   * ExamInputProto resultAssistantName.
+   * @member {string} resultAssistantName
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.resultAssistantName = ''
+
+  /**
+   * ExamInputProto resultPrincipalName.
+   * @member {string} resultPrincipalName
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.resultPrincipalName = ''
+
+  /**
+   * ExamInputProto examStatus.
+   * @member {string} examStatus
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.examStatus = ''
+
+  /**
+   * ExamInputProto digitalimageneed.
+   * @member {string} digitalimageneed
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.digitalimageneed = ''
+
+  /**
+   * ExamInputProto lockFlag.
+   * @member {number} lockFlag
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.lockFlag = 0
+
+  /**
+   * ExamInputProto abnormalFlags.
+   * @member {string} abnormalFlags
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.abnormalFlags = ''
+
+  /**
+   * ExamInputProto fileCreateTime.
+   * @member {string} fileCreateTime
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.fileCreateTime = ''
+
+  /**
+   * ExamInputProto observationDate.
+   * @member {string} observationDate
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.observationDate = ''
+
+  /**
+   * ExamInputProto uploadTime.
+   * @member {string} uploadTime
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.uploadTime = ''
+
+  /**
+   * ExamInputProto preliminaryDate.
+   * @member {string} preliminaryDate
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.preliminaryDate = ''
+
+  /**
+   * ExamInputProto currentPage.
+   * @member {number} currentPage
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.currentPage = 0
+
+  /**
+   * ExamInputProto pageSize.
+   * @member {number} pageSize
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.pageSize = 0
+
+  /**
+   * Creates a new ExamInputProto instance using the specified properties.
+   * @function create
+   * @memberof ExamInputProto
+   * @static
+   * @param {IExamInputProto=} [properties] Properties to set
+   * @returns {ExamInputProto} ExamInputProto instance
+   */
+  ExamInputProto.create = function create(properties) {
+    return new ExamInputProto(properties)
+  }
+
+  /**
+   * Encodes the specified ExamInputProto message. Does not implicitly {@link ExamInputProto.verify|verify} messages.
+   * @function encode
+   * @memberof ExamInputProto
+   * @static
+   * @param {IExamInputProto} message ExamInputProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  ExamInputProto.encode = function encode(message, writer) {
+    if (!writer) writer = $Writer.create()
+    if (message.accessionNumber != null && Object.hasOwnProperty.call(message, 'accessionNumber'))
+      writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.accessionNumber)
+    if (message.medRecNO != null && Object.hasOwnProperty.call(message, 'medRecNO'))
+      writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.medRecNO)
+    if (message.visitUID != null && Object.hasOwnProperty.call(message, 'visitUID'))
+      writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.visitUID)
+    if (message.patientId != null && Object.hasOwnProperty.call(message, 'patientId'))
+      writer.uint32(/* id 4, wireType 2 =*/ 34).string(message.patientId)
+    if (message.iDCardNo != null && Object.hasOwnProperty.call(message, 'iDCardNo'))
+      writer.uint32(/* id 5, wireType 2 =*/ 42).string(message.iDCardNo)
+    if (message.contactPhoneNO != null && Object.hasOwnProperty.call(message, 'contactPhoneNO'))
+      writer.uint32(/* id 6, wireType 2 =*/ 50).string(message.contactPhoneNO)
+    if (message.insuranceID != null && Object.hasOwnProperty.call(message, 'insuranceID'))
+      writer.uint32(/* id 7, wireType 2 =*/ 58).string(message.insuranceID)
+    if (message.name != null && Object.hasOwnProperty.call(message, 'name'))
+      writer.uint32(/* id 8, wireType 2 =*/ 66).string(message.name)
+    if (message.organizationName != null && Object.hasOwnProperty.call(message, 'organizationName'))
+      writer.uint32(/* id 9, wireType 2 =*/ 74).string(message.organizationName)
+    if (message.organizationID != null && Object.hasOwnProperty.call(message, 'organizationID'))
+      writer.uint32(/* id 10, wireType 2 =*/ 82).string(message.organizationID)
+    if (message.sex != null && Object.hasOwnProperty.call(message, 'sex'))
+      writer.uint32(/* id 11, wireType 2 =*/ 90).string(message.sex)
+    if (message.birthDate != null && Object.hasOwnProperty.call(message, 'birthDate'))
+      writer.uint32(/* id 12, wireType 2 =*/ 98).string(message.birthDate)
+    if (message.age != null && Object.hasOwnProperty.call(message, 'age'))
+      writer.uint32(/* id 13, wireType 0 =*/ 104).int32(message.age)
+    if (message.ageUnit != null && Object.hasOwnProperty.call(message, 'ageUnit'))
+      writer.uint32(/* id 14, wireType 2 =*/ 114).string(message.ageUnit)
+    if (message.patientClass != null && Object.hasOwnProperty.call(message, 'patientClass'))
+      writer.uint32(/* id 15, wireType 2 =*/ 122).string(message.patientClass)
+    if (message.requestDeptName != null && Object.hasOwnProperty.call(message, 'requestDeptName'))
+      writer.uint32(/* id 16, wireType 2 =*/ 130).string(message.requestDeptName)
+    if (message.serviceSectID != null && Object.hasOwnProperty.call(message, 'serviceSectID'))
+      writer.uint32(/* id 17, wireType 2 =*/ 138).string(message.serviceSectID)
+    if (
+      message.resultAssistantName != null &&
+      Object.hasOwnProperty.call(message, 'resultAssistantName')
+    )
+      writer.uint32(/* id 18, wireType 2 =*/ 146).string(message.resultAssistantName)
+    if (
+      message.resultPrincipalName != null &&
+      Object.hasOwnProperty.call(message, 'resultPrincipalName')
+    )
+      writer.uint32(/* id 19, wireType 2 =*/ 154).string(message.resultPrincipalName)
+    if (message.examStatus != null && Object.hasOwnProperty.call(message, 'examStatus'))
+      writer.uint32(/* id 20, wireType 2 =*/ 162).string(message.examStatus)
+    if (message.digitalimageneed != null && Object.hasOwnProperty.call(message, 'digitalimageneed'))
+      writer.uint32(/* id 21, wireType 2 =*/ 170).string(message.digitalimageneed)
+    if (message.lockFlag != null && Object.hasOwnProperty.call(message, 'lockFlag'))
+      writer.uint32(/* id 22, wireType 0 =*/ 176).int32(message.lockFlag)
+    if (message.abnormalFlags != null && Object.hasOwnProperty.call(message, 'abnormalFlags'))
+      writer.uint32(/* id 23, wireType 2 =*/ 186).string(message.abnormalFlags)
+    if (message.fileCreateTime != null && Object.hasOwnProperty.call(message, 'fileCreateTime'))
+      writer.uint32(/* id 24, wireType 2 =*/ 194).string(message.fileCreateTime)
+    if (message.observationDate != null && Object.hasOwnProperty.call(message, 'observationDate'))
+      writer.uint32(/* id 25, wireType 2 =*/ 202).string(message.observationDate)
+    if (message.uploadTime != null && Object.hasOwnProperty.call(message, 'uploadTime'))
+      writer.uint32(/* id 26, wireType 2 =*/ 210).string(message.uploadTime)
+    if (message.preliminaryDate != null && Object.hasOwnProperty.call(message, 'preliminaryDate'))
+      writer.uint32(/* id 27, wireType 2 =*/ 218).string(message.preliminaryDate)
+    if (message.currentPage != null && Object.hasOwnProperty.call(message, 'currentPage'))
+      writer.uint32(/* id 28, wireType 0 =*/ 224).int32(message.currentPage)
+    if (message.pageSize != null && Object.hasOwnProperty.call(message, 'pageSize'))
+      writer.uint32(/* id 29, wireType 0 =*/ 232).int32(message.pageSize)
+    return writer
+  }
+
+  /**
+   * Encodes the specified ExamInputProto message, length delimited. Does not implicitly {@link ExamInputProto.verify|verify} messages.
+   * @function encodeDelimited
+   * @memberof ExamInputProto
+   * @static
+   * @param {IExamInputProto} message ExamInputProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  ExamInputProto.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.encode(message, writer).ldelim()
+  }
+
+  /**
+   * Decodes an ExamInputProto message from the specified reader or buffer.
+   * @function decode
+   * @memberof ExamInputProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @param {number} [length] Message length if known beforehand
+   * @returns {ExamInputProto} ExamInputProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  ExamInputProto.decode = function decode(reader, length, error) {
+    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+    let end = length === undefined ? reader.len : reader.pos + length,
+      message = new $root.ExamInputProto()
+    while (reader.pos < end) {
+      let tag = reader.uint32()
+      if (tag === error) break
+      switch (tag >>> 3) {
+        case 1: {
+          message.accessionNumber = reader.string()
+          break
+        }
+        case 2: {
+          message.medRecNO = reader.string()
+          break
+        }
+        case 3: {
+          message.visitUID = reader.string()
+          break
+        }
+        case 4: {
+          message.patientId = reader.string()
+          break
+        }
+        case 5: {
+          message.iDCardNo = reader.string()
+          break
+        }
+        case 6: {
+          message.contactPhoneNO = reader.string()
+          break
+        }
+        case 7: {
+          message.insuranceID = reader.string()
+          break
+        }
+        case 8: {
+          message.name = reader.string()
+          break
+        }
+        case 9: {
+          message.organizationName = reader.string()
+          break
+        }
+        case 10: {
+          message.organizationID = reader.string()
+          break
+        }
+        case 11: {
+          message.sex = reader.string()
+          break
+        }
+        case 12: {
+          message.birthDate = reader.string()
+          break
+        }
+        case 13: {
+          message.age = reader.int32()
+          break
+        }
+        case 14: {
+          message.ageUnit = reader.string()
+          break
+        }
+        case 15: {
+          message.patientClass = reader.string()
+          break
+        }
+        case 16: {
+          message.requestDeptName = reader.string()
+          break
+        }
+        case 17: {
+          message.serviceSectID = reader.string()
+          break
+        }
+        case 18: {
+          message.resultAssistantName = reader.string()
+          break
+        }
+        case 19: {
+          message.resultPrincipalName = reader.string()
+          break
+        }
+        case 20: {
+          message.examStatus = reader.string()
+          break
+        }
+        case 21: {
+          message.digitalimageneed = reader.string()
+          break
+        }
+        case 22: {
+          message.lockFlag = reader.int32()
+          break
+        }
+        case 23: {
+          message.abnormalFlags = reader.string()
+          break
+        }
+        case 24: {
+          message.fileCreateTime = reader.string()
+          break
+        }
+        case 25: {
+          message.observationDate = reader.string()
+          break
+        }
+        case 26: {
+          message.uploadTime = reader.string()
+          break
+        }
+        case 27: {
+          message.preliminaryDate = reader.string()
+          break
+        }
+        case 28: {
+          message.currentPage = reader.int32()
+          break
+        }
+        case 29: {
+          message.pageSize = reader.int32()
+          break
+        }
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  }
+
+  /**
+   * Decodes an ExamInputProto message from the specified reader or buffer, length delimited.
+   * @function decodeDelimited
+   * @memberof ExamInputProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @returns {ExamInputProto} ExamInputProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  ExamInputProto.decodeDelimited = function decodeDelimited(reader) {
+    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+    return this.decode(reader, reader.uint32())
+  }
+
+  /**
+   * Verifies an ExamInputProto message.
+   * @function verify
+   * @memberof ExamInputProto
+   * @static
+   * @param {Object.<string,*>} message Plain object to verify
+   * @returns {string|null} `null` if valid, otherwise the reason why it is not
+   */
+  ExamInputProto.verify = function verify(message) {
+    if (typeof message !== 'object' || message === null) return 'object expected'
+    if (message.accessionNumber != null && message.hasOwnProperty('accessionNumber'))
+      if (!$util.isString(message.accessionNumber)) return 'accessionNumber: string expected'
+    if (message.medRecNO != null && message.hasOwnProperty('medRecNO'))
+      if (!$util.isString(message.medRecNO)) return 'medRecNO: string expected'
+    if (message.visitUID != null && message.hasOwnProperty('visitUID'))
+      if (!$util.isString(message.visitUID)) return 'visitUID: string expected'
+    if (message.patientId != null && message.hasOwnProperty('patientId'))
+      if (!$util.isString(message.patientId)) return 'patientId: string expected'
+    if (message.iDCardNo != null && message.hasOwnProperty('iDCardNo'))
+      if (!$util.isString(message.iDCardNo)) return 'iDCardNo: string expected'
+    if (message.contactPhoneNO != null && message.hasOwnProperty('contactPhoneNO'))
+      if (!$util.isString(message.contactPhoneNO)) return 'contactPhoneNO: string expected'
+    if (message.insuranceID != null && message.hasOwnProperty('insuranceID'))
+      if (!$util.isString(message.insuranceID)) return 'insuranceID: string expected'
+    if (message.name != null && message.hasOwnProperty('name'))
+      if (!$util.isString(message.name)) return 'name: string expected'
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      if (!$util.isString(message.organizationName)) return 'organizationName: string expected'
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      if (!$util.isString(message.organizationID)) return 'organizationID: string expected'
+    if (message.sex != null && message.hasOwnProperty('sex'))
+      if (!$util.isString(message.sex)) return 'sex: string expected'
+    if (message.birthDate != null && message.hasOwnProperty('birthDate'))
+      if (!$util.isString(message.birthDate)) return 'birthDate: string expected'
+    if (message.age != null && message.hasOwnProperty('age'))
+      if (!$util.isInteger(message.age)) return 'age: integer expected'
+    if (message.ageUnit != null && message.hasOwnProperty('ageUnit'))
+      if (!$util.isString(message.ageUnit)) return 'ageUnit: string expected'
+    if (message.patientClass != null && message.hasOwnProperty('patientClass'))
+      if (!$util.isString(message.patientClass)) return 'patientClass: string expected'
+    if (message.requestDeptName != null && message.hasOwnProperty('requestDeptName'))
+      if (!$util.isString(message.requestDeptName)) return 'requestDeptName: string expected'
+    if (message.serviceSectID != null && message.hasOwnProperty('serviceSectID'))
+      if (!$util.isString(message.serviceSectID)) return 'serviceSectID: string expected'
+    if (message.resultAssistantName != null && message.hasOwnProperty('resultAssistantName'))
+      if (!$util.isString(message.resultAssistantName))
+        return 'resultAssistantName: string expected'
+    if (message.resultPrincipalName != null && message.hasOwnProperty('resultPrincipalName'))
+      if (!$util.isString(message.resultPrincipalName))
+        return 'resultPrincipalName: string expected'
+    if (message.examStatus != null && message.hasOwnProperty('examStatus'))
+      if (!$util.isString(message.examStatus)) return 'examStatus: string expected'
+    if (message.digitalimageneed != null && message.hasOwnProperty('digitalimageneed'))
+      if (!$util.isString(message.digitalimageneed)) return 'digitalimageneed: string expected'
+    if (message.lockFlag != null && message.hasOwnProperty('lockFlag'))
+      if (!$util.isInteger(message.lockFlag)) return 'lockFlag: integer expected'
+    if (message.abnormalFlags != null && message.hasOwnProperty('abnormalFlags'))
+      if (!$util.isString(message.abnormalFlags)) return 'abnormalFlags: string expected'
+    if (message.fileCreateTime != null && message.hasOwnProperty('fileCreateTime'))
+      if (!$util.isString(message.fileCreateTime)) return 'fileCreateTime: string expected'
+    if (message.observationDate != null && message.hasOwnProperty('observationDate'))
+      if (!$util.isString(message.observationDate)) return 'observationDate: string expected'
+    if (message.uploadTime != null && message.hasOwnProperty('uploadTime'))
+      if (!$util.isString(message.uploadTime)) return 'uploadTime: string expected'
+    if (message.preliminaryDate != null && message.hasOwnProperty('preliminaryDate'))
+      if (!$util.isString(message.preliminaryDate)) return 'preliminaryDate: string expected'
+    if (message.currentPage != null && message.hasOwnProperty('currentPage'))
+      if (!$util.isInteger(message.currentPage)) return 'currentPage: integer expected'
+    if (message.pageSize != null && message.hasOwnProperty('pageSize'))
+      if (!$util.isInteger(message.pageSize)) return 'pageSize: integer expected'
+    return null
+  }
+
+  /**
+   * Creates an ExamInputProto message from a plain object. Also converts values to their respective internal types.
+   * @function fromObject
+   * @memberof ExamInputProto
+   * @static
+   * @param {Object.<string,*>} object Plain object
+   * @returns {ExamInputProto} ExamInputProto
+   */
+  ExamInputProto.fromObject = function fromObject(object) {
+    if (object instanceof $root.ExamInputProto) return object
+    let message = new $root.ExamInputProto()
+    if (object.accessionNumber != null) message.accessionNumber = String(object.accessionNumber)
+    if (object.medRecNO != null) message.medRecNO = String(object.medRecNO)
+    if (object.visitUID != null) message.visitUID = String(object.visitUID)
+    if (object.patientId != null) message.patientId = String(object.patientId)
+    if (object.iDCardNo != null) message.iDCardNo = String(object.iDCardNo)
+    if (object.contactPhoneNO != null) message.contactPhoneNO = String(object.contactPhoneNO)
+    if (object.insuranceID != null) message.insuranceID = String(object.insuranceID)
+    if (object.name != null) message.name = String(object.name)
+    if (object.organizationName != null) message.organizationName = String(object.organizationName)
+    if (object.organizationID != null) message.organizationID = String(object.organizationID)
+    if (object.sex != null) message.sex = String(object.sex)
+    if (object.birthDate != null) message.birthDate = String(object.birthDate)
+    if (object.age != null) message.age = object.age | 0
+    if (object.ageUnit != null) message.ageUnit = String(object.ageUnit)
+    if (object.patientClass != null) message.patientClass = String(object.patientClass)
+    if (object.requestDeptName != null) message.requestDeptName = String(object.requestDeptName)
+    if (object.serviceSectID != null) message.serviceSectID = String(object.serviceSectID)
+    if (object.resultAssistantName != null)
+      message.resultAssistantName = String(object.resultAssistantName)
+    if (object.resultPrincipalName != null)
+      message.resultPrincipalName = String(object.resultPrincipalName)
+    if (object.examStatus != null) message.examStatus = String(object.examStatus)
+    if (object.digitalimageneed != null) message.digitalimageneed = String(object.digitalimageneed)
+    if (object.lockFlag != null) message.lockFlag = object.lockFlag | 0
+    if (object.abnormalFlags != null) message.abnormalFlags = String(object.abnormalFlags)
+    if (object.fileCreateTime != null) message.fileCreateTime = String(object.fileCreateTime)
+    if (object.observationDate != null) message.observationDate = String(object.observationDate)
+    if (object.uploadTime != null) message.uploadTime = String(object.uploadTime)
+    if (object.preliminaryDate != null) message.preliminaryDate = String(object.preliminaryDate)
+    if (object.currentPage != null) message.currentPage = object.currentPage | 0
+    if (object.pageSize != null) message.pageSize = object.pageSize | 0
+    return message
+  }
+
+  /**
+   * Creates a plain object from an ExamInputProto message. Also converts values to other types if specified.
+   * @function toObject
+   * @memberof ExamInputProto
+   * @static
+   * @param {ExamInputProto} message ExamInputProto
+   * @param {$protobuf.IConversionOptions} [options] Conversion options
+   * @returns {Object.<string,*>} Plain object
+   */
+  ExamInputProto.toObject = function toObject(message, options) {
+    if (!options) options = {}
+    let object = {}
+    if (options.defaults) {
+      object.accessionNumber = ''
+      object.medRecNO = ''
+      object.visitUID = ''
+      object.patientId = ''
+      object.iDCardNo = ''
+      object.contactPhoneNO = ''
+      object.insuranceID = ''
+      object.name = ''
+      object.organizationName = ''
+      object.organizationID = ''
+      object.sex = ''
+      object.birthDate = ''
+      object.age = 0
+      object.ageUnit = ''
+      object.patientClass = ''
+      object.requestDeptName = ''
+      object.serviceSectID = ''
+      object.resultAssistantName = ''
+      object.resultPrincipalName = ''
+      object.examStatus = ''
+      object.digitalimageneed = ''
+      object.lockFlag = 0
+      object.abnormalFlags = ''
+      object.fileCreateTime = ''
+      object.observationDate = ''
+      object.uploadTime = ''
+      object.preliminaryDate = ''
+      object.currentPage = 0
+      object.pageSize = 0
+    }
+    if (message.accessionNumber != null && message.hasOwnProperty('accessionNumber'))
+      object.accessionNumber = message.accessionNumber
+    if (message.medRecNO != null && message.hasOwnProperty('medRecNO'))
+      object.medRecNO = message.medRecNO
+    if (message.visitUID != null && message.hasOwnProperty('visitUID'))
+      object.visitUID = message.visitUID
+    if (message.patientId != null && message.hasOwnProperty('patientId'))
+      object.patientId = message.patientId
+    if (message.iDCardNo != null && message.hasOwnProperty('iDCardNo'))
+      object.iDCardNo = message.iDCardNo
+    if (message.contactPhoneNO != null && message.hasOwnProperty('contactPhoneNO'))
+      object.contactPhoneNO = message.contactPhoneNO
+    if (message.insuranceID != null && message.hasOwnProperty('insuranceID'))
+      object.insuranceID = message.insuranceID
+    if (message.name != null && message.hasOwnProperty('name')) object.name = message.name
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      object.organizationName = message.organizationName
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      object.organizationID = message.organizationID
+    if (message.sex != null && message.hasOwnProperty('sex')) object.sex = message.sex
+    if (message.birthDate != null && message.hasOwnProperty('birthDate'))
+      object.birthDate = message.birthDate
+    if (message.age != null && message.hasOwnProperty('age')) object.age = message.age
+    if (message.ageUnit != null && message.hasOwnProperty('ageUnit'))
+      object.ageUnit = message.ageUnit
+    if (message.patientClass != null && message.hasOwnProperty('patientClass'))
+      object.patientClass = message.patientClass
+    if (message.requestDeptName != null && message.hasOwnProperty('requestDeptName'))
+      object.requestDeptName = message.requestDeptName
+    if (message.serviceSectID != null && message.hasOwnProperty('serviceSectID'))
+      object.serviceSectID = message.serviceSectID
+    if (message.resultAssistantName != null && message.hasOwnProperty('resultAssistantName'))
+      object.resultAssistantName = message.resultAssistantName
+    if (message.resultPrincipalName != null && message.hasOwnProperty('resultPrincipalName'))
+      object.resultPrincipalName = message.resultPrincipalName
+    if (message.examStatus != null && message.hasOwnProperty('examStatus'))
+      object.examStatus = message.examStatus
+    if (message.digitalimageneed != null && message.hasOwnProperty('digitalimageneed'))
+      object.digitalimageneed = message.digitalimageneed
+    if (message.lockFlag != null && message.hasOwnProperty('lockFlag'))
+      object.lockFlag = message.lockFlag
+    if (message.abnormalFlags != null && message.hasOwnProperty('abnormalFlags'))
+      object.abnormalFlags = message.abnormalFlags
+    if (message.fileCreateTime != null && message.hasOwnProperty('fileCreateTime'))
+      object.fileCreateTime = message.fileCreateTime
+    if (message.observationDate != null && message.hasOwnProperty('observationDate'))
+      object.observationDate = message.observationDate
+    if (message.uploadTime != null && message.hasOwnProperty('uploadTime'))
+      object.uploadTime = message.uploadTime
+    if (message.preliminaryDate != null && message.hasOwnProperty('preliminaryDate'))
+      object.preliminaryDate = message.preliminaryDate
+    if (message.currentPage != null && message.hasOwnProperty('currentPage'))
+      object.currentPage = message.currentPage
+    if (message.pageSize != null && message.hasOwnProperty('pageSize'))
+      object.pageSize = message.pageSize
+    return object
+  }
+
+  /**
+   * Converts this ExamInputProto to JSON.
+   * @function toJSON
+   * @memberof ExamInputProto
+   * @instance
+   * @returns {Object.<string,*>} JSON object
+   */
+  ExamInputProto.prototype.toJSON = function toJSON() {
+    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+  }
+
+  /**
+   * Gets the default type url for ExamInputProto
+   * @function getTypeUrl
+   * @memberof ExamInputProto
+   * @static
+   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+   * @returns {string} The default type url
+   */
+  ExamInputProto.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+    if (typeUrlPrefix === undefined) {
+      typeUrlPrefix = 'type.googleapis.com'
+    }
+    return typeUrlPrefix + '/ExamInputProto'
+  }
+
+  return ExamInputProto
+})())
+
 export const DocDBProto = ($root.DocDBProto = (() => {
   /**
    * Properties of a DocDBProto.
@@ -39365,6 +41532,642 @@ export const DocDBProto = ($root.DocDBProto = (() => {
   }
 
   return DocDBProto
+})())
+
+export const MediaMstProto = ($root.MediaMstProto = (() => {
+  /**
+   * Properties of a MediaMstProto.
+   * @exports IMediaMstProto
+   * @interface IMediaMstProto
+   * @property {string|null} [mediaUID] MediaMstProto mediaUID
+   * @property {string|null} [mediaName] MediaMstProto mediaName
+   * @property {string|null} [pathType] MediaMstProto pathType
+   * @property {string|null} [mediaHost] MediaMstProto mediaHost
+   * @property {string|null} [path] MediaMstProto path
+   * @property {boolean|null} [currentFlag] MediaMstProto currentFlag
+   * @property {string|null} [createUserUID] MediaMstProto createUserUID
+   * @property {string|null} [createUserName] MediaMstProto createUserName
+   * @property {string|null} [createDate] MediaMstProto createDate
+   * @property {string|null} [memo] MediaMstProto memo
+   * @property {number|null} [sortNO] MediaMstProto sortNO
+   * @property {string|null} [organizationID] MediaMstProto organizationID
+   * @property {string|null} [accessId] MediaMstProto accessId
+   * @property {string|null} [accessKey] MediaMstProto accessKey
+   * @property {string|null} [organizationName] MediaMstProto organizationName
+   * @property {number|null} [storageSize] MediaMstProto storageSize
+   * @property {boolean|null} [isDirect] MediaMstProto isDirect
+   * @property {number|null} [ossId] MediaMstProto ossId
+   * @property {number|null} [usedSize] MediaMstProto usedSize
+   * @property {number|null} [currentPage] MediaMstProto currentPage
+   * @property {number|null} [pageSize] MediaMstProto pageSize
+   * @property {number|null} [id] MediaMstProto id
+   */
+
+  /**
+   * Constructs a new MediaMstProto.
+   * @exports MediaMstProto
+   * @classdesc Represents a MediaMstProto.
+   * @implements IMediaMstProto
+   * @constructor
+   * @param {IMediaMstProto=} [properties] Properties to set
+   */
+  function MediaMstProto(properties) {
+    if (properties)
+      for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
+  }
+
+  /**
+   * MediaMstProto mediaUID.
+   * @member {string} mediaUID
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.mediaUID = ''
+
+  /**
+   * MediaMstProto mediaName.
+   * @member {string} mediaName
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.mediaName = ''
+
+  /**
+   * MediaMstProto pathType.
+   * @member {string} pathType
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.pathType = ''
+
+  /**
+   * MediaMstProto mediaHost.
+   * @member {string} mediaHost
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.mediaHost = ''
+
+  /**
+   * MediaMstProto path.
+   * @member {string} path
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.path = ''
+
+  /**
+   * MediaMstProto currentFlag.
+   * @member {boolean} currentFlag
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.currentFlag = false
+
+  /**
+   * MediaMstProto createUserUID.
+   * @member {string} createUserUID
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.createUserUID = ''
+
+  /**
+   * MediaMstProto createUserName.
+   * @member {string} createUserName
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.createUserName = ''
+
+  /**
+   * MediaMstProto createDate.
+   * @member {string} createDate
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.createDate = ''
+
+  /**
+   * MediaMstProto memo.
+   * @member {string} memo
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.memo = ''
+
+  /**
+   * MediaMstProto sortNO.
+   * @member {number} sortNO
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.sortNO = 0
+
+  /**
+   * MediaMstProto organizationID.
+   * @member {string} organizationID
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.organizationID = ''
+
+  /**
+   * MediaMstProto accessId.
+   * @member {string} accessId
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.accessId = ''
+
+  /**
+   * MediaMstProto accessKey.
+   * @member {string} accessKey
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.accessKey = ''
+
+  /**
+   * MediaMstProto organizationName.
+   * @member {string} organizationName
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.organizationName = ''
+
+  /**
+   * MediaMstProto storageSize.
+   * @member {number} storageSize
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.storageSize = 0
+
+  /**
+   * MediaMstProto isDirect.
+   * @member {boolean} isDirect
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.isDirect = false
+
+  /**
+   * MediaMstProto ossId.
+   * @member {number} ossId
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.ossId = 0
+
+  /**
+   * MediaMstProto usedSize.
+   * @member {number} usedSize
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.usedSize = 0
+
+  /**
+   * MediaMstProto currentPage.
+   * @member {number} currentPage
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.currentPage = 0
+
+  /**
+   * MediaMstProto pageSize.
+   * @member {number} pageSize
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.pageSize = 0
+
+  /**
+   * MediaMstProto id.
+   * @member {number} id
+   * @memberof MediaMstProto
+   * @instance
+   */
+  MediaMstProto.prototype.id = 0
+
+  /**
+   * Creates a new MediaMstProto instance using the specified properties.
+   * @function create
+   * @memberof MediaMstProto
+   * @static
+   * @param {IMediaMstProto=} [properties] Properties to set
+   * @returns {MediaMstProto} MediaMstProto instance
+   */
+  MediaMstProto.create = function create(properties) {
+    return new MediaMstProto(properties)
+  }
+
+  /**
+   * Encodes the specified MediaMstProto message. Does not implicitly {@link MediaMstProto.verify|verify} messages.
+   * @function encode
+   * @memberof MediaMstProto
+   * @static
+   * @param {IMediaMstProto} message MediaMstProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  MediaMstProto.encode = function encode(message, writer) {
+    if (!writer) writer = $Writer.create()
+    if (message.mediaUID != null && Object.hasOwnProperty.call(message, 'mediaUID'))
+      writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.mediaUID)
+    if (message.mediaName != null && Object.hasOwnProperty.call(message, 'mediaName'))
+      writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.mediaName)
+    if (message.pathType != null && Object.hasOwnProperty.call(message, 'pathType'))
+      writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.pathType)
+    if (message.mediaHost != null && Object.hasOwnProperty.call(message, 'mediaHost'))
+      writer.uint32(/* id 4, wireType 2 =*/ 34).string(message.mediaHost)
+    if (message.path != null && Object.hasOwnProperty.call(message, 'path'))
+      writer.uint32(/* id 5, wireType 2 =*/ 42).string(message.path)
+    if (message.currentFlag != null && Object.hasOwnProperty.call(message, 'currentFlag'))
+      writer.uint32(/* id 6, wireType 0 =*/ 48).bool(message.currentFlag)
+    if (message.createUserUID != null && Object.hasOwnProperty.call(message, 'createUserUID'))
+      writer.uint32(/* id 7, wireType 2 =*/ 58).string(message.createUserUID)
+    if (message.createUserName != null && Object.hasOwnProperty.call(message, 'createUserName'))
+      writer.uint32(/* id 8, wireType 2 =*/ 66).string(message.createUserName)
+    if (message.createDate != null && Object.hasOwnProperty.call(message, 'createDate'))
+      writer.uint32(/* id 9, wireType 2 =*/ 74).string(message.createDate)
+    if (message.memo != null && Object.hasOwnProperty.call(message, 'memo'))
+      writer.uint32(/* id 10, wireType 2 =*/ 82).string(message.memo)
+    if (message.sortNO != null && Object.hasOwnProperty.call(message, 'sortNO'))
+      writer.uint32(/* id 11, wireType 0 =*/ 88).int32(message.sortNO)
+    if (message.organizationID != null && Object.hasOwnProperty.call(message, 'organizationID'))
+      writer.uint32(/* id 12, wireType 2 =*/ 98).string(message.organizationID)
+    if (message.accessId != null && Object.hasOwnProperty.call(message, 'accessId'))
+      writer.uint32(/* id 13, wireType 2 =*/ 106).string(message.accessId)
+    if (message.accessKey != null && Object.hasOwnProperty.call(message, 'accessKey'))
+      writer.uint32(/* id 14, wireType 2 =*/ 114).string(message.accessKey)
+    if (message.organizationName != null && Object.hasOwnProperty.call(message, 'organizationName'))
+      writer.uint32(/* id 15, wireType 2 =*/ 122).string(message.organizationName)
+    if (message.storageSize != null && Object.hasOwnProperty.call(message, 'storageSize'))
+      writer.uint32(/* id 16, wireType 5 =*/ 133).float(message.storageSize)
+    if (message.isDirect != null && Object.hasOwnProperty.call(message, 'isDirect'))
+      writer.uint32(/* id 17, wireType 0 =*/ 136).bool(message.isDirect)
+    if (message.ossId != null && Object.hasOwnProperty.call(message, 'ossId'))
+      writer.uint32(/* id 18, wireType 0 =*/ 144).int32(message.ossId)
+    if (message.usedSize != null && Object.hasOwnProperty.call(message, 'usedSize'))
+      writer.uint32(/* id 19, wireType 5 =*/ 157).float(message.usedSize)
+    if (message.currentPage != null && Object.hasOwnProperty.call(message, 'currentPage'))
+      writer.uint32(/* id 20, wireType 0 =*/ 160).int32(message.currentPage)
+    if (message.pageSize != null && Object.hasOwnProperty.call(message, 'pageSize'))
+      writer.uint32(/* id 21, wireType 0 =*/ 168).int32(message.pageSize)
+    if (message.id != null && Object.hasOwnProperty.call(message, 'id'))
+      writer.uint32(/* id 22, wireType 0 =*/ 176).int32(message.id)
+    return writer
+  }
+
+  /**
+   * Encodes the specified MediaMstProto message, length delimited. Does not implicitly {@link MediaMstProto.verify|verify} messages.
+   * @function encodeDelimited
+   * @memberof MediaMstProto
+   * @static
+   * @param {IMediaMstProto} message MediaMstProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  MediaMstProto.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.encode(message, writer).ldelim()
+  }
+
+  /**
+   * Decodes a MediaMstProto message from the specified reader or buffer.
+   * @function decode
+   * @memberof MediaMstProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @param {number} [length] Message length if known beforehand
+   * @returns {MediaMstProto} MediaMstProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  MediaMstProto.decode = function decode(reader, length, error) {
+    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+    let end = length === undefined ? reader.len : reader.pos + length,
+      message = new $root.MediaMstProto()
+    while (reader.pos < end) {
+      let tag = reader.uint32()
+      if (tag === error) break
+      switch (tag >>> 3) {
+        case 1: {
+          message.mediaUID = reader.string()
+          break
+        }
+        case 2: {
+          message.mediaName = reader.string()
+          break
+        }
+        case 3: {
+          message.pathType = reader.string()
+          break
+        }
+        case 4: {
+          message.mediaHost = reader.string()
+          break
+        }
+        case 5: {
+          message.path = reader.string()
+          break
+        }
+        case 6: {
+          message.currentFlag = reader.bool()
+          break
+        }
+        case 7: {
+          message.createUserUID = reader.string()
+          break
+        }
+        case 8: {
+          message.createUserName = reader.string()
+          break
+        }
+        case 9: {
+          message.createDate = reader.string()
+          break
+        }
+        case 10: {
+          message.memo = reader.string()
+          break
+        }
+        case 11: {
+          message.sortNO = reader.int32()
+          break
+        }
+        case 12: {
+          message.organizationID = reader.string()
+          break
+        }
+        case 13: {
+          message.accessId = reader.string()
+          break
+        }
+        case 14: {
+          message.accessKey = reader.string()
+          break
+        }
+        case 15: {
+          message.organizationName = reader.string()
+          break
+        }
+        case 16: {
+          message.storageSize = reader.float()
+          break
+        }
+        case 17: {
+          message.isDirect = reader.bool()
+          break
+        }
+        case 18: {
+          message.ossId = reader.int32()
+          break
+        }
+        case 19: {
+          message.usedSize = reader.float()
+          break
+        }
+        case 20: {
+          message.currentPage = reader.int32()
+          break
+        }
+        case 21: {
+          message.pageSize = reader.int32()
+          break
+        }
+        case 22: {
+          message.id = reader.int32()
+          break
+        }
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  }
+
+  /**
+   * Decodes a MediaMstProto message from the specified reader or buffer, length delimited.
+   * @function decodeDelimited
+   * @memberof MediaMstProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @returns {MediaMstProto} MediaMstProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  MediaMstProto.decodeDelimited = function decodeDelimited(reader) {
+    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+    return this.decode(reader, reader.uint32())
+  }
+
+  /**
+   * Verifies a MediaMstProto message.
+   * @function verify
+   * @memberof MediaMstProto
+   * @static
+   * @param {Object.<string,*>} message Plain object to verify
+   * @returns {string|null} `null` if valid, otherwise the reason why it is not
+   */
+  MediaMstProto.verify = function verify(message) {
+    if (typeof message !== 'object' || message === null) return 'object expected'
+    if (message.mediaUID != null && message.hasOwnProperty('mediaUID'))
+      if (!$util.isString(message.mediaUID)) return 'mediaUID: string expected'
+    if (message.mediaName != null && message.hasOwnProperty('mediaName'))
+      if (!$util.isString(message.mediaName)) return 'mediaName: string expected'
+    if (message.pathType != null && message.hasOwnProperty('pathType'))
+      if (!$util.isString(message.pathType)) return 'pathType: string expected'
+    if (message.mediaHost != null && message.hasOwnProperty('mediaHost'))
+      if (!$util.isString(message.mediaHost)) return 'mediaHost: string expected'
+    if (message.path != null && message.hasOwnProperty('path'))
+      if (!$util.isString(message.path)) return 'path: string expected'
+    if (message.currentFlag != null && message.hasOwnProperty('currentFlag'))
+      if (typeof message.currentFlag !== 'boolean') return 'currentFlag: boolean expected'
+    if (message.createUserUID != null && message.hasOwnProperty('createUserUID'))
+      if (!$util.isString(message.createUserUID)) return 'createUserUID: string expected'
+    if (message.createUserName != null && message.hasOwnProperty('createUserName'))
+      if (!$util.isString(message.createUserName)) return 'createUserName: string expected'
+    if (message.createDate != null && message.hasOwnProperty('createDate'))
+      if (!$util.isString(message.createDate)) return 'createDate: string expected'
+    if (message.memo != null && message.hasOwnProperty('memo'))
+      if (!$util.isString(message.memo)) return 'memo: string expected'
+    if (message.sortNO != null && message.hasOwnProperty('sortNO'))
+      if (!$util.isInteger(message.sortNO)) return 'sortNO: integer expected'
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      if (!$util.isString(message.organizationID)) return 'organizationID: string expected'
+    if (message.accessId != null && message.hasOwnProperty('accessId'))
+      if (!$util.isString(message.accessId)) return 'accessId: string expected'
+    if (message.accessKey != null && message.hasOwnProperty('accessKey'))
+      if (!$util.isString(message.accessKey)) return 'accessKey: string expected'
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      if (!$util.isString(message.organizationName)) return 'organizationName: string expected'
+    if (message.storageSize != null && message.hasOwnProperty('storageSize'))
+      if (typeof message.storageSize !== 'number') return 'storageSize: number expected'
+    if (message.isDirect != null && message.hasOwnProperty('isDirect'))
+      if (typeof message.isDirect !== 'boolean') return 'isDirect: boolean expected'
+    if (message.ossId != null && message.hasOwnProperty('ossId'))
+      if (!$util.isInteger(message.ossId)) return 'ossId: integer expected'
+    if (message.usedSize != null && message.hasOwnProperty('usedSize'))
+      if (typeof message.usedSize !== 'number') return 'usedSize: number expected'
+    if (message.currentPage != null && message.hasOwnProperty('currentPage'))
+      if (!$util.isInteger(message.currentPage)) return 'currentPage: integer expected'
+    if (message.pageSize != null && message.hasOwnProperty('pageSize'))
+      if (!$util.isInteger(message.pageSize)) return 'pageSize: integer expected'
+    if (message.id != null && message.hasOwnProperty('id'))
+      if (!$util.isInteger(message.id)) return 'id: integer expected'
+    return null
+  }
+
+  /**
+   * Creates a MediaMstProto message from a plain object. Also converts values to their respective internal types.
+   * @function fromObject
+   * @memberof MediaMstProto
+   * @static
+   * @param {Object.<string,*>} object Plain object
+   * @returns {MediaMstProto} MediaMstProto
+   */
+  MediaMstProto.fromObject = function fromObject(object) {
+    if (object instanceof $root.MediaMstProto) return object
+    let message = new $root.MediaMstProto()
+    if (object.mediaUID != null) message.mediaUID = String(object.mediaUID)
+    if (object.mediaName != null) message.mediaName = String(object.mediaName)
+    if (object.pathType != null) message.pathType = String(object.pathType)
+    if (object.mediaHost != null) message.mediaHost = String(object.mediaHost)
+    if (object.path != null) message.path = String(object.path)
+    if (object.currentFlag != null) message.currentFlag = Boolean(object.currentFlag)
+    if (object.createUserUID != null) message.createUserUID = String(object.createUserUID)
+    if (object.createUserName != null) message.createUserName = String(object.createUserName)
+    if (object.createDate != null) message.createDate = String(object.createDate)
+    if (object.memo != null) message.memo = String(object.memo)
+    if (object.sortNO != null) message.sortNO = object.sortNO | 0
+    if (object.organizationID != null) message.organizationID = String(object.organizationID)
+    if (object.accessId != null) message.accessId = String(object.accessId)
+    if (object.accessKey != null) message.accessKey = String(object.accessKey)
+    if (object.organizationName != null) message.organizationName = String(object.organizationName)
+    if (object.storageSize != null) message.storageSize = Number(object.storageSize)
+    if (object.isDirect != null) message.isDirect = Boolean(object.isDirect)
+    if (object.ossId != null) message.ossId = object.ossId | 0
+    if (object.usedSize != null) message.usedSize = Number(object.usedSize)
+    if (object.currentPage != null) message.currentPage = object.currentPage | 0
+    if (object.pageSize != null) message.pageSize = object.pageSize | 0
+    if (object.id != null) message.id = object.id | 0
+    return message
+  }
+
+  /**
+   * Creates a plain object from a MediaMstProto message. Also converts values to other types if specified.
+   * @function toObject
+   * @memberof MediaMstProto
+   * @static
+   * @param {MediaMstProto} message MediaMstProto
+   * @param {$protobuf.IConversionOptions} [options] Conversion options
+   * @returns {Object.<string,*>} Plain object
+   */
+  MediaMstProto.toObject = function toObject(message, options) {
+    if (!options) options = {}
+    let object = {}
+    if (options.defaults) {
+      object.mediaUID = ''
+      object.mediaName = ''
+      object.pathType = ''
+      object.mediaHost = ''
+      object.path = ''
+      object.currentFlag = false
+      object.createUserUID = ''
+      object.createUserName = ''
+      object.createDate = ''
+      object.memo = ''
+      object.sortNO = 0
+      object.organizationID = ''
+      object.accessId = ''
+      object.accessKey = ''
+      object.organizationName = ''
+      object.storageSize = 0
+      object.isDirect = false
+      object.ossId = 0
+      object.usedSize = 0
+      object.currentPage = 0
+      object.pageSize = 0
+      object.id = 0
+    }
+    if (message.mediaUID != null && message.hasOwnProperty('mediaUID'))
+      object.mediaUID = message.mediaUID
+    if (message.mediaName != null && message.hasOwnProperty('mediaName'))
+      object.mediaName = message.mediaName
+    if (message.pathType != null && message.hasOwnProperty('pathType'))
+      object.pathType = message.pathType
+    if (message.mediaHost != null && message.hasOwnProperty('mediaHost'))
+      object.mediaHost = message.mediaHost
+    if (message.path != null && message.hasOwnProperty('path')) object.path = message.path
+    if (message.currentFlag != null && message.hasOwnProperty('currentFlag'))
+      object.currentFlag = message.currentFlag
+    if (message.createUserUID != null && message.hasOwnProperty('createUserUID'))
+      object.createUserUID = message.createUserUID
+    if (message.createUserName != null && message.hasOwnProperty('createUserName'))
+      object.createUserName = message.createUserName
+    if (message.createDate != null && message.hasOwnProperty('createDate'))
+      object.createDate = message.createDate
+    if (message.memo != null && message.hasOwnProperty('memo')) object.memo = message.memo
+    if (message.sortNO != null && message.hasOwnProperty('sortNO')) object.sortNO = message.sortNO
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      object.organizationID = message.organizationID
+    if (message.accessId != null && message.hasOwnProperty('accessId'))
+      object.accessId = message.accessId
+    if (message.accessKey != null && message.hasOwnProperty('accessKey'))
+      object.accessKey = message.accessKey
+    if (message.organizationName != null && message.hasOwnProperty('organizationName'))
+      object.organizationName = message.organizationName
+    if (message.storageSize != null && message.hasOwnProperty('storageSize'))
+      object.storageSize =
+        options.json && !isFinite(message.storageSize)
+          ? String(message.storageSize)
+          : message.storageSize
+    if (message.isDirect != null && message.hasOwnProperty('isDirect'))
+      object.isDirect = message.isDirect
+    if (message.ossId != null && message.hasOwnProperty('ossId')) object.ossId = message.ossId
+    if (message.usedSize != null && message.hasOwnProperty('usedSize'))
+      object.usedSize =
+        options.json && !isFinite(message.usedSize) ? String(message.usedSize) : message.usedSize
+    if (message.currentPage != null && message.hasOwnProperty('currentPage'))
+      object.currentPage = message.currentPage
+    if (message.pageSize != null && message.hasOwnProperty('pageSize'))
+      object.pageSize = message.pageSize
+    if (message.id != null && message.hasOwnProperty('id')) object.id = message.id
+    return object
+  }
+
+  /**
+   * Converts this MediaMstProto to JSON.
+   * @function toJSON
+   * @memberof MediaMstProto
+   * @instance
+   * @returns {Object.<string,*>} JSON object
+   */
+  MediaMstProto.prototype.toJSON = function toJSON() {
+    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+  }
+
+  /**
+   * Gets the default type url for MediaMstProto
+   * @function getTypeUrl
+   * @memberof MediaMstProto
+   * @static
+   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+   * @returns {string} The default type url
+   */
+  MediaMstProto.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+    if (typeUrlPrefix === undefined) {
+      typeUrlPrefix = 'type.googleapis.com'
+    }
+    return typeUrlPrefix + '/MediaMstProto'
+  }
+
+  return MediaMstProto
 })())
 
 export const google = ($root.google = (() => {

@@ -1,16 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { ElMessage, ElMessageBox, ElPagination } from 'element-plus'
-import {
-  ElTable,
-  ElTableColumn,
-  ElButton,
-  ElSelect,
-  ElCard,
-  ElOption,
-  ElSwitch
-} from 'element-plus'
-import { CloudStorageConfig, getOrg, getStorage, storageDelete, storageEdit } from '@/api/paramConf'
+import { ElTable, ElTableColumn, ElButton, ElSelect, ElCard, ElOption } from 'element-plus'
+import { CloudStorageConfig, getOrg, getStorage, storageDelete } from '@/api/paramConf'
 import AddStorageMedium from './components/AddStorageMedium.vue'
 interface OrgOption {
   label: string
@@ -95,16 +87,6 @@ const getOrgList = async () => {
 }
 // 运行状态
 
-const editSwitch = async (row: CloudStorageConfig) => {
-  const { isSuccess, message } = await storageEdit(row)
-  if (isSuccess) {
-    ElMessage.success(message || '操作成功')
-  } else {
-    // revert on failure
-    ElMessage.error(message || '操作失败')
-  }
-}
-
 onMounted(() => {
   getStorageList()
   getOrgList()
@@ -135,12 +117,13 @@ async function onConfirmStorage() {
       </div>
     </el-card>
 
-    <el-card shadow="never">
+    <el-card shadow="never" class="card-table nopadding-card-top">
       <el-table
         align="center"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
         :data="tableData"
         style="width: 100%; margin-bottom: 10px"
-        height="calc(100vh - 220px)"
+        height="calc(100vh - 230px)"
       >
         <el-table-column
           align="center"
@@ -153,7 +136,7 @@ async function onConfirmStorage() {
         />
         <el-table-column
           align="center"
-          prop="name"
+          prop="mediaName"
           sortable
           label="媒质名称"
           min-width="120"
@@ -161,7 +144,7 @@ async function onConfirmStorage() {
         />
         <el-table-column
           align="center"
-          prop="type"
+          prop="pathType"
           sortable
           label="路径类型"
           min-width="120"
@@ -169,18 +152,79 @@ async function onConfirmStorage() {
         />
         <el-table-column
           align="center"
-          prop="path"
-          min-width="120"
+          prop="mediaHost"
+          min-width="150"
           sortable
-          label="路径/地址"
+          label="媒体主机地址"
           show-overflow-tooltip
         />
         <el-table-column
           align="center"
-          prop="accessID"
+          prop="path"
           min-width="120"
           sortable
-          label="子目录"
+          label="存储路径"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="currentFlag"
+          min-width="150"
+          sortable
+          label="当前使用标志"
+          show-overflow-tooltip
+          ><template #default="{ row }">
+            <el-tag :type="row.currentFlag ? 'success' : 'warning'">{{
+              row.currentFlag ? '是' : '否'
+            }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="createUserUID"
+          min-width="145"
+          sortable
+          label="创建用户ID"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="createUserName"
+          min-width="150"
+          sortable
+          label="创建用户姓名"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="CreateDate"
+          min-width="120"
+          sortable
+          label="创建时间"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="sortNO"
+          min-width="120"
+          sortable
+          label="排序序号"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="accessId"
+          min-width="120"
+          sortable
+          label="访问ID"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="accessKey"
+          min-width="120"
+          sortable
+          label="访问密钥"
           show-overflow-tooltip
         />
         <el-table-column
@@ -188,30 +232,41 @@ async function onConfirmStorage() {
           prop="organizationName"
           min-width="120"
           sortable
-          label="机构名称"
+          label="组织名称"
           show-overflow-tooltip
         />
         <el-table-column
           align="center"
-          prop="description"
-          min-width="120"
+          prop="storageSize"
+          min-width="140"
           sortable
-          label="描述"
+          label="存储总容量"
           show-overflow-tooltip
         />
-        <el-table-column prop="ifEnable" label="运行状态" width="150">
-          <template #default="{ row }">
-            <el-switch
-              v-model="row.ifEnable"
-              active-value="true"
-              inactive-value="false"
-              size="small"
-              @change="editSwitch(row)"
-              active-text="启用"
-              inactive-text="停用"
-            />
-          </template>
-        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="isDirect"
+          min-width="150"
+          sortable
+          label="是否直连访问"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="ossId"
+          min-width="150"
+          sortable
+          label=" 对象存储ID"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          prop="usedSize"
+          min-width="120"
+          sortable
+          label="已使用容量"
+          show-overflow-tooltip
+        />
         <el-table-column label="操作" width="120" fixed="right" align="center">
           <template #default="{ row }">
             <el-button link type="primary" size="small" @click="onEdit(row)">编辑</el-button>
@@ -256,6 +311,6 @@ async function onConfirmStorage() {
 .pager {
   display: flex;
   justify-content: center;
-  padding: 10px 0;
+  padding: 0;
 }
 </style>

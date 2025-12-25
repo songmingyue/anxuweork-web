@@ -1,7 +1,7 @@
 <template>
   <div class="checkinfo-page page">
     <!-- 顶部搜索条 -->
-    <div class="toolbar" v-if="permissionsMsd('displayStyleRightInfo', 'searchBarVisible')">
+    <div class="toolbar">
       <el-form :inline="true" :model="formFirst" class="from-inline-margin">
         <el-form-item label="">
           <div style="display: flex; gap: 8px; align-items: center">
@@ -34,7 +34,7 @@
         </el-form-item>
         <el-form-item label="姓名" label-width="40" label-position="left">
           <el-input
-            v-model="formFirst.patientName"
+            v-model="formFirst.name"
             size="small"
             clearable
             placeholder="请输入"
@@ -82,7 +82,7 @@
             />
           </div>
         </el-form-item>
-        <el-form-item v-if="permissionsMsd('examInfo', 'organizationVisible')" label="检查机构">
+        <el-form-item label="检查机构">
           <el-select
             size="small"
             v-model="formFirst.organizationID"
@@ -143,7 +143,7 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item>
-                    <div style="width: 550px; height: 300px">
+                    <div style="width: 350px; height: 300px">
                       <el-checkbox-group
                         v-model="checkedColumns"
                         style="display: flex; flex-flow: column wrap; height: 100%"
@@ -169,92 +169,16 @@
           :data="list"
           v-loading="loading"
           height="calc(100vh - 230px)"
+          :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
           highlight-current-row
-          @row-click="onRowClick"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column label="" width="112" fixed="left">
-            <template #default="{ row }">
-              <div class="line-status" :style="{ backgroundColor: colorMap(row) }"></div>
-              <div class="icon-disable">
-                <!-- 影像上传状态 -->
-                <el-tooltip
-                  v-if="row.ifHasImage === '有'"
-                  effect="dark"
-                  :content="row.ifImageUpload === '是' ? '影像已上传' : '影像未上传'"
-                  placement="top"
-                >
-                  <div class="positions">
-                    <Icon
-                      v-if="selectRow.find((item) => item.examUID === row.examUID)"
-                      icon="svg-icon:a-313805856"
-                      :size="18"
-                    />
-                    <Icon v-else icon="svg-icon:a-313805854" :size="18" />
-                    <span v-if="row.ifImageUpload === '是'" class="span-icon"></span>
-                  </div>
-                </el-tooltip>
-                <!-- 报告 -->
-                <el-tooltip
-                  v-if="row.ifHasReport === '有'"
-                  effect="dark"
-                  :content="row.ifReportUpload === '是' ? '报告已上传' : '报告未上传'"
-                  placement="top"
-                >
-                  <div class="positions">
-                    <!-- <img class="image-icon" src="@/assets/imgs/info/w_report.png" alt="imgs" /> -->
-                    <Icon icon="svg-icon:baogaoshangchuan" :size="18" />
-                    <span v-if="row.ifReportUpload === '是'" class="span-icon"></span>
-                  </div>
-                </el-tooltip>
-                <!-- 胶片 -->
-                <el-tooltip
-                  v-if="row.ifHasFilm === '有'"
-                  effect="dark"
-                  :content="row.ifFilmUpload === '是' ? '胶片已上传' : '胶片未上传'"
-                  placement="top"
-                >
-                  <div>
-                    <img
-                      class="image-icon"
-                      style="width: 19px; height: 19px"
-                      src="@/assets/imgs/info/film_disable.png"
-                    />
-                  </div>
-                </el-tooltip>
-                <div
-                  class="lock-icon"
-                  v-if="permissionsMsd('displayStyleRightInfo', 'manualLockVisible')"
-                >
-                  <el-tooltip
-                    v-if="row.lockFlag === '否'"
-                    effect="dark"
-                    content="检查未锁定"
-                    placement="top"
-                  >
-                    <Icon
-                      icon="svg-icon:suoding"
-                      @click.stop="showLockDialog(row, true)"
-                      :size="18"
-                    />
-                  </el-tooltip>
-                  <el-tooltip v-else effect="dark" content="检查已锁定" placement="top">
-                    <Icon
-                      icon="svg-icon:jiesuo"
-                      @click.stop="showLockDialog(row, false)"
-                      :size="18"
-                    />
-                  </el-tooltip>
-                </div>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="left" type="selection" width="48" />
           <el-table-column
             show-overflow-tooltip
             v-for="item in tableList"
             :key="item.prop"
             :min-width="item.width"
+            align="center"
             :label="item.label"
             :prop="item.prop"
           />
@@ -282,8 +206,6 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, computed } from 'vue'
-import { Icon } from '@/components/Icon'
-import { permissionsMsd } from '@/utils/permission'
 import {
   ElForm,
   ElFormItem,
@@ -301,21 +223,10 @@ import {
   ElDropdownItem,
   ElIcon,
   ElCheckbox,
-  ElCheckboxGroup,
-  ElTooltip,
-  ElMessageBox
+  ElCheckboxGroup
 } from 'element-plus'
 import { ArrowDown, ArrowUp, Operation } from '@element-plus/icons-vue'
-import type { CheckReportDetail, DocStatusProto, DocumentProto, PushStatus } from '@/api/checkInfo'
-import {
-  CheckInfoRow,
-  getcheckinfolist,
-  getdoc,
-  getdocstatus,
-  getPushStatus,
-  getwrittenreport,
-  upDownload
-} from '@/api/checkInfo'
+import { CheckInfoRow, getcheckinfolist, upDownload } from '@/api/checkInfo'
 
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { getOrg } from '@/api/paramConf'
@@ -324,15 +235,8 @@ import { getSearchFormList, permiseListSearch } from './searchOptions'
 import { getpreset, PresetList } from '@/api/authConf'
 import { getdicitemlists, getDicmsgList } from '@/utils/dicmsg'
 import AdvanceSearchForm from './components/AdvanceSearchForm.vue'
-import { arrayBufferToBase64 } from '@/utils/base64'
 
 import { formatDate } from '@/utils/timeDate'
-// 预设
-
-// 锁定
-const lockDialog = ref(false)
-
-const lockTitle = ref('')
 
 // 锁定弹窗由子组件 LockDialog 管理表单与校验
 
@@ -374,6 +278,7 @@ const dateShortcuts = [
       const t = timeAlternative[indexTime.value]
       if (t) {
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `,${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -397,6 +302,7 @@ const dateShortcuts = [
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `${formatDate(start, 'date')},${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -410,6 +316,7 @@ const dateShortcuts = [
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `${formatDate(start, 'date')},${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -423,6 +330,7 @@ const dateShortcuts = [
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `${formatDate(start, 'date')},${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -436,6 +344,7 @@ const dateShortcuts = [
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `${formatDate(start, 'date')},${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -451,6 +360,7 @@ const dateShortcuts = [
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `${formatDate(start, 'date')},${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -465,6 +375,7 @@ const dateShortcuts = [
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `${formatDate(start, 'date')},${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -480,6 +391,7 @@ const dateShortcuts = [
       if (t) {
         formFirst.value[t.propStart] = formatDate(start, 'date')
         formFirst.value[t.propEndTime] = formatDate(end, 'date')
+        formFirst.value[t.prop] = `${formatDate(start, 'date')},${formatDate(end, 'date')}`
       }
       return [start]
     }
@@ -491,14 +403,12 @@ function onTimeKeyChange(key: string) {
   timeAlternative.forEach((item) => {
     formFirst.value[item.propEndTime] = ''
     formFirst.value[item.propStart] = ''
+    formFirst.value[item.prop] = ''
   })
 }
 // 展开筛选
 const showAdvance = ref(false)
 
-// 面板控制
-const advanceCardRef = ref<HTMLElement | null>(null)
-const btnClickShow = ref<HTMLElement | null>(null)
 const toggleAdvance = () => {
   setTimeout(() => {
     showAdvance.value = !showAdvance.value
@@ -578,20 +488,6 @@ const totalPages = computed(() => {
 })
 const orgOptions = ref<{ organizationName: string; organizationID: string }[]>([])
 // 右侧详情当前行：同时包含列表行字段与详细报告字段
-type CurrentDetail = Partial<CheckInfoRow & CheckReportDetail & PushStatus> &
-  DocStatusProto &
-  DocumentProto & {
-    isShowDialog: boolean
-  }
-const currentDetail = ref<CurrentDetail>({
-  examResultStatus: false,
-  examWrittenStatus: false,
-  examFilmStatus: false,
-  examImgStatus: false,
-  documentDtos: [],
-  isShowDialog: true
-})
-
 const setQuery = () => {
   timeAlternative.forEach((item) => {
     if (formFirst.value[item.propStart]) {
@@ -609,6 +505,8 @@ const setQuery = () => {
         formFirst.value[item.propEndTime] = formFirst.value[item.propEndTime] + ' 23:59:59'
       }
     }
+    formFirst.value[item.prop] =
+      `${formFirst.value[item.propStart]},${formFirst.value[item.propEndTime]}`
   })
 
   return {
@@ -646,15 +544,7 @@ async function upLoad() {
 }
 
 const getOrganization = () => {
-  if (userStore.getorganizationID === '-1') {
-    return formFirst.value.organizationID || ''
-  } else {
-    return formFirst.value.organizationID
-      ? formFirst.value.organizationID
-      : permissionsMsd('examInfo', 'organizationVisible')
-        ? ''
-        : userStore.getorganizationID
-  }
+  return formFirst.value.organizationID || ''
 }
 
 // 查询
@@ -685,18 +575,6 @@ async function onSearch() {
     } else {
       total.value = data.data.length || 0
     }
-    if (total.value) {
-      onRowClick(list.value[0])
-    } else {
-      currentDetail.value = {
-        examResultStatus: false,
-        examWrittenStatus: false,
-        examFilmStatus: false,
-        examImgStatus: false,
-        documentDtos: [],
-        isShowDialog: true
-      }
-    }
     // 默认选中第一条作为右侧详情
   } finally {
     loading.value = false
@@ -708,6 +586,7 @@ const onReset = () => {
   advance.value = {}
   formFirst.value.examEndTime = formatDate(new Date(), 'date')
   formFirst.value.examStartTime = formatDate(new Date(), 'date')
+  formFirst.value.prop = `${formFirst.value.examStartTime},${formFirst.value.examEndTime}`
   onSearch()
 }
 function onSizeChange(s: number) {
@@ -718,87 +597,6 @@ function onSizeChange(s: number) {
 function onPageChange(p: number) {
   page.value = p
   onSearch()
-}
-const activeRow = ref<CheckInfoRow | null>({})
-const selectLockRow = ref<CheckInfoRow | null>({})
-
-const changeDocument = (documents: DocumentProto) => {
-  if (Array.isArray(documents)) {
-    const haveImg = documents[0].documentDtos.filter(
-      (item) => item['base64url'] && item['base64url'].length
-    )
-    if (haveImg.length === 0) {
-      return []
-    }
-    return haveImg.map((item) => {
-      return {
-        ...item,
-        base64url: arrayBufferToBase64(item.base64url)
-      }
-    })
-  }
-  const haveImgs = documents.documentDtos.filter(
-    (item) => item['base64url'] && item['base64url'].length
-  )
-  if (haveImgs.length === 0) {
-    return []
-  }
-  return haveImgs.map((item) => {
-    return {
-      ...item,
-      base64url: arrayBufferToBase64(item.base64url)
-    }
-  })
-}
-
-// 行点击时更新右侧详情
-async function onRowClick(row: CheckInfoRow) {
-  // 锁定判断
-  if (row.lockFlag === '是') {
-    ElMessageBox.alert(`该检查已被锁定。锁定原因：${row.lockReason}`, '提示', {
-      confirmButtonText: '确定',
-      type: 'warning'
-    })
-    currentDetail.value = {
-      examResultStatus: false,
-      examWrittenStatus: false,
-      examFilmStatus: false,
-      examImgStatus: false,
-      documentDtos: [],
-      isShowDialog: false // 如果已经被锁定了就不展示所有的东西
-    }
-    return
-    // selectLockRow.value = row
-  }
-
-  activeRow.value = row
-  let detailMsg = {}
-  let documents: any = {}
-  const { resultValue } = await getPushStatus(row)
-  const datas = await getdocstatus(row)
-  const status = datas.data[0]
-  if (status.examResultStatus) {
-    const { data } = await getdoc({
-      ...row,
-      userInfo,
-      typeCode: 'ExamResult'
-    })
-    documents = changeDocument(data && data[0] && data[0].document)
-  } else {
-    const { data } = await getwrittenreport({
-      ...row,
-      userInfo
-    })
-    detailMsg = data[0] || {}
-  }
-  currentDetail.value = {
-    ...row,
-    ...detailMsg,
-    ...resultValue,
-    ...status,
-    documentDtos: documents,
-    isShowDialog: true
-  }
 }
 
 // 左右拖拽分隔
@@ -824,17 +622,11 @@ const handleSelectionChange = (val) => {
 const startGetPresetList = async () => {
   await getpresetList()
   if (presetList.value.length > 0) {
-    const indexOnce = presetList.value.findIndex((item) => item.defaultFlag === '1')
-    if (indexOnce !== -1) {
-      // 命中默认预设，直接按预设查询
-      setForm(presetList.value[indexOnce])
-    } else {
-      // 无默认预设：设置“检查时间”为当天 00:00 ~ 23:59:59，再查询
+    // 无默认预设：设置“检查时间”为当天 00:00 ~ 23:59:59，再查询
 
-      formFirst.value.examEndTime = formatDate(new Date(), 'date')
-      formFirst.value.examStartTime = formatDate(new Date(), 'date')
-      onSearch()
-    }
+    formFirst.value.examEndTime = formatDate(new Date(), 'date')
+    formFirst.value.examStartTime = formatDate(new Date(), 'date')
+    onSearch()
   } else {
     // 无任何预设：设置“检查时间”为当天 00:00 ~ 23:59:59，再查询
 
@@ -861,46 +653,7 @@ onMounted(async () => {
   }
   // 进入页面不进行打印控件检测，点击打印时再检测
 })
-const colorMap = (row) => {
-  switch (row.examStatus) {
-    case '检查完成':
-      return '#24cae3'
-    case '审核完成':
-      return '#e324af'
-    case '修订完成':
-      return '#e3b424'
-    default:
-      return '#67c23a'
-  }
-}
 
-// 模板
-const setForm = (item) => {
-  const formList = JSON.parse(item.queryCondition)
-  const formArray = Object.keys(formList)
-  console.log(formArray, 'formArray')
-  // findLastIndex 过滤掉初始的accessionNumber
-  const isHaveFirstDropdown = alternative.findLastIndex((item) => formArray.includes(item.prop))
-  if (isHaveFirstDropdown !== -1) {
-    indexInput.value = isHaveFirstDropdown
-  }
-  const isHaveSecondDropdown = timeAlternative.findIndex(
-    (item) => formArray.includes(item.propStart) && formList[item.propStart]
-  )
-  if (isHaveSecondDropdown !== -1) {
-    indexTime.value = isHaveSecondDropdown
-  }
-
-  formFirst.value = formList
-  advance.value = formList
-  onSearch()
-}
-
-const showLockDialog = (row, isLock) => {
-  selectLockRow.value = row
-  lockTitle.value = isLock ? '锁定原因' : '解锁原因'
-  lockDialog.value = true
-}
 onBeforeUnmount(() => {
   permiseListSearch()
 })

@@ -36,6 +36,7 @@
                   :value="opt.itemCode || opt.prop || opt.value"
                 />
               </el-select>
+
               <span v-else class="double-gap"></span>
             </template>
           </div>
@@ -80,6 +81,22 @@
               :key="opt.itemCode || opt.prop || opt.value"
               :label="opt.itemName || opt.name || opt.lable"
               :value="opt.itemCode || opt.prop || opt.value"
+            />
+          </el-select>
+          <el-select
+            v-else-if="item.type === 'selectDoctore'"
+            :disabled="item.vIf"
+            :model-value="modelValue[item.prop]"
+            @update:model-value="updateValue(item.prop, $event)"
+            :style="{ width: item.width || '100px' }"
+            :filterable="!!item.filterable"
+            clearable
+          >
+            <el-option
+              v-for="opt in getFieldOptions(item)"
+              :key="opt.itemCode || opt.prop || opt.value"
+              :label="opt.itemName || opt.name || opt.lable"
+              :value="opt.itemName"
             />
           </el-select>
           <el-select

@@ -262,7 +262,7 @@ async function onConfirmStorage() {
         <el-table-column
           align="center"
           prop="usedSize"
-          min-width="120"
+          min-width="130"
           sortable
           label="已使用容量"
           show-overflow-tooltip

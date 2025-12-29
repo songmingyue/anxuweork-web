@@ -115,7 +115,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import {
   ElInput,
   ElSelect,
@@ -190,6 +190,10 @@ const lockAction = async (row) => {
 
 const getDataList = async () => {
   changeSelect(select.value)
+  if (!form.value['accessionNumber'] && !form.value['name']) {
+    ElMessage.warning('请输入搜索内容')
+    return
+  }
   const { data, pageBase } = await listDoc({
     currentPage: page.value,
     ...form.value,
@@ -239,9 +243,6 @@ function onSizeChange(s: number) {
 }
 
 watch([page, size], () => {
-  getDataList()
-})
-onMounted(() => {
   getDataList()
 })
 </script>

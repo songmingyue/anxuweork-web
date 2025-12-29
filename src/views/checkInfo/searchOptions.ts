@@ -9,6 +9,11 @@ const lockStatus = [
   { itemName: '已锁定', prop: 'true' },
   { itemName: '未锁定', prop: 'false' }
 ]
+const imageStatus = [
+  { itemName: '全部', prop: 0 },
+  { itemName: '有', prop: 1 },
+  { itemName: '无', prop: 2 }
+]
 
 let listDephname: any = []
 // 申请科室权限过滤
@@ -118,12 +123,11 @@ export const getSearchFormList = () => ({
     },
     {
       label: '审核医生',
-      type: 'select',
+      type: 'selectDoctore',
       prop: 'resultPrincipalName',
-      vIf: true,
       width: '180px',
       loadOptFcn: 'loadAssessDoc',
-      filterable: !0,
+      filterable: false,
       opt: getdicitemlists('ResultPrincipalName')
     }
   ],
@@ -139,7 +143,7 @@ export const getSearchFormList = () => ({
     },
     {
       label: '报告医生',
-      type: 'select',
+      type: 'selectDoctore',
       prop: 'resultAssistantName',
       width: '180px',
       loadOptFcn: 'loadReportDoc',
@@ -173,6 +177,20 @@ export const getSearchFormList = () => ({
       prop: 'lockFlag',
       width: '180px',
       opt: lockStatus
+    },
+    {
+      label: '胶片状态',
+      type: 'select',
+      prop: 'ifHasFilm',
+      width: '180px',
+      opt: imageStatus
+    },
+    {
+      label: '影像状态',
+      type: 'select',
+      prop: 'ifHasImage',
+      width: '180px',
+      opt: imageStatus
     }
   ],
   inspectionResults: [

@@ -58,9 +58,8 @@ const rules: Record<string, any[]> = {
   mediaName: [{ required: true, message: '请输入媒质名称', trigger: 'blur' }],
   pathType: [{ required: true, message: '请选择路径类型', trigger: 'change' }],
   host: [requiredWhen(() => isCloud.value, '请输入主机域名')],
-  accessKey: [requiredWhen(() => isCloud.value, '请输入访问密钥')],
-  mediaHost: [requiredWhen(() => isCloud.value, '请输入媒体主机地址')],
-  accessId: [requiredWhen(() => isCloud.value, '请输入访问ID')]
+
+  mediaHost: [requiredWhen(() => isCloud.value, '请输入媒体主机地址')]
 }
 
 async function loadOrgOptions() {
@@ -184,20 +183,10 @@ function onCancel() {
         <el-switch v-model="form.currentFlag" active-value="true" inactive-value="false" />
         <!-- <el-input v-model="form.currentFlag" /> -->
       </el-form-item>
-      <el-form-item
-        v-show="form.pathType === 'AmazonS3'"
-        label="访问ID"
-        prop="accessId"
-        :required="isCloud"
-      >
+      <el-form-item v-show="form.pathType === 'AmazonS3'" label="访问ID" prop="accessId">
         <el-input v-model="form.accessId" />
       </el-form-item>
-      <el-form-item
-        v-show="form.pathType === 'AmazonS3'"
-        label="访问密钥"
-        prop="accessKey"
-        :required="isCloud"
-      >
+      <el-form-item v-show="form.pathType === 'AmazonS3'" label="访问密钥" prop="accessKey">
         <el-input v-model="form.accessKey" />
       </el-form-item>
       <el-form-item v-if="form.pathType === 'AmazonS3'" label="存储总容量" prop="storageSize">

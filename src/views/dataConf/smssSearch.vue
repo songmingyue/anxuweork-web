@@ -49,14 +49,7 @@
         </el-table-column>
         <el-table-column prop="" label="操作" align="center">
           <template #default="{ row }">
-            <el-button
-              link
-              type="primary"
-              v-if="row.contactPhoneNo"
-              size="small"
-              @click="getPhone(row)"
-              >重发</el-button
-            >
+            <el-button link type="primary" size="small" @click="getPhone(row)">重发</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -104,7 +97,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import {
   ElInput,
   ElSelect,
@@ -141,7 +134,7 @@ const changeSelect = (key) => {
       form.value['accessionNumber'] = modelInput.value
       break
     case '2':
-      form.value['name '] = modelInput.value
+      form.value['name'] = modelInput.value
       break
 
     default:
@@ -149,7 +142,11 @@ const changeSelect = (key) => {
   }
 }
 const getSmsLists = async () => {
-  changeSelect(select.value)
+  changeSelect(select.value || '1')
+  if (!form.value['accessionNumber'] && !form.value['name']) {
+    ElMessage.warning('请输入搜索内容')
+    return
+  }
   const { data, pageBase } = await getSmsList({
     currentPage: page.value,
     ...form.value,
@@ -173,6 +170,10 @@ const getPhone = async (row) => {
 }
 
 const resetMsg = async () => {
+  if (!decryptionPhone.value && !newPhone.value) {
+    ElMessage.warning('手机号不能为空')
+    return
+  }
   loadingRole.value = true
   const { isSuccess, message } = await resetSmss({
     fileUid: rowValue.value.fileUid,
@@ -201,9 +202,6 @@ function onSizeChange(s: number) {
   page.value = 1
   getSmsLists()
 }
-onMounted(() => {
-  getSmsLists()
-})
 </script>
 
 <style>

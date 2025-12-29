@@ -116,6 +116,32 @@
           <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
           <el-button size="small" @click="onReset">重置</el-button>
           <el-button size="small" @click="upLoad">导出</el-button>
+          <el-dropdown :hide-on-click="false" style="position: fixed; top: 80px; right: 30px">
+            <span class="el-dropdown-link">
+              <el-icon :size="20"><Operation /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>
+                  <div style="width: 350px; height: 300px">
+                    <el-checkbox-group
+                      v-model="checkedColumns"
+                      style="display: flex; flex-flow: column wrap; height: 100%"
+                    >
+                      <el-checkbox
+                        v-for="value in checkBoxList"
+                        :disabled="value.disabled"
+                        :key="value.prop"
+                        :label="value.label"
+                        :value="value.prop"
+                        >{{ value.label }}</el-checkbox
+                      >
+                    </el-checkbox-group>
+                  </div>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </el-form-item>
       </el-form>
     </div>
@@ -131,76 +157,77 @@
     </div>
 
     <!-- 中间主区域：左表格 + 分隔条 + 右预览（图三） -->
-    <div class="checkinfo-main">
-      <div class="left">
-        <!-- 工具条（打印、导出等） -->
-        <div class="left-tools">
-          <div class="tools-flex">
-            <el-dropdown :hide-on-click="false">
-              <span class="el-dropdown-link">
-                <el-icon :size="20"><Operation /></el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>
-                    <div style="width: 350px; height: 300px">
-                      <el-checkbox-group
-                        v-model="checkedColumns"
-                        style="display: flex; flex-flow: column wrap; height: 100%"
-                      >
-                        <el-checkbox
-                          v-for="value in checkBoxList"
-                          :disabled="value.disabled"
-                          :key="value.prop"
-                          :label="value.label"
-                          :value="value.prop"
-                          >{{ value.label }}</el-checkbox
-                        >
-                      </el-checkbox-group>
-                    </div>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
-        </div>
+    <el-card shadow="hover" class="mt8 card-table nopadding-card nopadding-card-top">
+      <el-table
+        :data="list"
+        v-loading="loading"
+        height="calc(100vh - 190px)"
+        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        highlight-current-row
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column label="" width="90" fixed="left">
+          <template #default="{ row }">
+            <div class="line-status" :style="{ backgroundColor: colorMap(row) }"></div>
+            <div class="icon-disable">
+              <!-- 影像上传状态 -->
 
-        <el-table
-          :data="list"
-          v-loading="loading"
-          height="calc(100vh - 230px)"
-          :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
-          highlight-current-row
-          @selection-change="handleSelectionChange"
+              <div class="positions" style="margin-left: 8px">
+                <div v-if="row.ifHasImage === 1">
+                  <Icon icon="svg-icon:a-313805854" :size="18" />
+                </div>
+                <span v-if="row.ifImageUpload === '是'" class="span-icon"></span>
+              </div>
+              <!-- 报告 -->
+              <el-tooltip effect="dark" placement="top" content="报告已上传">
+                <div class="positions">
+                  <div>
+                    <Icon icon="svg-icon:baogaoshangchuan" :size="18" />
+                    <span class="span-icon"></span>
+                  </div>
+                </div>
+              </el-tooltip>
+              <!-- 胶片 -->
+
+              <div class="positions">
+                <img
+                  v-if="row.ifHasFilm === 1"
+                  class="image-icon"
+                  style="width: 19px; height: 19px"
+                  src="@/assets/imgs/info/film_disable.png"
+                />
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          show-overflow-tooltip
+          v-for="item in tableList"
+          :key="item.prop"
+          :min-width="item.width"
+          :sortable="item.sort"
+          align="center"
+          :label="item.label"
+          :prop="item.prop"
+        />
+      </el-table>
+
+      <div class="pager">
+        <el-pagination
+          background
+          layout="prev, slot, next, sizes, total"
+          :total="total"
+          :page-sizes="[20, 50, 100]"
+          :page-size="size"
+          :current-page="page"
+          size="small"
+          @size-change="onSizeChange"
+          @current-change="onPageChange"
         >
-          <el-table-column
-            show-overflow-tooltip
-            v-for="item in tableList"
-            :key="item.prop"
-            :min-width="item.width"
-            align="center"
-            :label="item.label"
-            :prop="item.prop"
-          />
-        </el-table>
-
-        <div class="pager">
-          <el-pagination
-            background
-            layout="prev, slot, next, sizes, total"
-            :total="total"
-            :page-sizes="[20, 50, 100]"
-            :page-size="size"
-            :current-page="page"
-            size="small"
-            @size-change="onSizeChange"
-            @current-change="onPageChange"
-          >
-            <span class="page-ratio">{{ page }} / {{ totalPages }}</span>
-          </el-pagination>
-        </div>
+          <span class="page-ratio">{{ page }} / {{ totalPages }}</span>
+        </el-pagination>
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 
@@ -223,7 +250,8 @@ import {
   ElDropdownItem,
   ElIcon,
   ElCheckbox,
-  ElCheckboxGroup
+  ElCheckboxGroup,
+  ElTooltip
 } from 'element-plus'
 import { ArrowDown, ArrowUp, Operation } from '@element-plus/icons-vue'
 import { CheckInfoRow, getcheckinfolist, upDownload } from '@/api/checkInfo'
@@ -414,7 +442,18 @@ const toggleAdvance = () => {
     showAdvance.value = !showAdvance.value
   }, 10)
 }
-
+const colorMap = (row) => {
+  switch (row.examStatus) {
+    case '检查完成':
+      return '#24cae3'
+    case '审核完成':
+      return '#e324af'
+    case '修订完成':
+      return '#e3b424'
+    default:
+      return '#67c23a'
+  }
+}
 // 表单模型与选项缓存
 const advance = ref<Record<string, any>>({})
 const formOptions = reactive<Record<string, any[]>>({})
@@ -564,6 +603,7 @@ async function onSearch() {
       examStatus: advance.value.examStatus?.join(',') || '',
       requestDeptID: advance.value.requestDeptID?.join(',') || '',
       patientClass: advance.value.patientClass?.join(',') || '',
+      requestDeptName: advance.value.requestDeptName?.join(',') || '',
       organizationID: getOrganization()
     }
     console.log(query, 'query')
@@ -847,6 +887,7 @@ onBeforeUnmount(() => {
 
 .positions {
   position: relative;
+  width: 25px;
 }
 
 .line-status {

@@ -51,16 +51,16 @@ export const examOptions = [
 ]
 
 export const defaultStart: any = [
-  { prop: 'serviceSectID', label: '类型', sort: !0, width: 60, disabled: true },
-  { prop: 'procedureName', label: '检查部位', sort: !0, width: 90, disabled: true },
-  { prop: 'name', label: '姓名', sort: !0, width: 120, disabled: true },
-  { prop: 'sex', label: '性别', sort: !0, width: 120, disabled: true },
-  { prop: 'age', label: '年龄', sort: !0, width: 120, disabled: true },
-  { prop: 'contactPhoneNo', label: '电话', sort: !0, width: 120, disabled: true },
-  { prop: 'birthDate', label: '生日', sort: !0, width: 120, disabled: true },
-  { prop: 'idCardNO', label: '身份证', sort: !0, width: 120, disabled: true },
-  // { prop: 'examItem', label: '检查项目', sort: !0, width: 120, disabled: true },
-  { prop: 'medRecNO', label: '病历号', sort: !0, width: 120, disabled: true }
+  { prop: 'serviceSectID', label: '类型', sort: true, width: 90, disabled: true },
+  { prop: 'procedureName', label: '检查部位', sort: true, width: 115, disabled: true },
+  { prop: 'name', label: '姓名', sort: true, width: 120, disabled: true },
+  { prop: 'sex', label: '性别', sort: true, width: 120, disabled: true },
+  { prop: 'age', label: '年龄', sort: true, width: 120, disabled: true },
+  { prop: 'contactPhoneNo', label: '电话', sort: true, width: 120, disabled: true },
+  { prop: 'birthDate', label: '生日', sort: true, width: 120, disabled: true },
+  { prop: 'idCardNO', label: '身份证', sort: true, width: 120, disabled: true },
+  // { prop: 'examItem', label: '检查项目', sort: true, width: 120, disabled: true },
+  { prop: 'medRecNO', label: '病历号', sort: true, width: 120, disabled: true }
 ]
 
 export const checkBoxList: any = [

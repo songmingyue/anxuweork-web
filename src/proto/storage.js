@@ -39278,6 +39278,8 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
    * @property {string|null} [preliminaryDate] ExamInputProto preliminaryDate
    * @property {number|null} [currentPage] ExamInputProto currentPage
    * @property {number|null} [pageSize] ExamInputProto pageSize
+   * @property {number|null} [ifHasFilm] ExamInputProto ifHasFilm
+   * @property {number|null} [ifHasImage] ExamInputProto ifHasImage
    */
 
   /**
@@ -39527,6 +39529,22 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
   ExamInputProto.prototype.pageSize = 0
 
   /**
+   * ExamInputProto ifHasFilm.
+   * @member {number} ifHasFilm
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.ifHasFilm = 0
+
+  /**
+   * ExamInputProto ifHasImage.
+   * @member {number} ifHasImage
+   * @memberof ExamInputProto
+   * @instance
+   */
+  ExamInputProto.prototype.ifHasImage = 0
+
+  /**
    * Creates a new ExamInputProto instance using the specified properties.
    * @function create
    * @memberof ExamInputProto
@@ -39613,6 +39631,10 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
       writer.uint32(/* id 28, wireType 0 =*/ 224).int32(message.currentPage)
     if (message.pageSize != null && Object.hasOwnProperty.call(message, 'pageSize'))
       writer.uint32(/* id 29, wireType 0 =*/ 232).int32(message.pageSize)
+    if (message.ifHasFilm != null && Object.hasOwnProperty.call(message, 'ifHasFilm'))
+      writer.uint32(/* id 30, wireType 0 =*/ 240).int32(message.ifHasFilm)
+    if (message.ifHasImage != null && Object.hasOwnProperty.call(message, 'ifHasImage'))
+      writer.uint32(/* id 31, wireType 0 =*/ 248).int32(message.ifHasImage)
     return writer
   }
 
@@ -39764,6 +39786,14 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
           message.pageSize = reader.int32()
           break
         }
+        case 30: {
+          message.ifHasFilm = reader.int32()
+          break
+        }
+        case 31: {
+          message.ifHasImage = reader.int32()
+          break
+        }
         default:
           reader.skipType(tag & 7)
           break
@@ -39857,6 +39887,10 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
       if (!$util.isInteger(message.currentPage)) return 'currentPage: integer expected'
     if (message.pageSize != null && message.hasOwnProperty('pageSize'))
       if (!$util.isInteger(message.pageSize)) return 'pageSize: integer expected'
+    if (message.ifHasFilm != null && message.hasOwnProperty('ifHasFilm'))
+      if (!$util.isInteger(message.ifHasFilm)) return 'ifHasFilm: integer expected'
+    if (message.ifHasImage != null && message.hasOwnProperty('ifHasImage'))
+      if (!$util.isInteger(message.ifHasImage)) return 'ifHasImage: integer expected'
     return null
   }
 
@@ -39902,6 +39936,8 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
     if (object.preliminaryDate != null) message.preliminaryDate = String(object.preliminaryDate)
     if (object.currentPage != null) message.currentPage = object.currentPage | 0
     if (object.pageSize != null) message.pageSize = object.pageSize | 0
+    if (object.ifHasFilm != null) message.ifHasFilm = object.ifHasFilm | 0
+    if (object.ifHasImage != null) message.ifHasImage = object.ifHasImage | 0
     return message
   }
 
@@ -39947,6 +39983,8 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
       object.preliminaryDate = ''
       object.currentPage = 0
       object.pageSize = 0
+      object.ifHasFilm = 0
+      object.ifHasImage = 0
     }
     if (message.accessionNumber != null && message.hasOwnProperty('accessionNumber'))
       object.accessionNumber = message.accessionNumber
@@ -40003,6 +40041,10 @@ export const ExamInputProto = ($root.ExamInputProto = (() => {
       object.currentPage = message.currentPage
     if (message.pageSize != null && message.hasOwnProperty('pageSize'))
       object.pageSize = message.pageSize
+    if (message.ifHasFilm != null && message.hasOwnProperty('ifHasFilm'))
+      object.ifHasFilm = message.ifHasFilm
+    if (message.ifHasImage != null && message.hasOwnProperty('ifHasImage'))
+      object.ifHasImage = message.ifHasImage
     return object
   }
 
@@ -40101,6 +40143,8 @@ export const DocDBProto = ($root.DocDBProto = (() => {
    * @property {string|null} [expr1] DocDBProto expr1
    * @property {string|null} [createdDate] DocDBProto createdDate
    * @property {string|null} [modifiedDate] DocDBProto modifiedDate
+   * @property {number|null} [ifHasFilm] DocDBProto ifHasFilm
+   * @property {number|null} [ifHasImage] DocDBProto ifHasImage
    */
 
   /**
@@ -40606,6 +40650,22 @@ export const DocDBProto = ($root.DocDBProto = (() => {
   DocDBProto.prototype.modifiedDate = ''
 
   /**
+   * DocDBProto ifHasFilm.
+   * @member {number} ifHasFilm
+   * @memberof DocDBProto
+   * @instance
+   */
+  DocDBProto.prototype.ifHasFilm = 0
+
+  /**
+   * DocDBProto ifHasImage.
+   * @member {number} ifHasImage
+   * @memberof DocDBProto
+   * @instance
+   */
+  DocDBProto.prototype.ifHasImage = 0
+
+  /**
    * Creates a new DocDBProto instance using the specified properties.
    * @function create
    * @memberof DocDBProto
@@ -40759,6 +40819,10 @@ export const DocDBProto = ($root.DocDBProto = (() => {
       writer.uint32(/* id 60, wireType 2 =*/ 482).string(message.createdDate)
     if (message.modifiedDate != null && Object.hasOwnProperty.call(message, 'modifiedDate'))
       writer.uint32(/* id 61, wireType 2 =*/ 490).string(message.modifiedDate)
+    if (message.ifHasFilm != null && Object.hasOwnProperty.call(message, 'ifHasFilm'))
+      writer.uint32(/* id 62, wireType 0 =*/ 496).int32(message.ifHasFilm)
+    if (message.ifHasImage != null && Object.hasOwnProperty.call(message, 'ifHasImage'))
+      writer.uint32(/* id 63, wireType 0 =*/ 504).int32(message.ifHasImage)
     return writer
   }
 
@@ -41038,6 +41102,14 @@ export const DocDBProto = ($root.DocDBProto = (() => {
           message.modifiedDate = reader.string()
           break
         }
+        case 62: {
+          message.ifHasFilm = reader.int32()
+          break
+        }
+        case 63: {
+          message.ifHasImage = reader.int32()
+          break
+        }
         default:
           reader.skipType(tag & 7)
           break
@@ -41204,6 +41276,10 @@ export const DocDBProto = ($root.DocDBProto = (() => {
       if (!$util.isString(message.createdDate)) return 'createdDate: string expected'
     if (message.modifiedDate != null && message.hasOwnProperty('modifiedDate'))
       if (!$util.isString(message.modifiedDate)) return 'modifiedDate: string expected'
+    if (message.ifHasFilm != null && message.hasOwnProperty('ifHasFilm'))
+      if (!$util.isInteger(message.ifHasFilm)) return 'ifHasFilm: integer expected'
+    if (message.ifHasImage != null && message.hasOwnProperty('ifHasImage'))
+      if (!$util.isInteger(message.ifHasImage)) return 'ifHasImage: integer expected'
     return null
   }
 
@@ -41290,6 +41366,8 @@ export const DocDBProto = ($root.DocDBProto = (() => {
     if (object.expr1 != null) message.expr1 = String(object.expr1)
     if (object.createdDate != null) message.createdDate = String(object.createdDate)
     if (object.modifiedDate != null) message.modifiedDate = String(object.modifiedDate)
+    if (object.ifHasFilm != null) message.ifHasFilm = object.ifHasFilm | 0
+    if (object.ifHasImage != null) message.ifHasImage = object.ifHasImage | 0
     return message
   }
 
@@ -41375,6 +41453,8 @@ export const DocDBProto = ($root.DocDBProto = (() => {
       object.expr1 = ''
       object.createdDate = ''
       object.modifiedDate = ''
+      object.ifHasFilm = 0
+      object.ifHasImage = 0
     }
     if (message.id != null && message.hasOwnProperty('id')) object.id = message.id
     if (message.name != null && message.hasOwnProperty('name')) object.name = message.name
@@ -41502,6 +41582,10 @@ export const DocDBProto = ($root.DocDBProto = (() => {
       object.createdDate = message.createdDate
     if (message.modifiedDate != null && message.hasOwnProperty('modifiedDate'))
       object.modifiedDate = message.modifiedDate
+    if (message.ifHasFilm != null && message.hasOwnProperty('ifHasFilm'))
+      object.ifHasFilm = message.ifHasFilm
+    if (message.ifHasImage != null && message.hasOwnProperty('ifHasImage'))
+      object.ifHasImage = message.ifHasImage
     return object
   }
 

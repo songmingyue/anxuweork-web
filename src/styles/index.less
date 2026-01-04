@@ -130,8 +130,8 @@ a:active {
   padding: 0 9px !important;
 }
 .el-table__body tr.current-row > td.el-table__cell {
-  background-color: #bad3ed !important;
-  border-bottom: 1px solid #409eff !important;
+  // background-color: rgba(66, 101, 137, 0.3) !important;
+  border-bottom: 1px solid rgba(66, 101, 137) !important;
 }
 .el-table--default .cell {
   padding: 0 4px !important;
@@ -167,9 +167,19 @@ a:active {
 .nopadding-card-top .el-card__body {
   padding-top: 0px !important;
 }
-
+.input-with-select {
+  .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset !important;
+  }
+}
+.input-with-selects {
+  .el-select__wrapper {
+    background-color: #ffff !important;
+    box-shadow: 0 0 0 0px var(--el-input-border-color, var(--el-border-color)) inset !important;
+  }
+}
 .el-input__wrapper {
-  box-shadow: 0 0 0 1px #858282 inset !important;
+  // box-shadow: 0 0 0 1px #858282 inset !important;
 }
 .el-input-group__append {
   box-shadow:
@@ -178,7 +188,7 @@ a:active {
     -1px 0 0 0 #858282 inset !important;
 }
 .el-select__wrapper {
-  box-shadow: 0 0 0 1px #858282 inset !important;
+  // box-shadow: 0 0 0 1px #858282 inset !important;
 }
 .avatar-uploader .el-upload {
   border: 1px dashed var(--el-border-color);
@@ -199,4 +209,18 @@ a:active {
   width: 178px;
   height: 178px;
   text-align: center;
+}
+.sms-header {
+  .el-card__header {
+    // border-bottom: 1px solid var(--el-card-border-color);
+    box-sizing: border-box;
+    border-bottom: 0px solid var(--el-card-border-color);
+    /* padding: calc(var(--el-card-padding) - 2px) var(--el-card-padding); */
+    padding: 10px 20px 7px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .el-card__body {
+    padding-top: 10px !important;
+  }
 }

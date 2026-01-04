@@ -368,7 +368,7 @@ onMounted(() => {
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSearchOrg">搜索</el-button>
+          <el-button type="primary" @click="onSearchOrg" plain>搜索</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -382,7 +382,7 @@ onMounted(() => {
           highlight-current-row
           @row-click="onOrgRowClick"
           :style="{ width: '100%' }"
-          :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+          :header-cell-style="{ textAlign: 'center', padding: '10px' }"
           height="100%"
         >
           <el-table-column
@@ -511,8 +511,10 @@ onMounted(() => {
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSearchDept" :disabled="!activeOrg">搜索</el-button>
-          <el-button @click="onAddDept">新增科室</el-button>
+          <el-button type="primary" @click="onSearchDept" :disabled="!activeOrg" plain
+            >搜索</el-button
+          >
+          <el-button @click="onAddDept" plain>新增科室</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -522,7 +524,7 @@ onMounted(() => {
           :data="deptList"
           v-loading="deptLoading"
           :style="{ width: '100%' }"
-          :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+          :header-cell-style="{ textAlign: 'center', padding: '10px' }"
           height="100%"
         >
           <el-table-column

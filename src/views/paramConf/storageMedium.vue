@@ -111,8 +111,8 @@ async function onConfirmStorage() {
           />
         </el-select>
         <span>
-          <el-button type="primary" @click="onSearch">查 询</el-button>
-          <el-button type="success" @click="onAdd">新增存储媒介</el-button>
+          <el-button type="primary" @click="onSearch" plain>查 询</el-button>
+          <el-button type="success" @click="onAdd" plain>新增存储媒介</el-button>
         </span>
       </div>
     </el-card>
@@ -120,7 +120,7 @@ async function onConfirmStorage() {
     <el-card shadow="never" class="card-table nopadding-card-top">
       <el-table
         align="center"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         :data="tableData"
         style="width: 100%; margin-bottom: 10px"
         height="calc(100vh - 230px)"

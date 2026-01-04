@@ -3,7 +3,7 @@
     <!-- 上：服务（有分页） -->
 
     <el-card body-style="display: flex; align-item: center; justify-content: space-between">
-      <el-button type="primary" @click="onCreateService">新增服务</el-button>
+      <el-button type="primary" @click="onCreateService" plain>新增服务</el-button>
       <!-- 模板模块（已拆分为独立组件） -->
       <TemplateDropdown />
     </el-card>
@@ -14,7 +14,7 @@
         highlight-current-row
         @row-click="onServiceRowClick"
         height="calc(50vh - 110px)"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
       >
         <el-table-column
           prop="serviceUID"
@@ -69,7 +69,7 @@
     <!-- 下：任务（不分页） -->
     <el-card shadow="never" class="card-table nopadding-car">
       <div class="flex">
-        <el-button type="primary" @click="onCreateTask" :disabled="!activeService?.serviceUID"
+        <el-button type="primary" @click="onCreateTask" :disabled="!activeService?.serviceUID" plain
           >新增任务</el-button
         >
         <span style="margin-left: 12px; color: #909399" v-if="activeService">
@@ -79,7 +79,7 @@
 
       <el-table
         :data="taskList"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         v-loading="taskLoading"
         class="mt8"
         height="calc(50vh - 155px)"

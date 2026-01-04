@@ -217,8 +217,8 @@ onMounted(() => {
     <el-card shadow="never" class="mb8">
       <div class="toolbar">
         <el-input v-model="filter.roleName" placeholder="角色名称" style="width: 220px" clearable />
-        <el-button type="primary" class="ml8" @click="handleSearch">检索</el-button>
-        <el-button @click="handleAddRole" class="ml8">新增角色</el-button>
+        <el-button type="primary" class="ml8" @click="handleSearch" plain>检索</el-button>
+        <el-button @click="handleAddRole" class="ml8" plain>新增角色</el-button>
       </div>
     </el-card>
 
@@ -230,7 +230,7 @@ onMounted(() => {
         highlight-current-row
         @row-click="handleRowClick"
         :style="{ width: '100%' }"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         height="calc(50vh - 165px)"
       >
         <el-table-column prop="roleName" label="角色名称" min-width="160" align="center" sortable />
@@ -301,11 +301,17 @@ onMounted(() => {
         v-loading="loadingPerm"
         :style="{ width: '100%' }"
         ref="permTableRef"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         row-key="rightID"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="48" sortable align="center" />
+        <el-table-column
+          type="selection"
+          width="48"
+          sortable
+          align="center"
+          :selectable="() => false"
+        />
         <el-table-column
           prop="rightName"
           label="权限名称"

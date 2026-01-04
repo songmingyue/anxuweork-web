@@ -51,7 +51,7 @@ export const useRenderLayout = () => {
                   'left-max': !appStore.getCollapse
                 }
               ]}
-              style="transition: all var(--transition-time-02);"
+              style="transition: all var(--transition-time-01);"
             ></Logo>
           ) : undefined}
           <Menu

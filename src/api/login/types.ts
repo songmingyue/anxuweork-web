@@ -1,7 +1,6 @@
 export interface UserLoginType {
   account: string
   password: string
-  organizationID: string
 }
 
 enum IsSuper {
@@ -101,7 +100,6 @@ export interface UserRight {
 export interface UserLoginTypes {
   account: string
   password: string
-  organizationID: string
   rememberMe: string
 }
 

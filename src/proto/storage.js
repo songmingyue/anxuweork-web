@@ -42254,6 +42254,440 @@ export const MediaMstProto = ($root.MediaMstProto = (() => {
   return MediaMstProto
 })())
 
+export const UserRoleInputProto = ($root.UserRoleInputProto = (() => {
+  /**
+   * Properties of a UserRoleInputProto.
+   * @exports IUserRoleInputProto
+   * @interface IUserRoleInputProto
+   * @property {string|null} [userUID] UserRoleInputProto userUID
+   * @property {string|null} [organizationID] UserRoleInputProto organizationID
+   */
+
+  /**
+   * Constructs a new UserRoleInputProto.
+   * @exports UserRoleInputProto
+   * @classdesc Represents a UserRoleInputProto.
+   * @implements IUserRoleInputProto
+   * @constructor
+   * @param {IUserRoleInputProto=} [properties] Properties to set
+   */
+  function UserRoleInputProto(properties) {
+    if (properties)
+      for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
+  }
+
+  /**
+   * UserRoleInputProto userUID.
+   * @member {string} userUID
+   * @memberof UserRoleInputProto
+   * @instance
+   */
+  UserRoleInputProto.prototype.userUID = ''
+
+  /**
+   * UserRoleInputProto organizationID.
+   * @member {string} organizationID
+   * @memberof UserRoleInputProto
+   * @instance
+   */
+  UserRoleInputProto.prototype.organizationID = ''
+
+  /**
+   * Creates a new UserRoleInputProto instance using the specified properties.
+   * @function create
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {IUserRoleInputProto=} [properties] Properties to set
+   * @returns {UserRoleInputProto} UserRoleInputProto instance
+   */
+  UserRoleInputProto.create = function create(properties) {
+    return new UserRoleInputProto(properties)
+  }
+
+  /**
+   * Encodes the specified UserRoleInputProto message. Does not implicitly {@link UserRoleInputProto.verify|verify} messages.
+   * @function encode
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {IUserRoleInputProto} message UserRoleInputProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  UserRoleInputProto.encode = function encode(message, writer) {
+    if (!writer) writer = $Writer.create()
+    if (message.userUID != null && Object.hasOwnProperty.call(message, 'userUID'))
+      writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.userUID)
+    if (message.organizationID != null && Object.hasOwnProperty.call(message, 'organizationID'))
+      writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.organizationID)
+    return writer
+  }
+
+  /**
+   * Encodes the specified UserRoleInputProto message, length delimited. Does not implicitly {@link UserRoleInputProto.verify|verify} messages.
+   * @function encodeDelimited
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {IUserRoleInputProto} message UserRoleInputProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  UserRoleInputProto.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.encode(message, writer).ldelim()
+  }
+
+  /**
+   * Decodes a UserRoleInputProto message from the specified reader or buffer.
+   * @function decode
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @param {number} [length] Message length if known beforehand
+   * @returns {UserRoleInputProto} UserRoleInputProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  UserRoleInputProto.decode = function decode(reader, length, error) {
+    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+    let end = length === undefined ? reader.len : reader.pos + length,
+      message = new $root.UserRoleInputProto()
+    while (reader.pos < end) {
+      let tag = reader.uint32()
+      if (tag === error) break
+      switch (tag >>> 3) {
+        case 1: {
+          message.userUID = reader.string()
+          break
+        }
+        case 2: {
+          message.organizationID = reader.string()
+          break
+        }
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  }
+
+  /**
+   * Decodes a UserRoleInputProto message from the specified reader or buffer, length delimited.
+   * @function decodeDelimited
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @returns {UserRoleInputProto} UserRoleInputProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  UserRoleInputProto.decodeDelimited = function decodeDelimited(reader) {
+    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+    return this.decode(reader, reader.uint32())
+  }
+
+  /**
+   * Verifies a UserRoleInputProto message.
+   * @function verify
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {Object.<string,*>} message Plain object to verify
+   * @returns {string|null} `null` if valid, otherwise the reason why it is not
+   */
+  UserRoleInputProto.verify = function verify(message) {
+    if (typeof message !== 'object' || message === null) return 'object expected'
+    if (message.userUID != null && message.hasOwnProperty('userUID'))
+      if (!$util.isString(message.userUID)) return 'userUID: string expected'
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      if (!$util.isString(message.organizationID)) return 'organizationID: string expected'
+    return null
+  }
+
+  /**
+   * Creates a UserRoleInputProto message from a plain object. Also converts values to their respective internal types.
+   * @function fromObject
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {Object.<string,*>} object Plain object
+   * @returns {UserRoleInputProto} UserRoleInputProto
+   */
+  UserRoleInputProto.fromObject = function fromObject(object) {
+    if (object instanceof $root.UserRoleInputProto) return object
+    let message = new $root.UserRoleInputProto()
+    if (object.userUID != null) message.userUID = String(object.userUID)
+    if (object.organizationID != null) message.organizationID = String(object.organizationID)
+    return message
+  }
+
+  /**
+   * Creates a plain object from a UserRoleInputProto message. Also converts values to other types if specified.
+   * @function toObject
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {UserRoleInputProto} message UserRoleInputProto
+   * @param {$protobuf.IConversionOptions} [options] Conversion options
+   * @returns {Object.<string,*>} Plain object
+   */
+  UserRoleInputProto.toObject = function toObject(message, options) {
+    if (!options) options = {}
+    let object = {}
+    if (options.defaults) {
+      object.userUID = ''
+      object.organizationID = ''
+    }
+    if (message.userUID != null && message.hasOwnProperty('userUID'))
+      object.userUID = message.userUID
+    if (message.organizationID != null && message.hasOwnProperty('organizationID'))
+      object.organizationID = message.organizationID
+    return object
+  }
+
+  /**
+   * Converts this UserRoleInputProto to JSON.
+   * @function toJSON
+   * @memberof UserRoleInputProto
+   * @instance
+   * @returns {Object.<string,*>} JSON object
+   */
+  UserRoleInputProto.prototype.toJSON = function toJSON() {
+    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+  }
+
+  /**
+   * Gets the default type url for UserRoleInputProto
+   * @function getTypeUrl
+   * @memberof UserRoleInputProto
+   * @static
+   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+   * @returns {string} The default type url
+   */
+  UserRoleInputProto.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+    if (typeUrlPrefix === undefined) {
+      typeUrlPrefix = 'type.googleapis.com'
+    }
+    return typeUrlPrefix + '/UserRoleInputProto'
+  }
+
+  return UserRoleInputProto
+})())
+
+export const UserRoleAddProto = ($root.UserRoleAddProto = (() => {
+  /**
+   * Properties of a UserRoleAddProto.
+   * @exports IUserRoleAddProto
+   * @interface IUserRoleAddProto
+   * @property {string|null} [userUID] UserRoleAddProto userUID
+   * @property {string|null} [roleUID] UserRoleAddProto roleUID
+   */
+
+  /**
+   * Constructs a new UserRoleAddProto.
+   * @exports UserRoleAddProto
+   * @classdesc Represents a UserRoleAddProto.
+   * @implements IUserRoleAddProto
+   * @constructor
+   * @param {IUserRoleAddProto=} [properties] Properties to set
+   */
+  function UserRoleAddProto(properties) {
+    if (properties)
+      for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
+  }
+
+  /**
+   * UserRoleAddProto userUID.
+   * @member {string} userUID
+   * @memberof UserRoleAddProto
+   * @instance
+   */
+  UserRoleAddProto.prototype.userUID = ''
+
+  /**
+   * UserRoleAddProto roleUID.
+   * @member {string} roleUID
+   * @memberof UserRoleAddProto
+   * @instance
+   */
+  UserRoleAddProto.prototype.roleUID = ''
+
+  /**
+   * Creates a new UserRoleAddProto instance using the specified properties.
+   * @function create
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {IUserRoleAddProto=} [properties] Properties to set
+   * @returns {UserRoleAddProto} UserRoleAddProto instance
+   */
+  UserRoleAddProto.create = function create(properties) {
+    return new UserRoleAddProto(properties)
+  }
+
+  /**
+   * Encodes the specified UserRoleAddProto message. Does not implicitly {@link UserRoleAddProto.verify|verify} messages.
+   * @function encode
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {IUserRoleAddProto} message UserRoleAddProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  UserRoleAddProto.encode = function encode(message, writer) {
+    if (!writer) writer = $Writer.create()
+    if (message.userUID != null && Object.hasOwnProperty.call(message, 'userUID'))
+      writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.userUID)
+    if (message.roleUID != null && Object.hasOwnProperty.call(message, 'roleUID'))
+      writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.roleUID)
+    return writer
+  }
+
+  /**
+   * Encodes the specified UserRoleAddProto message, length delimited. Does not implicitly {@link UserRoleAddProto.verify|verify} messages.
+   * @function encodeDelimited
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {IUserRoleAddProto} message UserRoleAddProto message or plain object to encode
+   * @param {$protobuf.Writer} [writer] Writer to encode to
+   * @returns {$protobuf.Writer} Writer
+   */
+  UserRoleAddProto.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.encode(message, writer).ldelim()
+  }
+
+  /**
+   * Decodes a UserRoleAddProto message from the specified reader or buffer.
+   * @function decode
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @param {number} [length] Message length if known beforehand
+   * @returns {UserRoleAddProto} UserRoleAddProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  UserRoleAddProto.decode = function decode(reader, length, error) {
+    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+    let end = length === undefined ? reader.len : reader.pos + length,
+      message = new $root.UserRoleAddProto()
+    while (reader.pos < end) {
+      let tag = reader.uint32()
+      if (tag === error) break
+      switch (tag >>> 3) {
+        case 1: {
+          message.userUID = reader.string()
+          break
+        }
+        case 2: {
+          message.roleUID = reader.string()
+          break
+        }
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  }
+
+  /**
+   * Decodes a UserRoleAddProto message from the specified reader or buffer, length delimited.
+   * @function decodeDelimited
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+   * @returns {UserRoleAddProto} UserRoleAddProto
+   * @throws {Error} If the payload is not a reader or valid buffer
+   * @throws {$protobuf.util.ProtocolError} If required fields are missing
+   */
+  UserRoleAddProto.decodeDelimited = function decodeDelimited(reader) {
+    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+    return this.decode(reader, reader.uint32())
+  }
+
+  /**
+   * Verifies a UserRoleAddProto message.
+   * @function verify
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {Object.<string,*>} message Plain object to verify
+   * @returns {string|null} `null` if valid, otherwise the reason why it is not
+   */
+  UserRoleAddProto.verify = function verify(message) {
+    if (typeof message !== 'object' || message === null) return 'object expected'
+    if (message.userUID != null && message.hasOwnProperty('userUID'))
+      if (!$util.isString(message.userUID)) return 'userUID: string expected'
+    if (message.roleUID != null && message.hasOwnProperty('roleUID'))
+      if (!$util.isString(message.roleUID)) return 'roleUID: string expected'
+    return null
+  }
+
+  /**
+   * Creates a UserRoleAddProto message from a plain object. Also converts values to their respective internal types.
+   * @function fromObject
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {Object.<string,*>} object Plain object
+   * @returns {UserRoleAddProto} UserRoleAddProto
+   */
+  UserRoleAddProto.fromObject = function fromObject(object) {
+    if (object instanceof $root.UserRoleAddProto) return object
+    let message = new $root.UserRoleAddProto()
+    if (object.userUID != null) message.userUID = String(object.userUID)
+    if (object.roleUID != null) message.roleUID = String(object.roleUID)
+    return message
+  }
+
+  /**
+   * Creates a plain object from a UserRoleAddProto message. Also converts values to other types if specified.
+   * @function toObject
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {UserRoleAddProto} message UserRoleAddProto
+   * @param {$protobuf.IConversionOptions} [options] Conversion options
+   * @returns {Object.<string,*>} Plain object
+   */
+  UserRoleAddProto.toObject = function toObject(message, options) {
+    if (!options) options = {}
+    let object = {}
+    if (options.defaults) {
+      object.userUID = ''
+      object.roleUID = ''
+    }
+    if (message.userUID != null && message.hasOwnProperty('userUID'))
+      object.userUID = message.userUID
+    if (message.roleUID != null && message.hasOwnProperty('roleUID'))
+      object.roleUID = message.roleUID
+    return object
+  }
+
+  /**
+   * Converts this UserRoleAddProto to JSON.
+   * @function toJSON
+   * @memberof UserRoleAddProto
+   * @instance
+   * @returns {Object.<string,*>} JSON object
+   */
+  UserRoleAddProto.prototype.toJSON = function toJSON() {
+    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+  }
+
+  /**
+   * Gets the default type url for UserRoleAddProto
+   * @function getTypeUrl
+   * @memberof UserRoleAddProto
+   * @static
+   * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+   * @returns {string} The default type url
+   */
+  UserRoleAddProto.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+    if (typeUrlPrefix === undefined) {
+      typeUrlPrefix = 'type.googleapis.com'
+    }
+    return typeUrlPrefix + '/UserRoleAddProto'
+  }
+
+  return UserRoleAddProto
+})())
+
 export const google = ($root.google = (() => {
   /**
    * Namespace google.

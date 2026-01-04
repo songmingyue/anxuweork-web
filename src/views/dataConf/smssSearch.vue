@@ -1,18 +1,20 @@
 <template>
   <div class="page-wrap">
-    <el-card>
+    <el-card class="sms-header">
+      <template #header> 短信查询 </template>
       <el-input
         v-model="modelInput"
         style="max-width: 600px"
-        placeholder="请输入就诊类别"
         class="input-with-select"
+        :placeholder="`请输入${select === '1' ? '检查号' : '姓名'}`"
         @keyup.enter="getSmsLists"
       >
         <template #prepend>
           <el-select
             v-model="select"
             placeholder="Select"
-            style="width: 115px"
+            class="input-with-selects"
+            style="width: 87px"
             @change="changeSelect"
           >
             <el-option label="检查号" value="1" />
@@ -20,14 +22,16 @@
           </el-select>
         </template>
       </el-input>
-      <el-button type="primary" @click="getSmsLists">搜索</el-button>
+      <el-button type="primary" @click="getSmsLists" style="margin-left: 13px" plain
+        >搜索</el-button
+      >
     </el-card>
     <el-card class="mt8 card-table nopadding-card-top">
       <el-table
         :data="roleList"
         v-loading="loadingRole"
         style="height: calc(100vh - 220px)"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         :row-style="{ textAlign: 'center' }"
       >
         <el-table-column prop="accessionNumber" label="检查号" align="center" />

@@ -66,27 +66,28 @@ onMounted(() => {
               <!-- <LocaleDropdown /> -->
             </div>
           </div>
-          <!-- <Transition appear enter-active-class="animate__animated animate__bounceInRight"> -->
-          <div class="right-inner">
-            <div
-              class="form-box"
-              :style="isLogin && organizationList.length > 0 ? 'width: 806px;' : 'width: 500px'"
-            >
-              <LoginForm
-                v-if="isLogin && organizationList.length > 0"
-                :organizationList="organizationList"
-                class="form-card"
-                @to-register="toRegister"
-              />
-
-              <RegisterForm
-                v-else-if="!isLogin && organizationList.length > 0"
-                class="form-card"
-                @to-login="toLogin"
-              />
-              <div class="class-message">{{ companyName }} {{ eword }} {{ version }}</div>
+          <div class="body-item">
+            <div>
+              <img class="body-left-img" src="@/assets/imgs/login/left_logo.png" />
             </div>
-            <!-- <div class="right-img" v-if="isLogin && organizationList.length > 0"> </div> -->
+
+            <div class="right-inner">
+              <div class="form-box">
+                <LoginForm
+                  v-if="isLogin && organizationList.length > 0"
+                  :organizationList="organizationList"
+                  class="form-card"
+                  @to-register="toRegister"
+                />
+
+                <RegisterForm
+                  v-else-if="!isLogin && organizationList.length > 0"
+                  class="form-card"
+                  @to-login="toLogin"
+                />
+                <div class="class-message">{{ companyName }} {{ eword }} {{ version }}</div>
+              </div>
+            </div>
           </div>
           <!-- </Transition> -->
         </div>
@@ -107,10 +108,10 @@ onMounted(() => {
   padding-right: 10px;
   padding-left: 10px;
   overflow: auto;
-  background: var(--login-bg-color);
-  // background: url('../../assets/imgs/bac-login3.jpg') no-repeat;
+  background-image: url('@/assets/imgs/login/login_backgroud.png');
   background-position: center;
-  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   // }
 
   &__left {
@@ -194,9 +195,10 @@ onMounted(() => {
 
 .header-row {
   display: flex;
+  display: none;
+  color: #fff;
   justify-content: space-between;
   align-items: center;
-  color: #fff;
 
   // >= xl 时右对齐
   // @media (width >= 1280px) {
@@ -236,25 +238,25 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 730px;
+  width: 500px;
   max-width: 100%;
 }
 
 .form-card {
   height: auto;
-  padding: 20px;
+  padding: 30px 20px;
   margin: 0 auto;
 
   // 小于 xl 圆角+白底（light）
   // @media (width <= 1279px) {
-  background-color: var(--app-content-bg-color);
+  background-color: var(--app-content-bg-light-color);
   border-radius: 0;
   // }header-row
 }
 
 .class-message {
   margin-top: 20px;
-  color: #fff;
+  color: #ccc;
   text-align: center;
 }
 
@@ -268,5 +270,31 @@ onMounted(() => {
   background-color: var(--app-content-bg-color);
   align-items: center;
   justify-content: center;
+}
+
+.body-left-img {
+  position: absolute;
+  bottom: 124px;
+  width: 45vw;
+}
+
+.body-item {
+  display: flex;
+  height: 100%;
+  padding: 10vh 6vw 0;
+  align-items: center;
+  justify-content: space-between;
+  // position: absolute;
+  // bottom: 124px;
+}
+
+@media (width <= 1023px) {
+  .body-left-img {
+    display: none;
+  }
+
+  .body-item {
+    justify-content: center;
+  }
 }
 </style>

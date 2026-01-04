@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted, unref } from 'vue'
 import { useAppStore } from '@/store/modules/app'
-import { underlineToHump } from '@/utils'
 import { Fold, Expand } from '@element-plus/icons-vue'
 import { ElIcon } from 'element-plus'
 const appStore = useAppStore()
@@ -48,7 +47,7 @@ watch(
 
 <template>
   <div>
-    <div class="logo-link" style="width: 300px">
+    <div class="logo-link">
       <!-- <img src="@/assets/imgs/logo.svg" class="logo-img" /> -->
       <div class="logo-title">
         <div class="left" v-if="layout !== 'top'">
@@ -56,14 +55,9 @@ watch(
             <ElIcon :size="30" v-if="collapse"> <Expand /></ElIcon>
             <ElIcon :size="30" v-else><Fold /></ElIcon>
           </span>
-          <span style="margin-left: 15px; font-size: 14px" class="header-text">
-            <img
-              src="@/assets/imgs/header_icon.png"
-              style="width: 19px; margin-top: 2px; margin-right: 5px"
-            />
+          <span style="margin-left: 15px; font-size: 14px" class="header-text" v-if="!collapse">
             <span>
               {{ appStore.getTitle }}
-              ( {{ underlineToHump(appStore.getVersion) }})
             </span>
           </span>
         </div>
@@ -88,7 +82,7 @@ watch(
   text-decoration: none;
   cursor: pointer;
   align-items: center;
-  background-color: #414549;
+  background-color: #1c3753;
 }
 
 .logo-img {

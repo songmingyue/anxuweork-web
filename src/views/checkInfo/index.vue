@@ -28,7 +28,7 @@
               v-model="formFirst[alternative[indexInput].prop]"
               placeholder="请输入"
               clearable
-              style="width: 150px"
+              style="width: 160px"
             />
           </div>
         </el-form-item>
@@ -38,7 +38,7 @@
             size="small"
             clearable
             placeholder="请输入"
-            style="width: 150px"
+            style="width: 160px"
           />
         </el-form-item>
         <el-form-item label="">
@@ -71,12 +71,13 @@
               size="small"
               :shortcuts="dateShortcuts"
             />
-            <span class="sep sep-span">-</span>
+            <span class="span-time">至</span>
             <el-date-picker
               v-model="formFirst[timeAlternative[indexTime].propEndTime]"
               value-format="YYYY-MM-DD"
               type="date"
               style="width: 150px; margin-top: -5px"
+              prefix-icon="TimeLikeType"
               placeholder="结束时间"
               size="small"
             />
@@ -113,7 +114,7 @@
               <arrow-down v-else />
             </el-icon>
           </el-button>
-          <el-button size="small" type="primary" @click="onSearch">搜索</el-button>
+          <el-button size="small" type="primary" @click="onSearch" plain>搜索</el-button>
           <el-button size="small" @click="onReset">重置</el-button>
           <el-button size="small" @click="upLoad">导出</el-button>
           <el-dropdown :hide-on-click="false" style="position: fixed; top: 80px; right: 30px">
@@ -157,18 +158,17 @@
     </div>
 
     <!-- 中间主区域：左表格 + 分隔条 + 右预览（图三） -->
-    <el-card shadow="hover" class="mt8 card-table nopadding-card nopadding-card-top">
+    <el-card shadow="hover" class="card-table nopadding-card nopadding-card-top">
       <el-table
         :data="list"
         v-loading="loading"
         height="calc(100vh - 190px)"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column label="" width="90" fixed="left">
+        <el-table-column label="" width="85" fixed="left">
           <template #default="{ row }">
-            <div class="line-status" :style="{ backgroundColor: colorMap(row) }"></div>
             <div class="icon-disable">
               <!-- 影像上传状态 -->
 
@@ -442,18 +442,7 @@ const toggleAdvance = () => {
     showAdvance.value = !showAdvance.value
   }, 10)
 }
-const colorMap = (row) => {
-  switch (row.examStatus) {
-    case '检查完成':
-      return '#24cae3'
-    case '审核完成':
-      return '#e324af'
-    case '修订完成':
-      return '#e3b424'
-    default:
-      return '#67c23a'
-  }
-}
+
 // 表单模型与选项缓存
 const advance = ref<Record<string, any>>({})
 const formOptions = reactive<Record<string, any[]>>({})
@@ -953,5 +942,19 @@ onBeforeUnmount(() => {
 .btn-show {
   margin-right: -12px;
   margin-left: -12px;
+}
+
+.span-time {
+  position: absolute;
+  left: 223px;
+  z-index: 99;
+  display: flex;
+  width: 16px;
+  height: 29px;
+  background: var(--el-input-bg-color, var(--el-fill-color-blank));
+  border-top: 1px solid #858282;
+  border-bottom: 1px solid #858282;
+  align-items: center;
+  justify-content: center;
 }
 </style>

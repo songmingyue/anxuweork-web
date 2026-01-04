@@ -35,7 +35,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onTopSearch">搜索</el-button>
+          <el-button type="primary" @click="onTopSearch" plain>搜索</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -48,16 +48,47 @@
         highlight-current-row
         @row-click="onTopRowClick"
         height="calc(50vh - 170px)"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         :style="{ width: '100%' }"
       >
-        <el-table-column prop="typeClass" sortable label="字典分类" min-width="140" />
-        <el-table-column prop="typeCode" sortable label="类型代码" min-width="180" />
-        <el-table-column prop="typeName" sortable label="类型名称" min-width="180" />
-        <el-table-column prop="allowCreateItem" sortable label="创建字典项" min-width="120" />
-        <el-table-column prop="allowUpdateItem" sortable label="修改字典项" min-width="120" />
-        <el-table-column prop="allowDeleteItem" sortable label="删除字典项" min-width="120" />
-        <el-table-column prop="memo" label="备注" sortable min-width="240" show-overflow-tooltip />
+        <el-table-column
+          prop="typeClass"
+          sortable
+          label="字典分类"
+          min-width="140"
+          align="center"
+        />
+        <el-table-column prop="typeCode" sortable label="类型代码" min-width="180" align="center" />
+        <el-table-column prop="typeName" sortable label="类型名称" min-width="180" align="center" />
+        <el-table-column
+          prop="allowCreateItem"
+          sortable
+          label="创建字典项"
+          min-width="130"
+          align="center"
+        />
+        <el-table-column
+          prop="allowUpdateItem"
+          sortable
+          label="修改字典项"
+          min-width="130"
+          align="center"
+        />
+        <el-table-column
+          prop="allowDeleteItem"
+          sortable
+          label="删除字典项"
+          min-width="130"
+          align="center"
+        />
+        <el-table-column
+          prop="memo"
+          label="备注"
+          sortable
+          min-width="240"
+          show-overflow-tooltip
+          align="center"
+        />
       </el-table>
 
       <div class="pager">
@@ -95,7 +126,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :disabled="!selectedType" @click="onBottomSearch"
+          <el-button type="primary" :disabled="!selectedType" @click="onBottomSearch" plain
             >搜索</el-button
           >
           <el-button
@@ -115,7 +146,7 @@
         :data="bottomList"
         v-loading="bottomLoading"
         height="calc(50vh - 130px)"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         :style="{ width: '100%' }"
         :empty-text="selectedType ? '暂无数据' : '请先在上方选择一个类型'"
       >

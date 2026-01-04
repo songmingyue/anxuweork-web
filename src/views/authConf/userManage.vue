@@ -14,7 +14,8 @@ import {
   ElOption,
   ElPagination,
   ElSwitch,
-  ElUpload
+  ElUpload,
+  ElDialog
 } from 'element-plus'
 import {
   getorgList,
@@ -29,7 +30,10 @@ import {
   createUser,
   addUserRoles,
   getroles,
-  editUser
+  editUser,
+  deleteUser,
+  checkselfUser,
+  addoneroleUser
 } from '@/api/userMessage'
 import { authorizeBulkregist } from '@/api/userMessage'
 import { OrganizationList } from '@/api/login/types'
@@ -44,7 +48,8 @@ const filters = reactive<UserInfo>({
   deptID: '',
   status: StatusOptions[0].value
 })
-
+const selectRole = ref<any[]>([])
+const isSelectRole = ref('')
 const orgOptions = ref<OrganizationOnce[]>([])
 
 // 列表与分页
@@ -58,6 +63,7 @@ const currentPage = ref(1)
 const roleList = ref<RoleData[]>([])
 const roleTableRef = ref<InstanceType<typeof ElTable> | null>(null)
 const currentUser = ref<UserOnce | null>(null)
+const isShowChange = ref(false)
 const initializingRoles = ref(false) // 避免初始化时触发保存
 const prevSelectedRoleUIDs = ref<string[]>([])
 
@@ -128,12 +134,33 @@ function handleEdit(row: UserOnce) {
   dialogVisible.value = true
 }
 
+const showPermissions = async (row: UserOnce) => {
+  currentUser.value = row
+  const { data, isSuccess, message } = await checkselfUser(row.userUID, row.organizationID)
+  if (isSuccess) {
+    isShowChange.value = true
+    selectRole.value = data
+    isSelectRole.value = data.find((item) => item.lAYChecked === 'true')?.roleUID || ''
+  } else {
+    ElMessage.error(message || '操作失败')
+    return
+  }
+}
+const handleDelete = async (row: UserOnce) => {
+  await ElMessageBox.confirm(`确认删除用户【${row.name}】吗？`, '危险操作', {
+    type: 'warning'
+  })
+  const data = await deleteUser(row.userUID)
+  ElMessage.success(data.message || '操作成功')
+  getUserList()
+}
+
 async function handlePassword(row: UserOnce) {
   await ElMessageBox.confirm(`确认重置用户【${row.name}】的密码吗？`, '危险操作', {
     type: 'warning'
   })
   const data = await resetUser(row)
-  const password = 'yjp@HRB2025'
+  const password = '123456'
   ElMessage.success(data.message || '操作成功')
   ElMessageBox.confirm(`密码已重置为初始密码${password}`, '提示', {
     type: 'success',
@@ -261,6 +288,23 @@ const handleUserConfirm = async (formData: UserOnce) => {
   getUserList()
 }
 
+const handleCancel = () => {
+  isShowChange.value = false
+}
+
+const handleConfirm = async () => {
+  const { isSuccess, message } = await addoneroleUser(
+    currentUser.value?.userUID || '',
+    isSelectRole.value
+  )
+  if (isSuccess) {
+    ElMessage.success(message)
+    isShowChange.value = false
+  } else {
+    ElMessage.error(message || '操作失败')
+  }
+}
+
 onMounted(() => {
   getOrgList()
 })
@@ -305,9 +349,9 @@ onMounted(() => {
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">检索</el-button>
-          <el-button @click="resetFilters">重置</el-button>
-          <el-button type="success" @click="handleCreate">新增用户</el-button>
+          <el-button type="primary" @click="handleSearch" plain>检索</el-button>
+          <el-button @click="resetFilters" plain>重置</el-button>
+          <el-button type="success" @click="handleCreate" plain>新增用户</el-button>
           <el-upload
             style="margin-left: 10px"
             :auto-upload="false"
@@ -315,7 +359,7 @@ onMounted(() => {
             :on-change="(file: any) => handleBatchRegister((file?.raw || file) as File)"
             accept=".csv,.xlsx,.xls,.json"
           >
-            <el-button type="primary" :loading="uploading">批量注册</el-button>
+            <el-button type="primary" :loading="uploading" plain>批量注册</el-button>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -326,9 +370,9 @@ onMounted(() => {
         :data="tableData"
         v-loading="loading"
         highlight-current-row
-        :height="'calc(50vh - 160px)'"
+        :height="'calc(100vh - 260px)'"
         :style="{ width: '100%' }"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         @current-change="handleCurrentChange"
       >
         <el-table-column
@@ -424,6 +468,7 @@ onMounted(() => {
             <el-switch
               v-model="row.status"
               size="small"
+              :disabled="row.organizationID === '-1'"
               :active-value="true"
               :inactive-value="false"
               active-text="启用"
@@ -432,10 +477,38 @@ onMounted(() => {
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" fixed="right" width="150">
+        <el-table-column label="操作" align="center" fixed="right" width="230">
           <template #default="{ row }">
-            <el-button link size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button link size="small" type="danger" @click="handlePassword(row)"
+            <el-button
+              link
+              size="small"
+              v-if="row.organizationID !== '-1'"
+              type="primary"
+              @click="handleEdit(row)"
+              >编辑</el-button
+            >
+            <el-button
+              link
+              size="small"
+              v-if="row.organizationID !== '-1'"
+              type="danger"
+              @click="handleDelete(row)"
+              >删除</el-button
+            >
+            <el-button
+              link
+              size="small"
+              v-if="row.organizationID !== '-1'"
+              type="primary"
+              @click="showPermissions(row)"
+              >权限分配</el-button
+            >
+            <el-button
+              link
+              size="small"
+              v-if="row.organizationID !== '-1'"
+              type="danger"
+              @click="handlePassword(row)"
               >重置密码</el-button
             >
           </template>
@@ -465,7 +538,7 @@ onMounted(() => {
         :data="roleList"
         ref="roleTableRef"
         height="calc(50vh - 160px)"
-        :header-cell-style="{ textAlign: 'center', background: '#f5f7fa', padding: '13px' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         row-key="roleUID"
         @selection-change="onRoleSelectionChange"
       >
@@ -504,7 +577,20 @@ onMounted(() => {
         />
       </el-table>
     </el-card>
-
+    <el-dialog title="修改权限" v-model="isShowChange" width="500px">
+      <el-select v-model="isSelectRole">
+        <el-option
+          v-for="d in selectRole"
+          :key="d.roleUID"
+          :label="d.roleName"
+          :value="d.roleUID"
+        />
+      </el-select>
+      <template #footer>
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="handleConfirm">确定</el-button>
+      </template>
+    </el-dialog>
     <UserFormDialog
       v-model:visible="dialogVisible"
       :isEdit="isEdit"

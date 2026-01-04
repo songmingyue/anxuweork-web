@@ -152,7 +152,7 @@ function renderMenu(list: any[]) {
   <div class="el-scrollbar__wrap el-scrollbar__wrap--hidden-default">
     <div
       :id="prefixCls"
-      style="height: 100%; background-color: #414549"
+      style="height: 100%; background-color: #426589"
       :class="[
         `${prefixCls} ${prefixCls}__${menuMode}`,
         'menu-root',
@@ -165,7 +165,7 @@ function renderMenu(list: any[]) {
       <ElMenu
         :uniqueOpened="layout === 'top' ? false : uniqueOpened"
         :collapse="layout === 'top' || layout === 'cutMenu' ? false : collapse"
-        backgroundColor="#414549"
+        backgroundColor="#426589"
         textColor="#bbb"
         activeTextColor="#fff"
         :default-active="activeMenu"
@@ -189,7 +189,7 @@ function renderMenu(list: any[]) {
     height: 100%;
     overflow: hidden;
     flex-direction: column;
-    background: #414549;
+    background: #426589;
   }
 
   .menu--min {
@@ -216,17 +216,17 @@ function renderMenu(list: any[]) {
     .@{elNamespace}-menu-item {
       &:hover {
         color: #fff !important;
-        background-color: #414549 !important;
+        background-color: #93a7be !important;
       }
     }
 
     // 设置选中时的高亮背景和高亮颜色
     .@{elNamespace}-menu-item.is-active {
-      color: #fff !important;
-      background-color: #409eff !important;
+      color: #555252 !important;
+      background-color: #fff !important;
 
       &:hover {
-        background-color: #409eff !important;
+        background-color: #fff !important;
       }
     }
 
@@ -238,7 +238,7 @@ function renderMenu(list: any[]) {
     .@{elNamespace}-menu {
       .@{elNamespace}-sub-menu__title,
       .@{elNamespace}-menu-item:not(.is-active) {
-        background-color: #414549 !important;
+        // background-color: #426589 !important;
       }
     }
   }
@@ -250,7 +250,8 @@ function renderMenu(list: any[]) {
     & > .is-active,
     & > .is-active > .@{elNamespace}-sub-menu__title {
       position: relative;
-      background-color: #409eff !important;
+      color: #837d7d !important;
+      background-color: #fff !important;
     }
   }
 
@@ -310,15 +311,15 @@ function renderMenu(list: any[]) {
   .el-sub-menu__title,
   .el-menu-item {
     &:hover {
-      color: #fff !important;
-      background-color: rgb(52 55 58) !important;
+      color: #ccc !important;
+      background-color: #426589 !important;
     }
   }
 
   // 设置选中时的高亮背景
   .el-menu-item.is-active {
     position: relative;
-    background-color: #409eff !important;
+    background-color: #fff !important;
 
     &:hover {
       background-color: #409eff !important;

@@ -1,10 +1,9 @@
 <script setup lang="tsx">
 import { reactive, ref, watch, onMounted, unref } from 'vue'
 import { Form, FormSchema } from '@/components/Form'
-import { ElCheckbox, ElButton } from 'element-plus'
+import { ElCheckbox } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
 import { loginApi } from '@/api/login'
-import { underlineToHump } from '@/utils'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OrganizationList, UserLoginTypes } from '@/api/login/types'
@@ -14,6 +13,7 @@ import { BaseButton } from '@/components/Button'
 import { encryptWithPublicKey } from '@/utils/encrypt'
 import { getLoginKey } from '@/api/common'
 import { useAppStore } from '@/store/modules/app'
+import iconHeader from '@/assets/imgs/login/icon_header.png'
 const publicKey = ref('')
 const { required } = useValidator()
 
@@ -39,34 +39,47 @@ const getLoginKeyMsd = async () => {
 
 const schema = reactive<FormSchema[]>([
   {
-    field: 'title',
+    field: 'icon',
     colProps: { span: 24 },
     formItemProps: {
       slots: {
-        default: () => <h2 style="color:#666">登录</h2>
+        default: () => <img style="margin: auto; width: 60px" src={iconHeader} alt="集成平台" />
       }
     }
   },
   {
-    field: 'organizationID',
-    label: '',
-    component: 'Select',
+    field: 'title',
     colProps: { span: 24 },
-    componentProps: {
-      autocomplete: 'off',
-      style: { width: '100%', zIndex: 11 },
-      placeholder: '请选择机构',
-      options: props.organizationList.map((org) => ({
-        label: org.label,
-        value: org.value
-      })),
-
-      clearable: true,
-      onChange: (value: string) => {
-        console.log('选择的机构ID:', value)
+    formItemProps: {
+      slots: {
+        default: () => (
+          <h2 style="color:#666; margin: auto; font-size: 28px; letter-spacing: 4px">
+            {appStore.title}
+          </h2>
+        )
       }
     }
   },
+  // {
+  //   field: 'organizationID',
+  //   label: '',
+  //   component: 'Select',
+  //   colProps: { span: 24 },
+  //   componentProps: {
+  //     autocomplete: 'off',
+  //     style: { width: '100%', zIndex: 11 },
+  //     placeholder: '请选择机构',
+  //     options: props.organizationList.map((org) => ({
+  //       label: org.label,
+  //       value: org.value
+  //     })),
+
+  //     clearable: true,
+  //     onChange: (value: string) => {
+  //       console.log('选择的机构ID:', value)
+  //     }
+  //   }
+  // },
   {
     field: 'account',
     label: '',
@@ -124,12 +137,7 @@ const schema = reactive<FormSchema[]>([
             >
               登录
             </BaseButton>
-            <div style="display: flex">
-              <span class="register">还没有账号？</span>
-              <ElButton link onClick={toRegister} type="primary">
-                去注册
-              </ElButton>
-            </div>
+            <div style="display: flex"></div>
           </>
         )
       }
@@ -142,8 +150,8 @@ const remember = ref(userStore.getRememberMe)
 const initLoginInfo = () => {
   const loginInfo = userStore.getLoginInfo
   if (loginInfo) {
-    const { account, password, organizationID } = loginInfo
-    setValues({ username: account, password, organizationID })
+    const { account, password } = loginInfo
+    setValues({ username: account, password })
   }
 }
 onMounted(() => {
@@ -179,8 +187,7 @@ const signIn = async () => {
         const passwordEncrypted: UserLoginTypes = {
           password: encryptWithPublicKey(formData.password || '', unref(publicKey)) || '',
           account: encryptWithPublicKey(formData.account || '', unref(publicKey)) || '',
-          organizationID:
-            encryptWithPublicKey(formData.organizationID || '', unref(publicKey)) || '',
+
           rememberMe: encryptWithPublicKey('', unref(publicKey)) || ''
         }
         const res = await loginApi(passwordEncrypted)
@@ -191,8 +198,7 @@ const signIn = async () => {
           if (unref(remember)) {
             userStore.setLoginInfo({
               account: formData.account,
-              password: formData.password,
-              organizationID: formData.organizationID
+              password: formData.password
             })
           } else {
             userStore.setLoginInfo(undefined)
@@ -214,11 +220,6 @@ const signIn = async () => {
     }
   })
 }
-
-// 去注册页面
-const toRegister = () => {
-  emit('to-register')
-}
 </script>
 
 <template>
@@ -232,14 +233,6 @@ const toRegister = () => {
       class="themed-border"
       @register="formRegister"
     />
-    <div>
-      <img
-        style="position: absolute; top: 93px; left: 431px; z-index: 10; height: 314px"
-        src="@/assets/imgs/logo.png
-                    "
-      />
-      <h3 class="login-img">{{ underlineToHump(appStore.getTitle) }}</h3>
-    </div>
   </div>
 </template>
 
@@ -271,7 +264,6 @@ const toRegister = () => {
 
 .themed-border {
   width: 393px;
-  height: 448px;
   border-radius: var(--el-border-radius-base);
 }
 
@@ -289,7 +281,7 @@ const toRegister = () => {
 .forms-box {
   position: relative;
   display: flex;
-  width: 776px;
+  width: 432px;
   flex-direction: row;
   align-items: center;
 }

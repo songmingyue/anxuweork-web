@@ -9,7 +9,7 @@
   z-index: 3000;
 }
 .rl-logo {
-  background: var(--left-menu-bg-color);
+  background: #44665b;
   position: relative;
 }
 .rl-logo.no-pl {

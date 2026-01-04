@@ -250,6 +250,41 @@ export const disableUser = (userUID: string, status: boolean): Promise<IResponse
   })
 }
 
+export const deleteUser = (userUID: string): Promise<IResponse<[]>> => {
+  return request.post({
+    url: 'usermanagement/delete',
+    data: { userUID },
+    requestTem: {
+      requestTem: 'UserDisableInputProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
+export const checkselfUser = (
+  userUID: string,
+  OrganizationID: string
+): Promise<IResponse<RoleMsgOut[]>> => {
+  return request.post({
+    url: 'userrole/checkself',
+    data: { userUID, OrganizationID },
+    requestTem: {
+      requestTem: 'UserRoleInputProto',
+      responseTem: 'RoleMstOutputProto'
+    }
+  })
+}
+export const addoneroleUser = (userUID: string, roleUID: string): Promise<IResponse<[]>> => {
+  return request.post({
+    url: 'userrole/addonerole',
+    data: { userUID, roleUID },
+    requestTem: {
+      requestTem: 'UserRoleAddProto',
+      responseTem: 'whitelist'
+    }
+  })
+}
+
 export const resetUser = (data: UserOnce): Promise<IResponse<[]>> => {
   return request.post({
     url: 'usermanagement/reset',

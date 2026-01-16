@@ -1,5 +1,4 @@
 import router from './router'
-import type { RouteRecordRaw } from 'vue-router'
 import { useTitle } from '@/hooks/web/useTitle'
 import { useNProgress } from '@/hooks/web/useNProgress'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
@@ -17,9 +16,10 @@ router.beforeEach(async (to, from, next) => {
   loadStart()
   const permissionStore = usePermissionStoreWithOut()
   const userStore = useUserStoreWithOut()
-  if (userStore.getUserInfo) {
+  if (userStore.getToken) {
     if (to.path === '/login') {
-      next({ path: '/' })
+      next()
+      return
     } else {
       if (permissionStore.getIsAddRouters) {
         next()
@@ -27,16 +27,9 @@ router.beforeEach(async (to, from, next) => {
       }
       setCssVar('--tags-view-height', '0px') // 进入页面时先隐藏标签页 这个标签页不要了
 
-      // 开发者可根据实际情况进行修改
-      const roleRouters = JSON.parse(localStorage.getItem('userInfo') || '{}').menuList
-
-      await permissionStore.generateRoutes(roleRouters as string[])
-      permissionStore.getAddRouters.forEach((route) => {
-        router.addRoute(route as unknown as RouteRecordRaw) // 动态添加可访问路由表
-      })
       const redirectPath = from.query.redirect || to.path
       const redirect = decodeURIComponent(redirectPath as string)
-      const nextData = to.path === redirect ? { ...to, replace: true } : { path: '/storageMedium' }
+      const nextData = to.path === redirect ? { ...to, replace: true } : { path: '/index' }
       permissionStore.setIsAddRouters(true)
       next(nextData)
     }

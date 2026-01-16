@@ -1,331 +1,37 @@
 {
-  "id": "5039005",
-  "name": "全网云",
+  "id": "5103628",
+  "name": "一站式病人影像中心",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
-  "description": "全网云前端icon",
+  "description": "",
   "glyphs": [
     {
-      "icon_id": "1028365",
-      "name": "数据统计",
-      "font_class": "shujutongji",
-      "unicode": "e637",
-      "unicode_decimal": 58935
-    },
-    {
-      "icon_id": "7577307",
-      "name": "24gl-printer",
-      "font_class": "24gl-printer",
-      "unicode": "e9bd",
-      "unicode_decimal": 59837
-    },
-    {
-      "icon_id": "21351062",
-      "name": "追加",
-      "font_class": "zhuijia",
-      "unicode": "e612",
-      "unicode_decimal": 58898
-    },
-    {
-      "icon_id": "5171604",
-      "name": "申请单",
-      "font_class": "wodeziliao",
-      "unicode": "e601",
-      "unicode_decimal": 58881
-    },
-    {
-      "icon_id": "658044",
-      "name": "解锁",
-      "font_class": "jiesuo",
-      "unicode": "e669",
-      "unicode_decimal": 58985
-    },
-    {
-      "icon_id": "679775",
-      "name": "锁定",
-      "font_class": "suoding",
-      "unicode": "e6e6",
-      "unicode_decimal": 59110
-    },
-    {
-      "icon_id": "6241498",
-      "name": "文件重采",
-      "font_class": "wenjianjiatianjia",
-      "unicode": "e62a",
-      "unicode_decimal": 58922
-    },
-    {
-      "icon_id": "6337498",
-      "name": "编辑",
-      "font_class": "tianxie",
-      "unicode": "ec88",
-      "unicode_decimal": 60552
-    },
-    {
-      "icon_id": "12387128",
-      "name": "推送",
-      "font_class": "feiji1",
-      "unicode": "e90a",
-      "unicode_decimal": 59658
-    },
-    {
-      "icon_id": "15391367",
-      "name": "报告",
-      "font_class": "baogao1",
-      "unicode": "e61f",
-      "unicode_decimal": 58911
-    },
-    {
-      "icon_id": "15644407",
-      "name": "云上传",
-      "font_class": "yunshangchuan",
-      "unicode": "e6d0",
-      "unicode_decimal": 59088
-    },
-    {
-      "icon_id": "43444356",
-      "name": "相关检查",
-      "font_class": "tingzhenqi1",
-      "unicode": "e7f4",
-      "unicode_decimal": 59380
-    },
-    {
-      "icon_id": "43570094",
-      "name": "胶片",
-      "font_class": "Gc_125_line-Film",
-      "unicode": "e611",
-      "unicode_decimal": 58897
-    },
-    {
-      "icon_id": "46112867",
-      "name": "影像",
-      "font_class": "a-313795151",
-      "unicode": "e602",
-      "unicode_decimal": 58882
-    },
-    {
-      "icon_id": "46113246",
-      "name": "影像选中",
-      "font_class": "a-313805856",
-      "unicode": "e604",
-      "unicode_decimal": 58884
-    },
-    {
-      "icon_id": "46113247",
-      "name": "有上传影像",
-      "font_class": "a-313805854",
-      "unicode": "e605",
-      "unicode_decimal": 58885
-    },
-    {
-      "icon_id": "35483062",
-      "name": "统计_折线图",
-      "font_class": "tongji_zhexiantu",
-      "unicode": "e610",
-      "unicode_decimal": 58896
-    },
-    {
-      "icon_id": "13474746",
-      "name": "影像集中诊断",
-      "font_class": "yingxiangjizhongzhenduan",
-      "unicode": "e636",
-      "unicode_decimal": 58934
-    },
-    {
-      "icon_id": "579386",
-      "name": "缩小",
-      "font_class": "suoxiao",
-      "unicode": "e616",
-      "unicode_decimal": 58902
-    },
-    {
-      "icon_id": "841850",
-      "name": "飞机",
-      "font_class": "feiji",
-      "unicode": "e6ae",
-      "unicode_decimal": 59054
-    },
-    {
-      "icon_id": "4662757",
-      "name": "报告",
-      "font_class": "baogao",
-      "unicode": "e630",
-      "unicode_decimal": 58928
-    },
-    {
-      "icon_id": "5791019",
-      "name": "放射",
-      "font_class": "fangshe",
-      "unicode": "e6cd",
-      "unicode_decimal": 59085
-    },
-    {
-      "icon_id": "6582320",
-      "name": "文件",
-      "font_class": "wenjian",
-      "unicode": "e629",
-      "unicode_decimal": 58921
-    },
-    {
-      "icon_id": "8791338",
-      "name": "手动",
-      "font_class": "shoudong",
-      "unicode": "e729",
-      "unicode_decimal": 59177
-    },
-    {
-      "icon_id": "9273208",
-      "name": "放大",
-      "font_class": "fangda",
-      "unicode": "e666",
-      "unicode_decimal": 58982
-    },
-    {
-      "icon_id": "10232782",
-      "name": "信息",
-      "font_class": "xinxi",
+      "icon_id": "34605178",
+      "name": "chong_ming_ming",
+      "font_class": "chong_ming_ming",
       "unicode": "e78f",
       "unicode_decimal": 59279
     },
     {
-      "icon_id": "11019854",
-      "name": "申请单",
-      "font_class": "shenqingdan",
-      "unicode": "e60e",
-      "unicode_decimal": 58894
+      "icon_id": "3590948",
+      "name": "配置管理",
+      "font_class": "peizhiguanli",
+      "unicode": "e631",
+      "unicode_decimal": 58929
     },
     {
-      "icon_id": "18170215",
-      "name": "云端,上传",
-      "font_class": "cloud-upload",
-      "unicode": "e98a",
-      "unicode_decimal": 59786
-    },
-    {
-      "icon_id": "18170230",
-      "name": "电影,胶片,影片",
-      "font_class": "film",
-      "unicode": "e98f",
-      "unicode_decimal": 59791
-    },
-    {
-      "icon_id": "18211336",
-      "name": "听诊器",
-      "font_class": "tingzhenqi",
-      "unicode": "e7a9",
-      "unicode_decimal": 59305
-    },
-    {
-      "icon_id": "34927814",
-      "name": "5放射诊疗设备管理-设备系统",
-      "font_class": "a-5fangshezhenliaoshebeiguanli-shebeixitong",
-      "unicode": "e655",
-      "unicode_decimal": 58965
-    },
-    {
-      "icon_id": "41801029",
-      "name": "报告上传",
-      "font_class": "baogaoshangchuan",
-      "unicode": "e799",
-      "unicode_decimal": 59289
-    },
-    {
-      "icon_id": "2320948",
-      "name": "诊疗信息",
-      "font_class": "zhenliao",
-      "unicode": "e628",
-      "unicode_decimal": 58920
-    },
-    {
-      "icon_id": "4520330",
-      "name": "日志信息",
-      "font_class": "rizhi",
-      "unicode": "e60c",
-      "unicode_decimal": 58892
-    },
-    {
-      "icon_id": "5243980",
-      "name": "插件配置",
-      "font_class": "chajianpeizhi",
-      "unicode": "e69c",
-      "unicode_decimal": 59036
-    },
-    {
-      "icon_id": "6527123",
-      "name": "日志",
-      "font_class": "rizhi1",
-      "unicode": "e647",
-      "unicode_decimal": 58951
-    },
-    {
-      "icon_id": "12515461",
-      "name": "权限配置",
-      "font_class": "quanxian",
-      "unicode": "e60d",
-      "unicode_decimal": 58893
-    },
-    {
-      "icon_id": "41431467",
-      "name": "参数配置",
-      "font_class": "canshu",
-      "unicode": "e60f",
-      "unicode_decimal": 58895
+      "icon_id": "5766793",
+      "name": "管理1",
+      "font_class": "guanli",
+      "unicode": "e6a3",
+      "unicode_decimal": 59043
     },
     {
       "icon_id": "42084062",
-      "name": "服务配置",
+      "name": "setting",
       "font_class": "setting",
       "unicode": "e966",
       "unicode_decimal": 59750
-    },
-    {
-      "icon_id": "2743879",
-      "name": "归档",
-      "font_class": "guidang",
-      "unicode": "e640",
-      "unicode_decimal": 58944
-    },
-    {
-      "icon_id": "6510092",
-      "name": "系统",
-      "font_class": "xitong",
-      "unicode": "e835",
-      "unicode_decimal": 59445
-    },
-    {
-      "icon_id": "7171141",
-      "name": "任务分配",
-      "font_class": "jiancharenwufenpei",
-      "unicode": "e624",
-      "unicode_decimal": 58916
-    },
-    {
-      "icon_id": "10434642",
-      "name": "银行存管",
-      "font_class": "yinhangcunguan",
-      "unicode": "e725",
-      "unicode_decimal": 59173
-    },
-    {
-      "icon_id": "22511058",
-      "name": "其他平台",
-      "font_class": "a-106_other",
-      "unicode": "e681",
-      "unicode_decimal": 59009
-    },
-    {
-      "icon_id": "27451821",
-      "name": "归档",
-      "font_class": "guidang1",
-      "unicode": "e600",
-      "unicode_decimal": 58880
-    },
-    {
-      "icon_id": "38291377",
-      "name": "插件管理",
-      "font_class": "a-bianzu23",
-      "unicode": "e603",
-      "unicode_decimal": 58883
     }
   ]
 }

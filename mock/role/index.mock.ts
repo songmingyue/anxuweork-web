@@ -334,14 +334,6 @@ const adminList = [
         }
       },
       {
-        path: 'avatars',
-        component: 'views/Components/Avatars',
-        name: 'Avatars',
-        meta: {
-          title: 'router.avatars'
-        }
-      },
-      {
         path: 'i-agree',
         component: 'views/Components/IAgree',
         name: 'IAgree',

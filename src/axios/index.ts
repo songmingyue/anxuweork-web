@@ -1,26 +1,16 @@
 import service from './service'
-import { useUserStoreWithOut } from '@/store/modules/user'
 
 const request = (option: AxiosConfig) => {
-  const { url, method, params, data, headers, responseType, requestTem } = option
-  const baseURL = 'api/'
-  const userStore = useUserStoreWithOut()
+  const { url, method, params, data, headers, requestTem } = option
+  const baseURL = ''
   return service.request({
     url: baseURL + url,
     method,
     params,
     data: data,
-    responseType: responseType ? responseType : 'arraybuffer',
     headers: {
-      [userStore.getTokenKey ?? 'Authorization']: userStore.getToken ?? '',
-      UserInfo: userStore.getUserInfo
-        ? JSON.stringify({
-            userUID: userStore.getUserInfo[0].userUID,
-            organizationID: userStore.getUserInfo[0].organizationID
-          })
-        : '',
-      'X-Requested-With': 'XMLHttpRequest',
-      ...headers
+      ...headers,
+      userid: 'admin'
     },
     proto: requestTem
   })
@@ -28,16 +18,16 @@ const request = (option: AxiosConfig) => {
 
 export default {
   get: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'get', ...option }) as Promise<IResponse<T>>
+    return request({ method: 'get', ...option }) as Promise<T>
   },
   post: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'post', ...option }) as Promise<IResponse<T>>
+    return request({ method: 'post', ...option }) as Promise<T>
   },
   delete: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'delete', ...option }) as Promise<IResponse<T>>
+    return request({ method: 'delete', ...option }) as Promise<T>
   },
   put: <T = any>(option: AxiosConfig) => {
-    return request({ method: 'put', ...option }) as Promise<IResponse<T>>
+    return request({ method: 'put', ...option }) as Promise<T>
   },
   cancelRequest: (url: string | string[]) => {
     return service.cancelRequest(url)

@@ -37,9 +37,7 @@ const dialogVisible = ref<boolean>(false)
     <div class="user-info">
       <!-- <img src="@/assets/imgs/avatar.jpg" alt="" class="avatar" /> -->
       <span class="username"
-        ><el-icon :size="15"><Avatar /></el-icon>您好，{{
-          userStore.getUserInfoObj?.userName
-        }}</span
+        ><el-icon :size="15"><Avatar /></el-icon>您好，{{ userStore.getUserName }}</span
       >
       <el-icon class="el-icon--right">
         <arrow-down />

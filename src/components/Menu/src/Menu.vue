@@ -2,13 +2,12 @@
 import { computed, ref, h, unref, reactive } from 'vue'
 import { ElMenu, ElSubMenu, ElMenuItem } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { menuList } from './menuList'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
 import { Icon } from '@/components/Icon'
 
 // 获取本地存储的菜单数据
-const userinfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-const menuList = (userinfo && userinfo[0] && userinfo[0].viewParts) || []
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('menu')
@@ -27,36 +26,20 @@ const menuIconList = reactive<
   }>
 >([
   {
-    key: '/paramConf',
-    icon: 'canshu'
+    key: '/index',
+    icon: 'guanli'
   },
   {
-    key: '/authConf',
-    icon: 'quanxian'
-  },
-  {
-    key: '/plugConf',
-    icon: 'chajianpeizhi'
-  },
-  {
-    key: '/serviceCof',
+    key: '/configuration',
     icon: 'setting'
   },
   {
-    key: '/checkInfo',
-    icon: 'jiancharenwufenpei'
+    key: '/management',
+    icon: 'peizhiguanli'
   },
   {
-    key: '/diagnosisInfo',
-    icon: 'zhenliao'
-  },
-  {
-    key: '/dataConf',
-    icon: 'rizhi'
-  },
-  {
-    key: '/statistics',
-    icon: 'tongji_zhexiantu'
+    key: '/client',
+    icon: 'chong_ming_ming'
   }
 ])
 const menuMode = computed((): 'vertical' | 'horizontal' => {

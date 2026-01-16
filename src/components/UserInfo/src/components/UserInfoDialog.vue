@@ -186,9 +186,9 @@ const { formRegister: profileRegister, formMethods: profileFormMethods } = useFo
 const { formRegister: passwordRegister, formMethods: passwordFormMethods } = useForm()
 
 const initProfile = () => {
-  const info: any = userStore.getUserInfoObj || {}
+  const info: any = userStore.getAccount || {}
   try {
-    options.value = userStore.getDeptOptions
+    options.value = userStore.getAccount
     profileFormMethods.setValues?.({
       loginName: info.loginName || '',
       userName: info.userName || '',
@@ -220,7 +220,6 @@ const handleSubmit = async () => {
   if (activeTab.value === 'profile') {
     const datas: any = await profileFormMethods.getFormData<any>()
     const { isSuccess, message } = await register({
-      ...userStore.getUserInfoObj,
       account: datas.loginName,
       name: datas.userName,
       userName: datas.userName,
@@ -234,7 +233,7 @@ const handleSubmit = async () => {
       ElMessage.success('个人资料更新成功')
       changepwd
 
-      userStore.setUserInfo([Object.assign(userStore.getUserInfoObj as any, datas)] as any)
+      // userStore.setUserInfo([Object.assign(userStore.getUserInfoObj as any, datas)] as any)
       dialogVisible.value = false
     } else {
       ElMessage.error(message || '个人资料更新失败')
@@ -245,8 +244,7 @@ const handleSubmit = async () => {
     const { isSuccess, message } = await changepwd({
       oldPassword,
       newPassword,
-      confirmPassword,
-      userUID: userStore.getUserUID
+      confirmPassword
     })
     if (isSuccess) {
       ElMessage.success('密码修改成功')

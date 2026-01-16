@@ -100,7 +100,7 @@ export interface UserRight {
 export interface UserLoginTypes {
   account: string
   password: string
-  rememberMe: string
+  loginType: number
 }
 
 export interface OrganizationList {

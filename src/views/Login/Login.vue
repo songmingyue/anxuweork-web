@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { LoginForm, RegisterForm } from './components'
+import { LoginForm } from './components'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 
 import { useDesign } from '@/hooks/web/useDesign'
-import { onMounted, ref, unref } from 'vue'
+import { ref } from 'vue'
 import { ElScrollbar } from 'element-plus'
-import { getOrganization } from '@/api/login'
-import { getVersion } from '@/api/common'
 import { OrganizationList } from '@/api/login/types'
-import { useStorage } from '@/hooks/web/useStorage'
-const { setStorage } = useStorage('localStorage')
+
 const { getPrefixCls } = useDesign()
 const version = ref('')
 const prefixCls = getPrefixCls('login')
@@ -22,26 +19,6 @@ const eword = (import.meta as any).env?.VITE_APP_COMPANY_EN_NAME || ''
 const toRegister = () => {
   isLogin.value = false
 }
-const toLogin = () => {
-  isLogin.value = true
-}
-
-const getVersionMsd = async () => {
-  const data = await getVersion()
-  version.value = data
-  localStorage.setItem('version', data)
-}
-
-const getorgbylogin = async () => {
-  const { data } = await getOrganization()
-  organizationList.value = data || []
-  const orgList = unref(organizationList).filter((item) => item.value !== '-1')
-  setStorage('org', orgList)
-}
-onMounted(() => {
-  getVersionMsd()
-  getorgbylogin()
-})
 </script>
 
 <template>
@@ -74,17 +51,12 @@ onMounted(() => {
             <div class="right-inner">
               <div class="form-box">
                 <LoginForm
-                  v-if="isLogin && organizationList.length > 0"
                   :organizationList="organizationList"
                   class="form-card"
                   @to-register="toRegister"
                 />
 
-                <RegisterForm
-                  v-else-if="!isLogin && organizationList.length > 0"
-                  class="form-card"
-                  @to-login="toLogin"
-                />
+                <!-- <RegisterForm v-else-if="!isLogin" class="form-card" @to-login="toLogin" /> -->
                 <div class="class-message">{{ companyName }} {{ eword }} {{ version }}</div>
               </div>
             </div>

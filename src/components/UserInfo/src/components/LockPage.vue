@@ -8,7 +8,7 @@ import { useLockStore } from '@/store/modules/lock'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useNow } from '@/hooks/web/useNow'
 import { useDesign } from '@/hooks/web/useDesign'
-import { loginOutApi } from '@/api/login'
+import { userLogout } from '@/api/login'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { Icon } from '@/components/Icon'
 const tagsViewStore = useTagsViewStore()
@@ -48,7 +48,7 @@ async function unLock() {
 
 // 返回登录
 async function goLogin() {
-  const res = await loginOutApi().catch(() => {})
+  const res = await userLogout().catch(() => {})
   if (res) {
     clear()
     tagsViewStore.delAllViews()

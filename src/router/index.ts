@@ -1,36 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
-import { Layout } from '@/utils/routerHelper'
 import { NO_RESET_WHITE_LIST } from '@/constants'
-import { authConf } from './authConf'
-import { paramConf } from './paramConf'
-import { checkInfo } from './checkInfo'
-import { logConfig } from './logConfig'
-import { plugConf } from './plugConf'
-import { serviceCof } from './serviceCof'
-import { diagnosisInfo } from './diagnosisInfo'
-import { statics } from './orgCheckCharge'
-import { dataSearch } from './dataSearch'
+import { Layout } from '@/utils/routerHelper'
+import { management } from '@/router/management'
 
 export const constantRouterMap: AppRouteRecordRaw[] = [
-  {
-    path: '/redirect',
-    component: Layout,
-    name: 'RedirectWrap',
-    children: [
-      {
-        path: '/redirect/:path(.*)',
-        name: 'Redirect',
-        component: () => import('@/views/Redirect/Redirect.vue'),
-        meta: {}
-      }
-    ],
-    meta: {
-      hidden: true,
-      noTagsView: true
-    }
-  },
   {
     path: '/login',
     component: () => import('@/views/Login/Login.vue'),
@@ -42,24 +17,18 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     }
   },
   {
-    path: '/personal',
+    path: '/',
     component: Layout,
-    redirect: '/personal/personal-center',
-    name: 'Personal',
-    meta: {
-      title: '个人中心',
-      hidden: true,
-      canTo: true
-    },
+    name: 'indexs',
+    meta: {},
     children: [
       {
-        path: 'personal-center',
-        component: () => import('@/views/Personal/PersonalCenter/PersonalCenter.vue'),
-        name: 'PersonalCenter',
+        path: '',
+        component: () => import('@/views/dataPage/index.vue'),
+        name: 'indexPages',
         meta: {
-          title: '个人中心',
-          hidden: true,
-          canTo: true
+          title: '基础信息',
+          icon: ''
         }
       }
     ]
@@ -73,73 +42,63 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
       title: '404',
       noTagsView: true
     }
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/userManage',
-    name: 'userManage_toop',
-    meta: {
-      title: '个人中心',
-      hidden: true,
-      canTo: true
-    },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/authConf/userManage.vue'),
-        name: 'UserManage',
-        meta: {
-          title: '用户信息',
-          icon: 'vi-cib:telegram-plane'
-        }
-      }
-    ]
   }
 ]
 
 export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
-    path: '/dashboard',
+    path: '/index',
     component: Layout,
-    redirect: '/dashboard/analysis',
-    name: 'Dashboard',
-    meta: {
-      title: '仪表盘',
-      icon: 'vi-ant-design:dashboard-filled',
-      alwaysShow: true
-    },
+    name: 'index',
+    meta: {},
     children: [
       {
-        path: 'analysis',
-        component: () => import('@/views/Dashboard/Analysis.vue'),
-        name: 'Analysis',
+        path: '',
+        component: () => import('@/views/dataPage/index.vue'),
+        name: 'indexPage',
         meta: {
-          title: '分析页',
-          noCache: true,
-          affix: true
-        }
-      },
-      {
-        path: 'workplace',
-        component: () => import('@/views/Dashboard/Workplace.vue'),
-        name: 'Workplace',
-        meta: {
-          title: '工作台',
-          noCache: true
+          title: '基础信息',
+          icon: ''
         }
       }
     ]
   },
-  ...authConf,
-  ...paramConf,
-  ...checkInfo,
-  ...logConfig,
-  ...plugConf,
-  ...serviceCof,
-  ...diagnosisInfo,
-  ...statics,
-  ...dataSearch
+  {
+    path: '/configuration',
+    component: Layout,
+    name: 'configurations',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/configuration/index.vue'),
+        name: 'configurationChild',
+        meta: {
+          title: '参数配置',
+          icon: ''
+        }
+      }
+    ]
+  },
+  {
+    path: '/clientRegister',
+    component: Layout,
+    name: 'clientRegister',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/clientRegister/index.vue'),
+        name: 'clientRegisterChild',
+        meta: {
+          title: '客户端注册',
+          icon: ''
+        }
+      }
+    ]
+  },
+
+  ...management
 ]
 
 const router = createRouter({

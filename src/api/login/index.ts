@@ -1,20 +1,19 @@
 import request from '@/axios'
 import type { OrganizationList, UserType } from './types'
-interface RoleParams {
-  roleName: string
-}
+import { UserMsg } from '@/store/modules/user'
 
-export const loginApi = (data: any): Promise<IResponse<UserType>> => {
+export const loginApi = (data: any): Promise<UserMsg> => {
   return request.post({
-    url: 'authorize/login',
-    data,
-    requestTem: {
-      requestTem: 'AdminLoginInputProto',
-      responseTem: 'AdminLoginUserInfoProto'
-    }
+    url: '/Home/Login',
+    data
   })
 }
-//
+
+export const userLogout = (): Promise<IResponse<UserType>> => {
+  return request.post({
+    url: 'Home/Logout'
+  })
+}
 
 export const changepwd = (data: any): Promise<IResponse<UserType>> => {
   return request.post({
@@ -46,40 +45,6 @@ export const register = (data: any): Promise<IResponse<UserType>> => {
     }
   })
 }
-export const userLogout = (): Promise<IResponse<UserType>> => {
-  return request.post({
-    url: 'authorize/UserLogout',
-    requestTem: {
-      requestTem: 'AdminLoginInputProto',
-      responseTem: 'AdminLoginUserInfoProto'
-    }
-  })
-}
-
-export const loginOutApi = (): Promise<IResponse> => {
-  return request.get({ url: '/mock/user/loginOut' })
-}
-
-export const getUserListApi = ({ params }: AxiosConfig) => {
-  return request.get<{
-    code: string
-    data: {
-      list: UserType[]
-      total: number
-    }
-  }>({ url: '/mock/user/list', params })
-}
-
-export const getAdminRoleApi = (
-  params: RoleParams
-): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
-  return request.get({ url: '/mock/role/list', params })
-}
-
-export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {
-  return request.get({ url: '/mock/role/list2', params })
-}
-
 export const getLoginList = (): Promise<IResponse<OrganizationList[]>> => {
   return request.post({
     url: `register/getorgbylogin`,

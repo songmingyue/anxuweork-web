@@ -41,10 +41,16 @@ export const useUserStore = defineStore('user', {
     }
   },
   actions: {
-    setUseMsg(userMsg: UserMsg) {
+    setUseMsg() {
+      const usersString = localStorage.getItem('userMsg')
+      if (!usersString) return
+      const userMsg: UserMsg = JSON.parse(usersString)
       this.account = userMsg.account
       this.token = userMsg.token
       this.userName = userMsg.userName
+    },
+    setLocalstorage(userMsg: UserMsg) {
+      localStorage.setItem('userMsg', JSON.stringify(userMsg))
     },
     logoutConfirm() {
       this.account = ''

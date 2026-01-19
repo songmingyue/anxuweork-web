@@ -167,7 +167,8 @@ const signIn = async () => {
         appStore.setCollapse(true)
         if (res) {
           console.log('登录成功，设置用户信息', res)
-          userStore.setUseMsg(res)
+          userStore.setLocalstorage(res)
+          userStore.setUseMsg()
           const pushUrl = '/index'
           push(redirect.value || pushUrl)
         }

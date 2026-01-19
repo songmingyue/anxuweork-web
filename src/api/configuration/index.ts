@@ -112,7 +112,7 @@ export const getAdminConfig = (): Promise<GetAdminConfig> => {
 }
 // 默认值
 export const getDefaultPaperSizeMappings = (): Promise<GetDefaultPaperSizeMappings> => {
-  return request.post({
+  return request.get({
     url: '/Admin/Config/GetDefaultPaperSizeMappings'
   })
 }

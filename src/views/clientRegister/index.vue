@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import {
   ElButton,
   ElCard,
@@ -8,8 +8,16 @@ import {
   ElInput,
   ElTable,
   ElTableColumn,
-  ElMessage
+  ElMessage,
+  ElMessageBox
 } from 'element-plus'
+import { Department, getDepartment } from '@/api/common'
+import {
+  getHospitalAndDepartment,
+  registerDepartment,
+  registerHospital,
+  deleteDepartment
+} from '@/api/clientRegister'
 
 type HospitalForm = {
   hospitalName: string
@@ -25,10 +33,11 @@ const requestCount = ref(500)
 
 const hospitalRegistered = ref(true)
 const hospitalEditing = ref(false)
+const hospitalID = ref('')
 
 const hospitalForm = reactive<HospitalForm>({
-  hospitalName: '超管机构1',
-  hospitalCode: '1'
+  hospitalName: '',
+  hospitalCode: ''
 })
 
 const hospitalSnapshot = reactive<HospitalForm>({
@@ -55,20 +64,44 @@ const onHospitalCancel = () => {
   hospitalEditing.value = false
 }
 
-const onHospitalRegister = () => {
+const onHospitalRegister = async () => {
   if (!hospitalForm.hospitalName.trim() || !hospitalForm.hospitalCode.trim()) {
     ElMessage.error('请填写医院名称和医院编码')
     return
   }
-  hospitalRegistered.value = true
-  hospitalEditing.value = false
-  ElMessage.success('注册成功')
+  try {
+    await ElMessageBox.confirm('是否确认注册医院？', '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+
+    const { status, desc } = await registerHospital({
+      hospitalID: hospitalID.value,
+      hospitalCode: hospitalForm.hospitalCode,
+      hospitalName: hospitalForm.hospitalName,
+      requestDeviceCount: 0
+    })
+
+    if (status === 0) {
+      ElMessage.success(`注册成功`)
+    } else {
+      ElMessage.error(`${desc ?? '注册失败'}`)
+      return
+    }
+
+    hospitalRegistered.value = true
+    hospitalEditing.value = false
+  } catch (e: any) {
+    // 用户取消或接口异常
+    const reason = typeof e === 'string' ? e : ''
+    if (reason !== 'cancel' && reason !== 'close') {
+      ElMessage.error('注册已取消或发生错误')
+    }
+  }
 }
 
-const departments = ref<DepartmentRow[]>([
-  { departmentCode: 'fsk2', departmentName: '放射科2' },
-  { departmentCode: 'fsk', departmentName: '放射科' }
-])
+const departments = ref<Department[]>([])
 
 const deptEditingIndex = ref<number | null>(null)
 const deptEditingMode = ref<'add' | 'edit' | null>(null)
@@ -82,7 +115,12 @@ const canShowDeptCard = computed(() => hospitalRegistered.value && !hospitalEdit
 
 const onAddDept = () => {
   if (deptEditingIndex.value !== null) return
-  departments.value.unshift({ departmentCode: '', departmentName: '' })
+  departments.value.unshift({
+    departmentCode: '',
+    departmentName: '',
+    departmentID: '',
+    hospitalID: ''
+  })
   deptEditingIndex.value = 0
   deptEditingMode.value = 'add'
   deptForm.departmentCode = ''
@@ -109,15 +147,11 @@ const onDeptCancel = (index: number) => {
   deptEditingMode.value = null
 }
 
-const onDeptRegister = (index: number) => {
+const onDeptRegister = async (index: number) => {
   if (deptEditingMode.value === 'add') {
     if (!deptForm.departmentCode.trim() || !deptForm.departmentName.trim()) {
       ElMessage.error('请填写科室编码和科室名称')
       return
-    }
-    departments.value[index] = {
-      departmentCode: deptForm.departmentCode.trim(),
-      departmentName: deptForm.departmentName.trim()
     }
   } else if (deptEditingMode.value === 'edit') {
     if (!deptForm.departmentName.trim()) {
@@ -127,20 +161,79 @@ const onDeptRegister = (index: number) => {
     const row = departments.value[index]
     if (row) row.departmentName = deptForm.departmentName.trim()
   }
-
+  const { status, desc } = await registerDepartment({
+    departmentCode: deptForm.departmentCode,
+    departmentName: deptForm.departmentName,
+    departmentID: departments.value[index].departmentID || '',
+    hospitalID: departments.value[index].hospitalID || '' || crypto.randomUUID()
+  })
+  if (status === 0) {
+    ElMessage.success('注册成功')
+  } else {
+    ElMessage.error(`${desc ?? '注册失败'}`)
+    return
+  }
   deptEditingIndex.value = null
   deptEditingMode.value = null
+  getDepartmentMsd()
   ElMessage.success('注册成功')
 }
 
-const onDeptDelete = (index: number) => {
-  if (deptEditingIndex.value === index) return
-  departments.value.splice(index, 1)
+const onDeptDelete = async (index: number) => {
+  ElMessageBox.confirm('是否确认删除该科室？', '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      const row = departments.value[index]
+      const { status, desc } = await deleteDepartment({
+        departmentId: row.departmentID
+      })
+      if (status === 0) {
+        ElMessage.success('删除成功')
+        departments.value.splice(index, 1)
+      } else {
+        ElMessage.error(`${desc ?? '删除失败'}`)
+      }
+    })
+    .catch(() => {
+      // 用户取消
+    })
 }
 
 const deptRowClassName = ({ rowIndex }: { rowIndex: number }) => {
   return rowIndex === deptEditingIndex.value ? 'dept-row--editing' : ''
 }
+const getHospital = async () => {
+  try {
+    const { hospitalInfo } = await getHospitalAndDepartment()
+    if (hospitalInfo) {
+      hospitalForm.hospitalName = hospitalInfo.hospitalName
+      hospitalForm.hospitalCode = hospitalInfo.hospitalCode
+      hospitalID.value = hospitalInfo.hospitalID
+      hospitalRegistered.value = true
+    } else {
+      hospitalRegistered.value = false
+      hospitalEditing.value = true
+    }
+  } catch (error) {
+    console.error('Failed to fetch hospital info:', error)
+  }
+}
+const getDepartmentMsd = async () => {
+  try {
+    const { data } = await getDepartment()
+    departments.value = data
+  } catch (error) {
+    console.error('Failed to fetch departments:', error)
+  }
+}
+onMounted(() => {
+  getDepartmentMsd()
+  getHospital()
+  // Fetch initial data if needed
+})
 </script>
 
 <template>
@@ -204,7 +297,6 @@ const deptRowClassName = ({ rowIndex }: { rowIndex: number }) => {
             </template>
           </template>
         </el-table-column>
-
         <el-table-column label="操作" width="220" align="center">
           <template #default="scope">
             <template v-if="deptEditingIndex === scope.$index">

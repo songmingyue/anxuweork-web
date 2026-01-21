@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import {
   ElButton,
   ElCard,
@@ -8,9 +8,13 @@ import {
   ElInput,
   ElOption,
   ElSelect,
-  ElMessage
+  ElMessage,
+  ElMessageBox,
+  ElLoading
 } from 'element-plus'
-import { DbTypeList } from '@/api/configuration'
+import { DbTypeList, testDBConnection } from '@/api/configuration'
+import { getDbAndLogConfig, setDbAndLogConfig } from '@/api/systemManagement'
+import { startServiceMsd, stopServiceMsd } from '@/api/dataPage'
 
 defineOptions({
   name: 'SystemManagement'
@@ -27,22 +31,84 @@ type DbLogForm = {
 
 const form = reactive<DbLogForm>({
   dbType: 1,
-  hostName: '127.0.0.1',
-  dbName: 'eWordPOD',
-  dbUser: 'sa',
+  hostName: '',
+  dbName: '',
+  dbUser: '',
   dbPassword: '',
-  logPath: 'D:\\eWord\\eWordPOD\\logs'
+  logPath: ''
 })
 
 const onTest = async () => {
-  // TODO: 接入真实接口后在此调用测试连接/检测逻辑
-  ElMessage.success('测试成功（接口占位）')
+  const { status } = await testDBConnection({
+    dbType: form.dbType,
+    hostName: form.hostName,
+    dbName: form.dbName,
+    dbUser: form.dbUser,
+    dbPassword: form.dbPassword,
+    viewName: ''
+  })
+  if (status === 0) {
+    ElMessage.success('数据库连接成功')
+  } else {
+    ElMessage.error('数据库连接失败')
+  }
 }
 
 const onSave = async () => {
-  // TODO: 接入真实接口后在此调用保存逻辑
-  ElMessage.success('保存成功（接口占位）')
+  try {
+    await ElMessageBox.confirm('需要重启服务器才能使修改的配置生效，是否确认保存配置？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+
+    const loading = ElLoading.service({
+      lock: true,
+      fullscreen: true,
+      text: '正在保存并重启服务，请稍候…',
+      background: 'rgba(0, 0, 0, 0.4)'
+    })
+    try {
+      const { status } = await setDbAndLogConfig({
+        initDBSetting: {
+          dbType: form.dbType,
+          dbHost: form.hostName,
+          dbName: form.dbName,
+          dbUser: form.dbUser,
+          dbPassword: form.dbPassword
+        },
+        logSetting: {
+          logFilePath: form.logPath
+        }
+      })
+      if (status === 0) {
+        await stopServiceMsd()
+        await startServiceMsd()
+        ElMessage.success('保存成功')
+      } else {
+        ElMessage.error('保存失败')
+      }
+    } finally {
+      loading.close()
+    }
+  } catch (e) {
+    // 用户取消或关闭弹窗，无需处理
+  }
 }
+const getDbAndLogConfigMsd = async () => {
+  const { data, status } = await getDbAndLogConfig()
+  if (status === 0) {
+    form.dbType = data.initDBSetting.dbType
+    form.hostName = data.initDBSetting.dbHost
+    form.dbName = data.initDBSetting.dbName
+    form.dbUser = data.initDBSetting.dbUser
+    form.dbPassword = data.initDBSetting.dbPassword
+    form.logPath = data.logSetting.logFilePath
+  }
+}
+onMounted(() => {
+  getDbAndLogConfigMsd()
+})
 </script>
 
 <template>

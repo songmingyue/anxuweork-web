@@ -7,35 +7,52 @@ import {
   ElFormItem,
   ElInput,
   ElMessage,
+  ElMessageBox,
   ElOption,
   ElRadioButton,
   ElRadioGroup,
   ElSelect
 } from 'element-plus'
 import type { ConfigTabExpose } from './types'
-import { DbTypeList, MatchSettingsForm, testDBConnection } from '@/api/configuration'
+import { MatchSettingsForm, testDBConnection } from '@/api/configuration'
+import { useCommonStoreWithOut } from '@/store/modules/common'
 const props = defineProps({
   adminConfigInfo: {
+    type: Object,
+    required: false,
+    default: () => ({})
+  },
+  defaultConfigInfo: {
     type: Object,
     required: false,
     default: () => ({})
   }
 })
 const emit = defineEmits(['onChangeConfig'])
-
+const commonStore = useCommonStoreWithOut()
 const defaultForm: MatchSettingsForm = {
-  matchDBType: props.adminConfigInfo.parameterConfig.matchDBType || '',
-  matchHostName: props.adminConfigInfo.parameterConfig.matchHostName || '',
-  matchDBName: props.adminConfigInfo.parameterConfig.matchDBName || '',
-  matchDBUser: props.adminConfigInfo.parameterConfig.matchDBUser || '',
-  matchDBPWD: props.adminConfigInfo.parameterConfig.matchDBPWD || '',
-  matchViewName: props.adminConfigInfo.parameterConfig.matchViewName || '',
-  isEnabled: props.adminConfigInfo.parameterConfig.matchResetSetting.isEnabled || false,
-  matchResetTime: props.adminConfigInfo.parameterConfig.matchResetSetting.matchResetTime || 0,
-  resetInterval: props.adminConfigInfo.parameterConfig.matchResetSetting.resetInterval || 0
+  matchDBType: props.defaultConfigInfo.parameterConfig.matchDBType || '',
+  matchHostName: props.defaultConfigInfo.parameterConfig.matchHostName || '',
+  matchDBName: props.defaultConfigInfo.parameterConfig.matchDBName || '',
+  matchDBUser: props.defaultConfigInfo.parameterConfig.matchDBUser || '',
+  matchDBPWD: props.defaultConfigInfo.parameterConfig.matchDBPWD || '',
+  matchViewName: props.defaultConfigInfo.parameterConfig.matchViewName || '',
+  isEnabled: props.defaultConfigInfo.parameterConfig.matchResetSetting.isEnabled || false,
+  matchResetTime: props.defaultConfigInfo.parameterConfig.matchResetSetting.matchResetTime || 0,
+  resetInterval: props.defaultConfigInfo.parameterConfig.matchResetSetting.resetInterval || 0
 }
 
-console.log('defaultForm', props.adminConfigInfo.parameterConfig)
+const resetForm: MatchSettingsForm = {
+  matchDBType: 0,
+  matchHostName: '',
+  matchDBName: '',
+  matchDBUser: '',
+  matchDBPWD: '',
+  matchViewName: '',
+  isEnabled: false,
+  matchResetTime: 0,
+  resetInterval: 0
+}
 const form = reactive<MatchSettingsForm>({ ...defaultForm })
 
 const isLoading = ref(false)
@@ -57,9 +74,24 @@ const onTest = async () => {
   }
 }
 
+const cancel = () => {
+  ElMessageBox.confirm('是否确定取消当前修改内容?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      Object.assign(form, defaultForm)
+      formChange()
+    })
+    .catch(() => {
+      // 取消操作
+    })
+}
+
 const reset = () => {
-  console.log(defaultForm)
-  Object.assign(form, defaultForm)
+  Object.assign(form, resetForm)
+  formChange()
 }
 
 const formChange = () => {
@@ -92,7 +124,7 @@ defineExpose<ConfigTabExpose>({ submit, reset })
           isLoading ? '测试中...' : '测试'
         }}</el-button>
         <el-button @click="reset">重置</el-button>
-        <el-button @click="reset">取消</el-button>
+        <el-button @click="cancel">取消</el-button>
       </div>
     </div>
 
@@ -105,8 +137,8 @@ defineExpose<ConfigTabExpose>({ submit, reset })
           style="width: 100%"
         >
           <el-option
-            v-for="value in DbTypeList"
-            :label="value.label"
+            v-for="value in commonStore.matchdbType"
+            :label="value.text"
             :value="value.value"
             :key="value.value"
           />

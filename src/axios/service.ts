@@ -34,6 +34,9 @@ axiosInstance.interceptors.response.use(
     if (res.status == 200) {
       const { data } = res
       if (data.status !== 0) {
+        if (res.config.url === '/Admin/Config/GetUserPermissionList') {
+          return res.data
+        }
         ElMessage.error(data.desc || '请求出错')
         return Promise.reject(data)
       } else {

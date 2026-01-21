@@ -16,9 +16,14 @@ const props = defineProps({
     type: Object,
     required: false,
     default: () => ({})
+  },
+  defaultConfigInfo: {
+    type: Object,
+    required: false,
+    default: () => ({})
   }
 })
-const emit = defineEmits(['onChangeConfig'])
+const emit = defineEmits(['onChangeConfig', 'cancel'])
 type BasicParamsForm = {
   aeTitle: string
   port: number
@@ -60,7 +65,11 @@ const cancel = () => {
   })
     .then(() => {
       console.log('取消修改', cancelForm)
-      Object.assign(form, cancelForm)
+      const newConfig = props.defaultConfigInfo
+      form.aeTitle = newConfig.parameterConfig.aeTitle
+      form.port = newConfig.parameterConfig.port
+      form.storagePath = newConfig.parameterConfig.storagePath
+      changeForm()
     })
     .catch(() => {
       // 取消操作

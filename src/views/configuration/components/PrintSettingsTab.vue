@@ -197,7 +197,12 @@ const onNew = () => {
   syncPaperMappingsFromForm()
 }
 
-const onTestDevice = () => {
+const onTestDevice = async () => {
+  // await testPrintConnection({
+  //   hostName: form.hostName,
+  //   aeTitle: form.aeTitle,
+  //   port: form.port
+  // })
   ElMessage.success('测试打印设备成功')
 }
 

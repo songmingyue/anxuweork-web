@@ -5,10 +5,10 @@ import {
   deleteScript,
   executeScript,
   getScriptDetail,
-  getScriptList,
   type ScriptDetail,
   type ScriptListItem
 } from '@/api/scriptManagement'
+import { getUpgradeScriptList } from '@/api/systemManagement'
 
 defineOptions({
   name: 'ScriptManagement'
@@ -34,7 +34,7 @@ const canOperate = computed(() => Boolean(currentRow.value?.scriptId))
 const loadList = async () => {
   listLoading.value = true
   try {
-    const { list: data } = await getScriptList()
+    const { data } = await getUpgradeScriptList()
     list.value = data
 
     if (!data.length) {

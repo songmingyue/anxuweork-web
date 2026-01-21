@@ -76,4 +76,93 @@ export const getAutoPrintConfig = (): Promise<FailedCount> => {
   })
 }
 
+export interface FilmBoxListOrderInfo {
+  columnName: string
+  orderType: number
+}
+
+export interface FilmBoxListFilter {
+  requestStartDate: string
+  requestEndDate: string
+  accessionNumber: string
+  patientID: string
+  dicomPeerId: string[]
+  matchState: string
+  printState: string
+}
+
+export interface FilmBoxListPageInfo {
+  pageIndex: number
+  pageSize: number
+  count: number
+}
+
+export interface FilmBoxListQuery {
+  orderInfo: FilmBoxListOrderInfo
+  filmBox: FilmBoxListFilter
+  pageInfo: FilmBoxListPageInfo
+}
+
+export interface FilmBoxResultItem {
+  filmBoxID: string
+  studyID: string
+  printState: string
+  matchState: string
+  accessionNumber: string
+  patientID: string
+  callingAE: string
+  requestTime: string
+  examineType: string
+  printer: string
+  filmSize: string
+  mediumType: string
+  displayFormat: string
+  filmOrientation: string
+  filmBoxPath: string
+  thumbnailString: string | null
+  taskNo: number
+  cloudFilmPaid: boolean
+  autoPrint: boolean
+  lastPrintTime: string | null
+}
+
+export interface GetFilmBoxList extends ServiceStatus {
+  filmBoxResult: FilmBoxResultItem[]
+  pageInfo: FilmBoxListPageInfo
+}
+
+export const getFilmBoxList = (data: FilmBoxListQuery): Promise<GetFilmBoxList> => {
+  return request.post({
+    url: '/Film/GetFilmBoxList',
+    data
+  })
+}
+
+export interface DicomPeerOption {
+  text: string
+  value: string
+}
+
+export interface DicomPeerDropDown extends ServiceStatus {
+  dicomPeers: DicomPeerOption[]
+}
+
+export const getDicomPeerDropDown = (): Promise<DicomPeerDropDown> => {
+  return request.get({
+    url: '/Admin/Config/GetDicomPeerDropDown'
+  })
+}
+
 //
+
+export interface ExamPrintRestrict {
+  accessionNumber: string
+  flag: boolean
+}
+
+export const updateExamPrintRestrict = (data: ExamPrintRestrict): Promise<ServiceStatus> => {
+  return request.get({
+    url: '/Exam/UpdateExamPrintRestrict',
+    params: data
+  })
+}

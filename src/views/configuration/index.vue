@@ -12,7 +12,7 @@ import UserManageTab from './components/UserManageTab.vue'
 import IntegrationPlatformTab from './components/IntegrationPlatformTab.vue'
 import DataDictTab from './components/DataDictTab.vue'
 import DeptParamsTab from './components/DeptParamsTab.vue'
-import { AdminConfig, getAdminConfig, saveTableConfig } from '@/api/configuration'
+import { AdminConfig, getAdminConfig, save } from '@/api/configuration'
 
 type TabKey =
   | 'basic'
@@ -48,7 +48,9 @@ const onCancel = () => {
 }
 
 const onSave = async () => {
-  const { status, desc } = await saveTableConfig(adminConfigInfo.value as any)
+  const forms = { ...adminConfigInfo.value }
+  forms.userConfig = null
+  const { status, desc } = await save(forms as any)
   if (status) {
     ElMessage.error(desc || '保存失败')
     return

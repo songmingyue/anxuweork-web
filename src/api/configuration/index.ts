@@ -65,7 +65,7 @@ export interface AdminConfig {
   printerConfig?: any[]
   dicomPeer?: DicomPeer[]
   diskConfig?: DiskConfig
-  userConfig?: UserConfig[]
+  userConfig?: UserConfig[] | any
   pacsConfig?: PacsConfig
   limitAutomaticPrint?: boolean
   defaultAutoPrintRestrict?: boolean
@@ -290,6 +290,13 @@ export interface SaveTableConfig {
 export const saveTableConfig = (data: SaveTableConfig): Promise<ServiceStatus> => {
   return request.post({
     url: '/Admin/Config/SaveTableConfig',
+    data
+  })
+}
+
+export const save = (data: SaveTableConfig): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Admin/Config/Save',
     data
   })
 }

@@ -161,8 +161,67 @@ export interface ExamPrintRestrict {
 }
 
 export const updateExamPrintRestrict = (data: ExamPrintRestrict): Promise<ServiceStatus> => {
-  return request.get({
+  return request.post({
     url: '/Exam/UpdateExamPrintRestrict',
-    params: data
+    data
+  })
+}
+
+export interface UpdateFilmPaidTag {
+  accessionNumberList: string[]
+  paidTag: boolean
+}
+
+// 批量修改付费状态
+
+export const updateFilmPaidTag = (data: UpdateFilmPaidTag): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Exam/UpdateFilmPaidTag',
+    data
+  })
+}
+// 重置配置
+export const resetMatch = (data: string[]): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Film/ResetMatch',
+    data
+  })
+}
+
+// shanchu /Film/DeleteFilmList
+export const deleteFilmList = (data: { filmBoxList: string[] }): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Film/DeleteFilmList',
+    data
+  })
+}
+// /Admin/Config/GetPrinterDropDown 获取打印机下拉列表
+export interface PrinterDropDown extends ServiceStatus {
+  printer: DicomPeerOption[]
+}
+export const getPrinterDropDown = (): Promise<PrinterDropDown> => {
+  return request.get({
+    url: '/Admin/Config/GetPrinterDropDown'
+  })
+}
+
+export interface SetFilmboxPrinter {
+  printerName: string
+  printerID: string
+  filmBoxIDList: string[]
+}
+// 修改打印机
+export const setFilmboxPrinter = (data: SetFilmboxPrinter): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Film/SetFilmboxPrinter',
+    data
+  })
+}
+
+// 打印
+export const printFilmBox = (data: { filmBoxIDList: string[] }): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Film/Print',
+    data
   })
 }

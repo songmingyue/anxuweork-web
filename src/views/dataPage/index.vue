@@ -7,6 +7,7 @@ import {
   ElButton,
   ElCard,
   ElDatePicker,
+  ElDialog,
   ElForm,
   ElFormItem,
   ElInput,
@@ -30,9 +31,15 @@ import {
   getFilmBoxList,
   getMatFailedCountMsd,
   getPrintFailedCountMsd,
+  getPrinterDropDown,
   getServiceStateMsd,
+  printFilmBox,
+  resetMatch,
+  setFilmboxPrinter,
   updateExamPrintRestrict,
   type ExamPrintRestrict,
+  updateFilmPaidTag,
+  type UpdateFilmPaidTag,
   ServiceEmum,
   startServiceMsd,
   stopServiceMsd
@@ -43,6 +50,23 @@ const printStateOptions = computed<ArrList[]>(() => commonStore.printState || []
 const matchStateOptions = computed<ArrList[]>(() => {
   return [...printStateOptions.value, { text: '手工匹配', value: '3' }]
 })
+
+const getOptionText = (options: ArrList[], value: unknown) => {
+  const strValue = value == null ? '' : String(value)
+  return options.find((o) => o.value === strValue)?.text || strValue
+}
+
+const printStateText = (value: unknown) => getOptionText(printStateOptions.value, value)
+const matchStateText = (value: unknown) => getOptionText(matchStateOptions.value, value)
+
+type ColumnSlot = 'printState' | 'matchState' | 'autoPrint' | 'cloudFilmPaid'
+interface TableColumnConfig {
+  prop: string
+  columnName: string
+  label: string
+  minWidth?: number
+  slot?: ColumnSlot
+}
 
 const failNumber = reactive({
   matchFailCount: 0,
@@ -79,14 +103,114 @@ const dicomPeerOptions = ref<DicomPeerOption[]>([])
 const tableRef = ref<TableInstance>()
 const selectedRows = ref<FilmBoxResultItem[]>([])
 const hasSelection = computed(() => selectedRows.value.length > 0)
-const singleSelectedRow = computed(() => selectedRows.value[0])
-const canToggleRestrict = computed(() => selectedRows.value.length === 1)
-const restrictActionText = computed(() =>
-  singleSelectedRow.value?.autoPrint ? '限制打印' : '解除限制'
-)
+
+const printerDialogVisible = ref(false)
+const printerOptions = ref<DicomPeerOption[]>([])
+const printerLoading = ref(false)
+const selectedPrinterId = ref('')
+
+const setSingleSelection = (row: FilmBoxResultItem) => {
+  const table = tableRef.value
+  if (!table) return
+  table.clearSelection()
+  table.toggleRowSelection(row, true)
+}
+
+const getRestrictActionText = (row: FilmBoxResultItem) => (row.autoPrint ? '限制打印' : '解除限制')
+
+const loadPrinterOptions = async () => {
+  printerLoading.value = true
+  try {
+    const res = await getPrinterDropDown()
+    printerOptions.value = res.printer || []
+  } catch (error) {
+    console.error('获取目的打印机下拉失败', error)
+    printerOptions.value = []
+  } finally {
+    printerLoading.value = false
+  }
+}
+
+const openPrinterDialog = async () => {
+  if (!hasSelection.value) return
+  printerDialogVisible.value = true
+
+  if (printerOptions.value.length === 0) {
+    await loadPrinterOptions()
+  }
+
+  // 默认回填：单选时根据当前行的 printer 文本匹配
+  if (selectedRows.value.length === 1) {
+    const row = selectedRows.value[0]
+    const matched = printerOptions.value.find((p) => p.text === row.printer)
+    selectedPrinterId.value = matched?.value || ''
+  } else {
+    selectedPrinterId.value = ''
+  }
+}
+
+const submitSetPrinter = async (andPrint: boolean) => {
+  if (!hasSelection.value) return
+  if (!selectedPrinterId.value) {
+    ElMessage.warning('请选择目的打印机')
+    return
+  }
+
+  const printer = printerOptions.value.find((p) => p.value === selectedPrinterId.value)
+  if (!printer) {
+    ElMessage.warning('所选目的打印机无效')
+    return
+  }
+
+  const filmBoxIDList = Array.from(
+    new Set(selectedRows.value.map((r) => r.filmBoxID).filter(Boolean))
+  )
+  if (filmBoxIDList.length === 0) {
+    ElMessage.warning('所选数据缺少胶片ID')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm('是否确定修改目的打印机？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+
+    await setFilmboxPrinter({
+      printerName: printer.text,
+      printerID: printer.value,
+      filmBoxIDList
+    })
+
+    if (andPrint) {
+      await printFilmBox({ filmBoxIDList })
+    }
+
+    ElMessage.success(andPrint ? '修改成功并已提交打印' : '修改成功')
+    printerDialogVisible.value = false
+    await search()
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') {
+      console.error('修改目的打印机失败', error)
+      ElMessage.error('修改目的打印机失败')
+    }
+  }
+}
+const changePayStatus = computed(() => {
+  if (!hasSelection.value) {
+    return '修改付费状态'
+  }
+  const allPaid = selectedRows.value.every((row) => row.cloudFilmPaid)
+  return allPaid ? '设为未付费' : '设为已付费'
+})
 const total = ref(0)
 const pageSize = ref(10)
 const currentPage = ref(1)
+
+// 远程排序：columnName 为后端字段，orderType：升序 1 / 降序 0
+const sortColumnName = ref('RequestTime')
+const sortOrderType = ref<0 | 1>(1)
 const services = ref<ServiceEmum>(ServiceEmum.Stopping)
 const changeService = (status: ServiceEmum) => {
   try {
@@ -159,8 +283,8 @@ const buildFilmBoxListQuery = (): FilmBoxListQuery => {
   const { requestStartDate, requestEndDate } = toRangeDateTime(query.dateRange)
   return {
     orderInfo: {
-      columnName: 'RequestTime',
-      orderType: 1
+      columnName: sortColumnName.value,
+      orderType: sortOrderType.value
     },
     filmBox: {
       requestStartDate,
@@ -196,6 +320,11 @@ const search = async () => {
   }
 }
 
+const handleSearchClick = () => {
+  currentPage.value = 1
+  search()
+}
+
 const reset = () => {
   query.checkNo = ''
   query.patientNo = ''
@@ -222,6 +351,59 @@ const handleSelectionChange = (rows: FilmBoxResultItem[]) => {
   selectedRows.value = rows
 }
 
+const tableColumns = computed<TableColumnConfig[]>(() => {
+  return [
+    { prop: 'taskNo', columnName: 'TaskNo', label: '任务号', minWidth: 130 },
+    {
+      prop: 'printState',
+      columnName: 'PrintState',
+      label: '打印状态',
+      minWidth: 110,
+      slot: 'printState'
+    },
+    {
+      prop: 'matchState',
+      columnName: 'MatchState',
+      label: '匹配状态',
+      minWidth: 110,
+      slot: 'matchState'
+    },
+    { prop: 'accessionNumber', columnName: 'AccessionNumber', label: '检查号', minWidth: 120 },
+    { prop: 'patientID', columnName: 'PatientID', label: '患者编号', minWidth: 120 },
+    { prop: 'callingAE', columnName: 'CallingAE', label: '请求设备', minWidth: 110 },
+    { prop: 'requestTime', columnName: 'RequestTime', label: '请求时间', minWidth: 140 },
+    { prop: 'examineType', columnName: 'ExamineType', label: '检查类型', minWidth: 110 },
+    { prop: 'printer', columnName: 'Printer', label: '目的打印机', minWidth: 120 },
+    { prop: 'filmSize', columnName: 'FilmSize', label: '胶片尺寸', minWidth: 110 },
+    { prop: 'mediumType', columnName: 'MediumType', label: '胶片类型', minWidth: 110 },
+    { prop: 'displayFormat', columnName: 'DisplayFormat', label: '显示格式', minWidth: 110 },
+    { prop: 'filmOrientation', columnName: 'FilmOrientation', label: '出片方向', minWidth: 110 },
+    {
+      prop: 'cloudFilmPaid',
+      columnName: 'CloudFilmPaid',
+      label: '胶片费用',
+      minWidth: 110,
+      slot: 'cloudFilmPaid'
+    },
+    {
+      prop: 'autoPrint',
+      columnName: 'AutoPrint',
+      label: '限制打印',
+      minWidth: 110,
+      slot: 'autoPrint'
+    }
+  ]
+})
+
+type SortOrder = 'ascending' | 'descending' | null
+const handleSortChange = (payload: { prop: string; order: SortOrder }) => {
+  const { prop, order } = payload
+  const col = tableColumns.value.find((c) => c.prop === prop)
+  sortColumnName.value = col?.columnName || prop
+  sortOrderType.value = order === 'descending' ? 0 : 1
+  search()
+}
+
 const handleRowClick = (row: FilmBoxResultItem) => {
   const table = tableRef.value
   if (!table) return
@@ -232,9 +414,12 @@ const handleRowClick = (row: FilmBoxResultItem) => {
   }
 }
 
-const togglePrintRestrict = async () => {
-  if (!canToggleRestrict.value || !singleSelectedRow.value) return
-
+const togglePrintRestrict = async (row: FilmBoxResultItem) => {
+  setSingleSelection(row)
+  if (!row.accessionNumber) {
+    ElMessage.warning('当前胶片未匹配到检查号')
+    return
+  }
   try {
     await ElMessageBox.confirm('是否确定更新限制状态?', '提示', {
       confirmButtonText: '确定',
@@ -242,9 +427,9 @@ const togglePrintRestrict = async () => {
       type: 'warning'
     })
 
-    const flag = restrictActionText.value === '限制打印'
+    const flag = !row.autoPrint
     const payload: ExamPrintRestrict = {
-      accessionNumber: singleSelectedRow.value.accessionNumber,
+      accessionNumber: row.accessionNumber,
       flag
     }
 
@@ -256,6 +441,73 @@ const togglePrintRestrict = async () => {
     if (error !== 'cancel' && error !== 'close') {
       console.error('更新限制状态失败', error)
       ElMessage.error('更新限制状态失败')
+    }
+  }
+}
+
+const handleViewRow = (row: FilmBoxResultItem) => {
+  setSingleSelection(row)
+}
+
+const changePayStatusMsd = async () => {
+  if (!hasSelection.value) return
+
+  const accessionNumberList = Array.from(
+    new Set(selectedRows.value.map((r) => r.accessionNumber).filter(Boolean))
+  )
+  if (accessionNumberList.length === 0) {
+    ElMessage.warning('所选数据未匹配到检查号')
+    return
+  }
+
+  const allPaid = selectedRows.value.every((row) => row.cloudFilmPaid)
+  const paidTag = !allPaid
+  try {
+    await ElMessageBox.confirm('是否确定更新付费状态?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+
+    const payload: UpdateFilmPaidTag = {
+      accessionNumberList,
+      paidTag
+    }
+    await updateFilmPaidTag(payload)
+    ElMessage.success('更新成功')
+    await search()
+  } catch (error) {
+    // 取消确认框时不提示错误
+    if (error !== 'cancel' && error !== 'close') {
+      console.error('更新付费状态失败', error)
+      ElMessage.error('更新付费状态失败')
+    }
+  }
+}
+
+const resetMatchMsd = async () => {
+  if (!hasSelection.value) return
+  const filmBoxIdList = Array.from(
+    new Set(selectedRows.value.map((r) => r.filmBoxID).filter(Boolean))
+  )
+  if (filmBoxIdList.length === 0) {
+    ElMessage.warning('所选数据缺少胶片ID')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm('是否确定重置匹配？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    await resetMatch(filmBoxIdList)
+    ElMessage.success('重置成功')
+    await getMatFailedCount()
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') {
+      console.error('重置匹配失败', error)
+      ElMessage.error('重置匹配失败')
     }
   }
 }
@@ -370,7 +622,7 @@ onMounted(() => {
             </el-form-item>
 
             <div class="form-actions">
-              <el-button type="primary" @click="search">查询</el-button>
+              <el-button type="primary" @click="handleSearchClick">查询</el-button>
               <el-button @click="reset">重置</el-button>
             </div>
           </div>
@@ -381,13 +633,17 @@ onMounted(() => {
     <el-card shadow="never" class="table-card">
       <div class="table-toolbar">
         <div class="table-toolbar-right">
-          <el-button size="small" :disabled="!canToggleRestrict" @click="togglePrintRestrict">
-            {{ restrictActionText }}
+          <el-button size="small" :disabled="!hasSelection" @click="changePayStatusMsd">
+            {{ changePayStatus }}
           </el-button>
           <el-button size="small" :disabled="!hasSelection">手工匹配</el-button>
-          <el-button size="small" :disabled="!hasSelection">重置匹配</el-button>
-          <el-button size="small" :disabled="!hasSelection">修改打印机</el-button>
-          <el-button size="small" :disabled="!hasSelection">查看</el-button>
+
+          <el-button size="small" :disabled="!hasSelection" @click="resetMatchMsd">
+            重置匹配
+          </el-button>
+          <el-button size="small" :disabled="!hasSelection" @click="openPrinterDialog">
+            修改打印机
+          </el-button>
           <el-button size="small" :disabled="!hasSelection">打印</el-button>
           <el-button size="small" :disabled="!hasSelection">删除</el-button>
         </div>
@@ -400,30 +656,85 @@ onMounted(() => {
         class="data-table"
         border
         height="520"
+        :default-sort="{ prop: 'requestTime', order: 'ascending' }"
         @selection-change="handleSelectionChange"
         @row-click="handleRowClick"
+        @sort-change="handleSortChange"
       >
         <el-table-column type="selection" width="40" fixed="left" />
         <el-table-column type="index" label="#" width="60" />
-        <el-table-column prop="taskNo" label="任务号" min-width="130" />
-        <el-table-column prop="printState" label="打印状态" min-width="110" />
-        <el-table-column prop="matchState" label="匹配状态" min-width="110" />
-        <el-table-column prop="accessionNumber" label="检查号" min-width="120" />
-        <el-table-column prop="patientID" label="患者编号" min-width="120" />
-        <el-table-column prop="callingAE" label="请求设备" min-width="110" />
-        <el-table-column prop="requestTime" label="请求时间" min-width="140" />
-        <el-table-column prop="examineType" label="检查类型" min-width="110" />
-        <el-table-column prop="printer" label="目的打印机" min-width="120" />
-        <el-table-column prop="filmSize" label="胶片尺寸" min-width="110" />
-        <el-table-column prop="mediumType" label="胶片类型" min-width="110" />
-        <el-table-column prop="displayFormat" label="显示格式" min-width="110" />
-        <el-table-column prop="filmOrientation" label="出片方向" min-width="110" />
-        <el-table-column prop="filmOrientation" label="胶片费用" min-width="110" />
+        <template v-for="col in tableColumns" :key="`${col.prop}-${col.label}`">
+          <el-table-column
+            v-if="col.slot === 'printState'"
+            :prop="col.prop"
+            :label="col.label"
+            :min-width="col.minWidth"
+            sortable="custom"
+            :sort-orders="['ascending', 'descending']"
+          >
+            <template #default="scope">
+              {{ printStateText(scope.row.printState) }}
+            </template>
+          </el-table-column>
 
-        <el-table-column prop="autoPrint" label="限制打印" min-width="110">
+          <el-table-column
+            v-else-if="col.slot === 'matchState'"
+            :prop="col.prop"
+            :label="col.label"
+            :min-width="col.minWidth"
+            sortable="custom"
+            :sort-orders="['ascending', 'descending']"
+          >
+            <template #default="scope">
+              {{ matchStateText(scope.row.matchState) }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-else-if="col.slot === 'cloudFilmPaid'"
+            :prop="col.prop"
+            :label="col.label"
+            :min-width="col.minWidth"
+            sortable="custom"
+            :sort-orders="['ascending', 'descending']"
+          >
+            <template #default="scope">
+              <template v-if="scope.row.cloudFilmPaid">已付费</template>
+              <template v-else>未付费</template>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            v-else-if="col.slot === 'autoPrint'"
+            :prop="col.prop"
+            :label="col.label"
+            :min-width="col.minWidth"
+            sortable="custom"
+            :sort-orders="['ascending', 'descending']"
+          >
+            <template #default="scope">
+              <template v-if="scope.row.autoPrint">未限制</template>
+              <template v-else>限制打印</template>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            v-else
+            :prop="col.prop"
+            :label="col.label"
+            :min-width="col.minWidth"
+            sortable="custom"
+            :sort-orders="['ascending', 'descending']"
+          />
+        </template>
+
+        <el-table-column label="操作" fixed="right" width="170" align="center">
           <template #default="scope">
-            <template v-if="scope.row.autoPrint">未限制</template>
-            <template v-else>限制打印</template>
+            <el-button size="small" type="primary" @click="togglePrintRestrict(scope.row)">
+              {{ getRestrictActionText(scope.row) }}
+            </el-button>
+            <el-button size="small" type="primary" @click="handleViewRow(scope.row)"
+              >查看</el-button
+            >
           </template>
         </el-table-column>
 
@@ -445,6 +756,34 @@ onMounted(() => {
         />
       </div>
     </el-card>
+
+    <el-dialog v-model="printerDialogVisible" title="修改目的打印机" width="520">
+      <el-form label-width="90px">
+        <el-form-item label="目的打印机">
+          <el-select
+            v-model="selectedPrinterId"
+            placeholder="请选择"
+            filterable
+            clearable
+            :loading="printerLoading"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in printerOptions"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button @click="printerDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitSetPrinter(false)">确定</el-button>
+        <el-button type="primary" @click="submitSetPrinter(true)">修改并打印</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 

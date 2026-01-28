@@ -49,7 +49,7 @@ declare global {
     method?: AxiosMethod
     headers?: RawAxiosRequestHeaders
     responseType?: AxiosResponseType
-    requestTem?: RequestTem // 请求的protobuf类型
+    requestTem?: boolean // 请求的protobuf类型
     pageBase?: PageBase
   }
 

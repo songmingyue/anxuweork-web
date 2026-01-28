@@ -18,38 +18,23 @@ export const userLogout = (): Promise<IResponse<UserType>> => {
 export const changepwd = (data: any): Promise<IResponse<UserType>> => {
   return request.post({
     url: 'login/changepwd',
-    data,
-    requestTem: {
-      requestTem: 'AdminChangePasswordInputProto',
-      responseTem: 'whitelist'
-    }
+    data
   })
 }
 export const getOrganization = () => {
   return request.post({
-    url: 'register/getorgbylogin',
-    requestTem: {
-      requestTem: 'OrganizationInputProto',
-      responseTem: 'OrganizationDtoNewProto'
-    }
+    url: 'register/getorgbylogin'
   })
 }
 
 export const register = (data: any): Promise<IResponse<UserType>> => {
   return request.post({
     url: 'login/register',
-    data,
-    requestTem: {
-      requestTem: 'UserMstProto',
-      responseTem: 'whitelist'
-    }
+    data
   })
 }
 export const getLoginList = (): Promise<IResponse<OrganizationList[]>> => {
   return request.post({
-    url: `register/getorgbylogin`,
-    requestTem: {
-      responseTem: 'OrganizationDtoProto'
-    }
+    url: `register/getorgbylogin`
   })
 }

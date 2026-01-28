@@ -4,6 +4,8 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+pnpmfileChecksum: uxmoy4spneww4rtevvsqp3kihy
+
 importers:
 
   .:
@@ -89,6 +91,9 @@ importers:
       vue:
         specifier: 3.5.13
         version: 3.5.13(typescript@5.7.3)
+      vue-computer:
+        specifier: ^1.0.13
+        version: 1.0.13(@element-plus/icons-vue@2.3.2(vue@3.5.13(typescript@5.7.3)))(element-plus@2.9.2(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
       vue-draggable-plus:
         specifier: ^0.6.0
         version: 0.6.0(@types/sortablejs@1.15.8)
@@ -5509,6 +5514,13 @@ packages:
 
   vscode-uri@3.0.8:
     resolution: {integrity: sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==}
+
+  vue-computer@1.0.13:
+    resolution: {integrity: sha512-Se6jJLz8KrwnoqqVpJXRVqd2Q0pWBwXUx0Nq4/ZoLnNgpcoE4Cl5nuFrbRDKSJcUyzTxIZgJ4sctGl+lrTGIpA==}
+    peerDependencies:
+      '@element-plus/icons-vue': ^2.3.2
+      element-plus: 2.9.2
+      vue: ^3.5.27
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -11546,6 +11558,12 @@ snapshots:
       yaml: 2.7.0
 
   vscode-uri@3.0.8: {}
+
+  vue-computer@1.0.13(@element-plus/icons-vue@2.3.2(vue@3.5.13(typescript@5.7.3)))(element-plus@2.9.2(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3)):
+    dependencies:
+      '@element-plus/icons-vue': 2.3.2(vue@3.5.13(typescript@5.7.3))
+      element-plus: 2.9.2(vue@3.5.13(typescript@5.7.3))
+      vue: 3.5.13(typescript@5.7.3)
 
   vue-demi@0.14.10(vue@3.5.13(typescript@5.7.3)):
     dependencies:

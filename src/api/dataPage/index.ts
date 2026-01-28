@@ -195,6 +195,14 @@ export const deleteFilmList = (data: { filmBoxList: string[] }): Promise<Service
     data
   })
 }
+
+export const deleteFilm = (data: { filmBoxID: string }): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Film/DeleteFilm',
+    data
+  })
+}
+
 // /Admin/Config/GetPrinterDropDown 获取打印机下拉列表
 export interface PrinterDropDown extends ServiceStatus {
   printer: DicomPeerOption[]
@@ -222,6 +230,104 @@ export const setFilmboxPrinter = (data: SetFilmboxPrinter): Promise<ServiceStatu
 export const printFilmBox = (data: { filmBoxIDList: string[] }): Promise<ServiceStatus> => {
   return request.post({
     url: '/Film/Print',
+    data
+  })
+}
+
+// 获取图片
+
+export const getImageByFilmBox = (query: string): Promise<ServiceStatus> => {
+  return request.get({
+    url: '/Film/GetImageByFilmBox',
+    requestTem: true,
+    params: { filmBoxID: query }
+  })
+}
+
+export interface FilmBoxInMatchManualMatch {
+  matchState: string
+  taskNo: any
+  dicomPeerId: string
+  accessionNumber: string
+  endDate: string
+  startDate: string
+}
+
+export interface FilmBoxInMatchPageInfo {
+  pageIndex: number
+  pageSize: number
+}
+
+export interface GetFilmBoxInMatchQuery {
+  manualMatch: FilmBoxInMatchManualMatch
+  pageInfo: FilmBoxInMatchPageInfo
+}
+
+export interface FilmBoxInMatchItem {
+  filmBoxID: string
+  filmImagePath: string
+  requestTime: string
+  accessionNumber: string | null
+  filmSize: string
+  callingAE: string
+  mediumType: string
+  peerDes: string | null
+  displayFormat: string
+  filmOrientation: string
+  taskNo: any
+  width: number
+  height: number
+}
+
+export interface GetFilmBoxInMatchResult extends ServiceStatus {
+  film: FilmBoxInMatchItem[]
+  pageInfo: FilmBoxListPageInfo
+}
+
+export const getFilmBoxInMatch = (
+  data: GetFilmBoxInMatchQuery
+): Promise<GetFilmBoxInMatchResult> => {
+  return request.post({
+    url: '/Film/GetFilmBoxInMatch',
+    data
+  })
+}
+
+export interface ExamStudyItem {
+  studyID: string
+  accessionNumber: string
+  patientID: string
+  patientSex: string
+  patientName: string
+  patientNameENG: string
+  examinePart: string | null
+  age: string
+  examineType: string
+  examineDate: string
+  patientType: string
+  cloudFilmPaid: boolean | null
+  autoPrint: boolean | null
+}
+
+export interface GetExamByAccNumOrPatientIDResult extends ServiceStatus {
+  study: ExamStudyItem[]
+}
+
+export const getExamByAccNumOrPatientID = (data: {
+  accessionNumber: string
+  patientID: string
+}): Promise<GetExamByAccNumOrPatientIDResult> => {
+  return request.get({
+    url: '/Exam/GetExamByAccNumOrPatientID',
+    params: data
+  })
+}
+export const doManualMatch = (data: {
+  accessionNumber: string
+  filmBoxID: string
+}): Promise<ServiceStatus> => {
+  return request.post({
+    url: '/Film/DoManualMatch',
     data
   })
 }

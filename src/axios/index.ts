@@ -8,11 +8,11 @@ const request = (option: AxiosConfig) => {
     method,
     params,
     data: data,
+    responseType: requestTem ? 'arraybuffer' : 'json',
     headers: {
       ...headers,
       userid: 'admin'
-    },
-    proto: requestTem
+    }
   })
 }
 

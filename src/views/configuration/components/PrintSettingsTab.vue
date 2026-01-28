@@ -263,7 +263,7 @@ const onRowClick = (row: Row) => {
     >
       <el-table-column type="selection" width="40" />
       <el-table-column type="index" label="#" width="60" />
-      <el-table-column prop="departmentCode" label="名称描述" min-width="140" />
+      <el-table-column prop="printerName" label="名称描述" min-width="140" />
       <el-table-column prop="departmentName" label="科室" min-width="110" />
       <el-table-column prop="hostName" label="服务地址" min-width="140" />
       <el-table-column prop="aeTitle" label="服务标识" min-width="120" />
@@ -335,7 +335,7 @@ const onRowClick = (row: Row) => {
           </el-form-item>
         </div>
 
-        <div class="grid">
+        <div class="grid" v-else>
           <el-form-item label="服务地址：" required>
             <el-input v-model="form.hostName" placeholder="服务地址" />
           </el-form-item>

@@ -3,6 +3,8 @@ import { computed, reactive, ref, onMounted } from 'vue'
 import { formatToDate } from '@/utils/dateUtil'
 import { useCommonStoreWithOut, type ArrList } from '@/store/modules/common'
 import type { TableInstance } from 'element-plus'
+import { HandMatchPlugin } from 'vue-computer'
+import ManualMatchDialog from './components/ManualMatchDialog.vue'
 import {
   ElButton,
   ElCard,
@@ -30,6 +32,7 @@ import {
   getDicomPeerDropDown,
   getFilmBoxList,
   getMatFailedCountMsd,
+  getImageByFilmBox,
   getPrintFailedCountMsd,
   getPrinterDropDown,
   getServiceStateMsd,
@@ -42,7 +45,8 @@ import {
   type UpdateFilmPaidTag,
   ServiceEmum,
   startServiceMsd,
-  stopServiceMsd
+  stopServiceMsd,
+  deleteFilm
 } from '@/api/dataPage'
 
 const commonStore = useCommonStoreWithOut()
@@ -58,7 +62,14 @@ const getOptionText = (options: ArrList[], value: unknown) => {
 
 const printStateText = (value: unknown) => getOptionText(printStateOptions.value, value)
 const matchStateText = (value: unknown) => getOptionText(matchStateOptions.value, value)
+// dialog 组件相关
+const dialogWidth = ref('70vw')
+const handMatchFitMode = ref<'natural' | 'fitHeight'>('natural')
+function setHandMatchMode(mode: 'natural' | 'fitHeight') {
+  handMatchFitMode.value = mode
+}
 
+// dialog 自用组件结束
 type ColumnSlot = 'printState' | 'matchState' | 'autoPrint' | 'cloudFilmPaid'
 interface TableColumnConfig {
   prop: string
@@ -108,6 +119,51 @@ const printerDialogVisible = ref(false)
 const printerOptions = ref<DicomPeerOption[]>([])
 const printerLoading = ref(false)
 const selectedPrinterId = ref('')
+
+const viewDialogVisible = ref(false)
+const viewUrlList = ref<string[]>([])
+const viewActiveIndex = ref(0)
+const viewObjectUrls = ref<string[]>([])
+const viewCurrentRow = ref<FilmBoxResultItem | null>(null)
+
+const manualMatchDialogVisible = ref(false)
+const manualMatchTaskNo = ref<number | string>('')
+const manualMatchImageUrl = ref('')
+const manualMatchObjectUrl = ref<string | null>(null)
+
+const viewTitle = computed(() => `第 ${viewActiveIndex.value + 1} 张`)
+const viewCurrentSrc = computed(() => viewUrlList.value[viewActiveIndex.value] || '')
+
+const cleanupViewObjectUrls = () => {
+  viewObjectUrls.value = []
+}
+
+const cleanupManualMatchObjectUrl = () => {
+  if (manualMatchObjectUrl.value) {
+    URL.revokeObjectURL(manualMatchObjectUrl.value)
+    manualMatchObjectUrl.value = null
+  }
+  manualMatchImageUrl.value = ''
+}
+
+const deleteFilmBtn = async () => {
+  ElMessageBox.confirm('是否确定删除所选胶片？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      await deleteFilm({
+        filmBoxID: viewCurrentRow.value?.filmBoxID || ''
+      })
+      ElMessage.success('删除成功')
+      await search()
+    })
+    .catch(() => {
+      // 取消确认框时不提示错误
+    })
+  // await deleteFilm
+}
 
 const setSingleSelection = (row: FilmBoxResultItem) => {
   const table = tableRef.value
@@ -445,8 +501,58 @@ const togglePrintRestrict = async (row: FilmBoxResultItem) => {
   }
 }
 
-const handleViewRow = (row: FilmBoxResultItem) => {
+const normalizeImageUrls = (imgData: any): string => {
+  const imgBlob = new Blob([imgData], { type: 'image/png' })
+  const imgUrl = URL.createObjectURL(imgBlob)
+  return imgUrl
+}
+
+const openManualMatchDialog = async (row?: FilmBoxResultItem) => {
+  const targetRow = row || selectedRows.value[0]
+  if (!targetRow) {
+    ElMessage.warning('请选择需要手工匹配的数据')
+    return
+  }
+  if (!targetRow.filmBoxID) {
+    ElMessage.warning('当前数据缺少胶片ID')
+    return
+  }
+
+  manualMatchTaskNo.value = targetRow.taskNo ?? ''
+
+  try {
+    cleanupManualMatchObjectUrl()
+    const res = await getImageByFilmBox(targetRow.filmBoxID)
+    const imgUrl = normalizeImageUrls(res)
+    manualMatchObjectUrl.value = imgUrl
+    manualMatchImageUrl.value = imgUrl
+    manualMatchDialogVisible.value = true
+  } catch (error) {
+    console.error('获取图片失败', error)
+    ElMessage.error('获取图片失败')
+  }
+}
+
+const handleViewRow = async (row: FilmBoxResultItem) => {
+  console.log('double click row', row)
   setSingleSelection(row)
+  viewCurrentRow.value = row
+
+  if (!row.filmBoxID) {
+    ElMessage.warning('当前数据缺少胶片ID')
+    return
+  }
+
+  try {
+    cleanupViewObjectUrls()
+    const res = await getImageByFilmBox(row.filmBoxID)
+    viewDialogVisible.value = true
+    const imgUrl = normalizeImageUrls(res)
+    viewUrlList.value = [imgUrl]
+  } catch (error) {
+    console.error('获取图片失败', error)
+    ElMessage.error('获取图片失败')
+  }
 }
 
 const changePayStatusMsd = async () => {
@@ -636,7 +742,9 @@ onMounted(() => {
           <el-button size="small" :disabled="!hasSelection" @click="changePayStatusMsd">
             {{ changePayStatus }}
           </el-button>
-          <el-button size="small" :disabled="!hasSelection">手工匹配</el-button>
+          <el-button size="small" :disabled="!hasSelection" @click="openManualMatchDialog()">
+            手工匹配
+          </el-button>
 
           <el-button size="small" :disabled="!hasSelection" @click="resetMatchMsd">
             重置匹配
@@ -660,6 +768,7 @@ onMounted(() => {
         @selection-change="handleSelectionChange"
         @row-click="handleRowClick"
         @sort-change="handleSortChange"
+        @row-dblclick="handleViewRow($event)"
       >
         <el-table-column type="selection" width="40" fixed="left" />
         <el-table-column type="index" label="#" width="60" />
@@ -757,6 +866,45 @@ onMounted(() => {
       </div>
     </el-card>
 
+    <el-dialog
+      v-model="viewDialogVisible"
+      :width="dialogWidth"
+      style="height: 100vh"
+      class="el-dialog-computer"
+      :close-on-click-modal="false"
+      @closed="cleanupViewObjectUrls"
+    >
+      <template #header>
+        <div class="viewer-header">
+          <div class="viewer-title">{{ viewTitle }}</div>
+          <div class="viewer-actions">
+            <el-button size="small" @click="openManualMatchDialog(viewCurrentRow || undefined)">
+              手工匹配
+            </el-button>
+            <el-button size="small" @click="setHandMatchMode('fitHeight')">适应屏幕</el-button>
+            <el-button size="small" @click="setHandMatchMode('natural')">原始大小</el-button>
+            <el-button
+              size="small"
+              @click="
+                () => {
+                  dialogWidth = dialogWidth === '100vw' ? '70vw' : '100vw'
+                }
+              "
+              >{{ dialogWidth === '100vw' ? '还原' : '最大化' }}</el-button
+            >
+            <el-button size="small" type="danger" @click="deleteFilmBtn">删除</el-button>
+          </div>
+        </div>
+      </template>
+
+      <div class="viewer-body">
+        <div v-if="viewCurrentSrc" class="viewer-plugin">
+          <HandMatchPlugin :src="viewCurrentSrc" :fit-mode="handMatchFitMode" />
+        </div>
+        <el-empty v-else description="暂无图片" />
+      </div>
+    </el-dialog>
+
     <el-dialog v-model="printerDialogVisible" title="修改目的打印机" width="520">
       <el-form label-width="90px">
         <el-form-item label="目的打印机">
@@ -784,6 +932,14 @@ onMounted(() => {
         <el-button type="primary" @click="submitSetPrinter(true)">修改并打印</el-button>
       </template>
     </el-dialog>
+
+    <ManualMatchDialog
+      v-model="manualMatchDialogVisible"
+      :task-no="manualMatchTaskNo"
+      :image-url="manualMatchImageUrl"
+      @closed="cleanupManualMatchObjectUrl"
+      @success="search"
+    />
   </div>
 </template>
 
@@ -792,6 +948,35 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.viewer-title {
+  font-weight: 600;
+}
+
+.viewer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.viewer-body {
+  height: calc(100vh - 90px);
+  min-height: 520px;
+}
+
+.viewer-plugin {
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
 }
 
 .top-grid {

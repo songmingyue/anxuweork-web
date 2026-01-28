@@ -16,8 +16,10 @@ import {
   ElTableColumn,
   ElMessage
 } from 'element-plus'
+import TemplateMatchDialog from './TemplateMatchDialog.vue'
 import type { ConfigTabExpose } from './types'
-import type { AdminConfig } from '@/api/configuration'
+import type { AdminConfig, DicomPeer } from '@/api/configuration'
+import { Department, getDepartment } from '@/api/common'
 
 type Row = {
   id: number
@@ -28,7 +30,7 @@ type Row = {
   defaultPrinter: string
 }
 
-const tableData = ref<Row[]>([])
+const tableData = ref<DicomPeer[]>([])
 const tableRef = ref<any>(null)
 
 const props = defineProps({
@@ -41,8 +43,20 @@ const props = defineProps({
 
 const emit = defineEmits(['onChangeConfig'])
 
-const currentRow = ref<Row | null>(null)
+const currentRow = ref<DicomPeer | any>(null)
 const mode = ref<'view' | 'create' | 'edit'>('view')
+
+const templateMatchVisible = ref(false)
+const currentAeTitle = computed(() => ((currentRow.value as any)?.aeTitle as string) || '')
+const aeTitleOptions = computed(() => {
+  const map = new Map<string, { label: string; value: string }>()
+  ;(tableData.value || []).forEach((r) => {
+    const ae = (r as any)?.aeTitle
+    if (!ae) return
+    map.set(ae, { label: ae, value: ae })
+  })
+  return Array.from(map.values())
+})
 
 const isFormVisible = computed(() => mode.value !== 'view')
 const showPasswordFields = computed(() => mode.value === 'create')
@@ -107,18 +121,22 @@ const onCancel = () => {
 }
 
 const onMatchTemplate = () => {
-  ElMessage.success('匹配模板')
+  if (!currentRow.value) {
+    ElMessage.warning('请先选择一条设备')
+    return
+  }
+  templateMatchVisible.value = true
 }
 
 const persistTableToConfig = () => {
-  const newConfig = props.adminConfigInfo
+  const newConfig = props.adminConfigInfo.dicomPeer
   // newConfig.dicomPeer = [...tableData.value]
   emit('onChangeConfig', newConfig)
 }
 
 const onSave = () => {
   if (mode.value === 'create') {
-    const nextId = Math.max(0, ...tableData.value.map((r) => r.id || 0)) + 1
+    const nextId = Math.max(0, ...tableData.value.map((r: any) => r.id || 0)) + 1
     tableData.value = [
       ...tableData.value,
       {
@@ -128,7 +146,7 @@ const onSave = () => {
         deviceAddr: form.deviceAddr,
         deviceId: form.deviceId,
         defaultPrinter: form.defaultPrinter
-      }
+      } as any
     ]
     ElMessage.success('新增成功')
   }
@@ -138,16 +156,16 @@ const onSave = () => {
       ElMessage.warning('请先选择一条数据')
       return
     }
-    const idx = tableData.value.findIndex((r) => r.id === currentRow.value?.id)
+    const idx = tableData.value.findIndex((r: any) => r.id === currentRow.value?.id)
     if (idx >= 0) {
-      tableData.value.splice(idx, 1, {
-        ...tableData.value[idx],
-        dept: form.dept,
-        deviceDesc: form.deviceDesc,
-        deviceAddr: form.deviceAddr,
-        deviceId: form.deviceId,
-        defaultPrinter: form.defaultPrinter
-      })
+      // tableData.value.splice(idx, 1, {
+      //   ...tableData.value[idx],
+      //   dept: form.dept,
+      //   deviceDesc: form.deviceDesc,
+      //   deviceAddr: form.deviceAddr,
+      //   deviceId: form.deviceId,
+      //   defaultPrinter: form.defaultPrinter
+      // })
       ElMessage.success('修改成功')
     }
   }
@@ -179,9 +197,19 @@ const selectRow = (row: Row) => {
     })
   }
 }
+const departments = ref<Department[]>([])
+const getDepartmentMsd = async () => {
+  try {
+    const { data } = await getDepartment()
+    departments.value = data
+  } catch (error) {
+    console.error('获取科室列表失败', error)
+  }
+}
 
 onMounted(async () => {
-  // tableData.value = (props.adminConfigInfo.dicomPeer as Row[]) || []
+  tableData.value = props.adminConfigInfo.dicomPeer || []
+  getDepartmentMsd()
   if (tableData.value.length > 0) {
     await Promise.resolve()
     const first = tableData.value[0]
@@ -216,10 +244,10 @@ defineExpose<ConfigTabExpose>({ submit, reset })
     >
       <el-table-column type="selection" width="40" />
       <el-table-column type="index" label="#" width="60" />
-      <el-table-column prop="deviceDesc" label="设备描述" min-width="140" />
-      <el-table-column prop="dept" label="科室" min-width="110" />
-      <el-table-column prop="deviceAddr" label="设备地址" min-width="140" />
-      <el-table-column prop="deviceId" label="设备标识" min-width="120" />
+      <el-table-column prop="peerDes" label="设备描述" min-width="140" />
+      <el-table-column prop="departmentName" label="科室" min-width="110" />
+      <el-table-column prop="hostName" label="设备地址" min-width="140" />
+      <el-table-column prop="aeTitle" label="设备标识" min-width="120" />
       <el-table-column prop="defaultPrinter" label="默认打印机" min-width="120" />
 
       <template #empty>
@@ -232,7 +260,12 @@ defineExpose<ConfigTabExpose>({ submit, reset })
         <div class="grid">
           <el-form-item label="科室：" required>
             <el-select v-model="form.dept" placeholder="科室" style="width: 100%">
-              <el-option label="科室" value="dept" />
+              <el-option
+                :label="item.departmentName"
+                :value="item.departmentCode"
+                v-for="item in departments"
+                :key="item.departmentCode"
+              />
             </el-select>
           </el-form-item>
 
@@ -313,6 +346,12 @@ defineExpose<ConfigTabExpose>({ submit, reset })
         <el-button type="primary" @click="onSave">保存</el-button>
       </div>
     </div>
+
+    <TemplateMatchDialog
+      v-model="templateMatchVisible"
+      :ae-title-options="aeTitleOptions"
+      :default-ae-title="currentAeTitle"
+    />
   </el-card>
 </template>
 

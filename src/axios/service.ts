@@ -29,12 +29,14 @@ axiosInstance.interceptors.request.use((res: any) => {
   return res
 })
 
+const whiteList = ['/Admin/Config/GetUserPermissionList', '/Film/GetImageByFilmBox']
+
 axiosInstance.interceptors.response.use(
   (res: any) => {
     if (res.status == 200) {
       const { data } = res
       if (data.status !== 0) {
-        if (res.config.url === '/Admin/Config/GetUserPermissionList') {
+        if (whiteList.includes(res.config.url || '')) {
           return res.data
         }
         ElMessage.error(data.desc || '请求出错')

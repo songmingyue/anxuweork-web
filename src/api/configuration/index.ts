@@ -340,3 +340,56 @@ export const testPrintConnection = (data: PrintConnection): Promise<PrintPublish
     data
   })
 }
+
+// Film/GetFilmBoxInSample
+export interface FilmBoxInSampleManualMatch {
+  /** 打印时间筛选（由后端定义取值，如 0/1） */
+  printTime?: number
+  /** 匹配状态（通常为字符串枚举，如 "0"/"1"） */
+  matchState?: string
+  /** 请求设备 / Calling AE */
+  callingAE?: string
+  /** 任务号（查询输入通常为字符串） */
+  taskNo?: string
+}
+
+export interface FilmBoxInSamplePageInfo {
+  pageIndex: number
+  pageSize: number
+  count: number
+}
+
+export interface GetFilmBoxInSampleRequest {
+  manualMatch: FilmBoxInSampleManualMatch
+  pageInfo: FilmBoxInSamplePageInfo
+}
+
+export interface FilmBoxInSampleItem {
+  filmBoxID: string
+  filmImagePath: string
+  requestTime: string
+  accessionNumber: string | null
+  filmSize: string
+  callingAE: string
+  mediumType: string
+  peerDes: string | null
+  displayFormat: string
+  filmOrientation: string
+  taskNo: number
+  width: number
+  height: number
+}
+
+export interface GetFilmBoxInSampleResponse extends ServiceStatus {
+  film: FilmBoxInSampleItem[]
+  pageInfo: FilmBoxInSamplePageInfo
+}
+
+export const getFilmBoxInSample = (
+  data: GetFilmBoxInSampleRequest
+): Promise<GetFilmBoxInSampleResponse> => {
+  return request.post({
+    url: '/Film/GetFilmBoxInSample',
+    data
+  })
+}

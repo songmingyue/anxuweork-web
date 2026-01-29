@@ -21,15 +21,6 @@ import type { ConfigTabExpose } from './types'
 import type { AdminConfig, DicomPeer } from '@/api/configuration'
 import { Department, getDepartment } from '@/api/common'
 
-type Row = {
-  id: number
-  dept: string
-  deviceDesc: string
-  deviceAddr: string
-  deviceId: string
-  defaultPrinter: string
-}
-
 const tableData = ref<DicomPeer[]>([])
 const tableRef = ref<any>(null)
 
@@ -49,46 +40,41 @@ const mode = ref<'view' | 'create' | 'edit'>('view')
 const templateMatchVisible = ref(false)
 const currentAeTitle = computed(() => ((currentRow.value as any)?.aeTitle as string) || '')
 const aeTitleOptions = computed(() => {
-  const map = new Map<string, { label: string; value: string }>()
+  const map = new Map<string, { label: string; value: string; peerDes?: string }>()
   ;(tableData.value || []).forEach((r) => {
     const ae = (r as any)?.aeTitle
     if (!ae) return
-    map.set(ae, { label: ae, value: ae })
+    map.set(ae, { label: ae, value: ae, peerDes: (r as any)?.peerDes })
   })
   return Array.from(map.values())
 })
 
 const isFormVisible = computed(() => mode.value !== 'view')
-const showPasswordFields = computed(() => mode.value === 'create')
 
 type DeviceForm = {
+  peerDes: string
   dept: string
-  deviceDesc: string
-  deviceAddr: string
-  deviceId: string
+  hostName: string
+  aeTitle: string
   defaultPrinter: string
-  deviceType: string
-  autoSend: 'yes' | 'no'
+  modalities: string[]
+  autoPrint: boolean
   delayH: number
   delayM: number
-  needOcr: 'yes' | 'no'
-  password: string
-  resetPassword: string
+  containsExamInfo: boolean
 }
 
 const defaultForm: DeviceForm = {
+  peerDes: '',
   dept: '',
-  deviceDesc: '',
-  deviceAddr: '',
-  deviceId: '',
+  hostName: '',
+  aeTitle: '',
   defaultPrinter: '',
-  deviceType: '',
-  autoSend: 'yes',
+  autoPrint: false,
+  modalities: [],
   delayH: 0,
   delayM: 0,
-  needOcr: 'yes',
-  password: '',
-  resetPassword: ''
+  containsExamInfo: true
 }
 
 const form = reactive<DeviceForm>({ ...defaultForm })
@@ -136,16 +122,10 @@ const persistTableToConfig = () => {
 
 const onSave = () => {
   if (mode.value === 'create') {
-    const nextId = Math.max(0, ...tableData.value.map((r: any) => r.id || 0)) + 1
     tableData.value = [
       ...tableData.value,
       {
-        id: nextId,
-        dept: form.dept,
-        deviceDesc: form.deviceDesc,
-        deviceAddr: form.deviceAddr,
-        deviceId: form.deviceId,
-        defaultPrinter: form.defaultPrinter
+        dicomPeerID: crypto.randomUUID()
       } as any
     ]
     ElMessage.success('新增成功')
@@ -158,14 +138,14 @@ const onSave = () => {
     }
     const idx = tableData.value.findIndex((r: any) => r.id === currentRow.value?.id)
     if (idx >= 0) {
-      // tableData.value.splice(idx, 1, {
-      //   ...tableData.value[idx],
-      //   dept: form.dept,
-      //   deviceDesc: form.deviceDesc,
-      //   deviceAddr: form.deviceAddr,
-      //   deviceId: form.deviceId,
-      //   defaultPrinter: form.defaultPrinter
-      // })
+      tableData.value.splice(idx, 1, {
+        ...tableData.value[idx],
+        dept: form.dept,
+        peerDes: form.peerDes,
+        hostName: form.hostName,
+        aeTitle: form.aeTitle,
+        defaultPrinter: form.defaultPrinter
+      } as any)
       ElMessage.success('修改成功')
     }
   }
@@ -186,16 +166,26 @@ const submit = () => {
   ElMessage.success('保存成功')
 }
 
-const selectRow = (row: Row) => {
+const selectRow = (row: DicomPeer) => {
   currentRow.value = row
-  if (mode.value === 'edit') {
-    Object.assign(form, {
-      ...defaultForm,
-      ...row,
-      password: '',
-      resetPassword: ''
-    })
+  const formData = {
+    peerDes: row.peerDes,
+    dept: row.departmentCode,
+    hostName: row.hostName,
+    aeTitle: row.aeTitle,
+    defaultPrinter: row.defaultPrinter,
+    modalities: [],
+    autoPrint: false,
+    delayH: 0,
+    delayM: 0,
+    containsExamInfo: true
   }
+  if (row.matchDelayMinutes) {
+    formData.delayH = Math.floor(row.matchDelayMinutes / 60)
+    formData.delayM = row.matchDelayMinutes % 60
+  }
+  Object.assign(form, formData)
+  mode.value = 'view'
 }
 const departments = ref<Department[]>([])
 const getDepartmentMsd = async () => {
@@ -227,7 +217,6 @@ defineExpose<ConfigTabExpose>({ submit, reset })
       <div class="tab-title">请求设备</div>
       <div class="tab-actions">
         <el-button type="primary" plain @click="onNew">新增</el-button>
-        <el-button :disabled="!currentRow" @click="onEdit">修改信息</el-button>
         <el-button @click="onCancel">取消</el-button>
         <el-button disabled>删除</el-button>
       </div>
@@ -270,15 +259,15 @@ defineExpose<ConfigTabExpose>({ submit, reset })
           </el-form-item>
 
           <el-form-item label="设备描述：" required>
-            <el-input v-model="form.deviceDesc" placeholder="设备描述" />
+            <el-input v-model="form.peerDes" placeholder="设备描述" />
           </el-form-item>
 
           <el-form-item label="设备地址：" required>
-            <el-input v-model="form.deviceAddr" placeholder="设备地址" />
+            <el-input v-model="form.hostName" placeholder="设备地址" />
           </el-form-item>
 
           <el-form-item label="设备标识：" required>
-            <el-input v-model="form.deviceId" placeholder="设备标识" />
+            <el-input v-model="form.aeTitle" placeholder="设备标识" />
           </el-form-item>
 
           <el-form-item label="默认打印机：">
@@ -288,15 +277,15 @@ defineExpose<ConfigTabExpose>({ submit, reset })
           </el-form-item>
 
           <el-form-item label="设备类型：">
-            <el-select v-model="form.deviceType" placeholder="设备类型" style="width: 100%">
+            <el-select v-model="form.modalities" placeholder="设备类型" style="width: 100%">
               <el-option label="设备类型" value="type" />
             </el-select>
           </el-form-item>
 
           <el-form-item label="自动发片：">
-            <el-radio-group v-model="form.autoSend">
-              <el-radio-button label="yes">是</el-radio-button>
-              <el-radio-button label="no">否</el-radio-button>
+            <el-radio-group v-model="form.autoPrint">
+              <el-radio-button :label="true">是</el-radio-button>
+              <el-radio-button :label="false">否</el-radio-button>
             </el-radio-group>
           </el-form-item>
 
@@ -321,36 +310,26 @@ defineExpose<ConfigTabExpose>({ submit, reset })
           </el-form-item>
 
           <el-form-item label="是否需要OCR：">
-            <el-radio-group v-model="form.needOcr">
-              <el-radio-button label="yes">是</el-radio-button>
-              <el-radio-button label="no">否</el-radio-button>
+            <el-radio-group v-model="form.containsExamInfo">
+              <el-radio-button :label="true">是</el-radio-button>
+              <el-radio-button :label="false">否</el-radio-button>
             </el-radio-group>
-          </el-form-item>
-
-          <el-form-item v-if="showPasswordFields" label="密码：" required>
-            <el-input v-model="form.password" type="password" show-password placeholder="密码" />
-          </el-form-item>
-
-          <el-form-item v-if="showPasswordFields" label="重置密码：" required>
-            <el-input
-              v-model="form.resetPassword"
-              type="password"
-              show-password
-              placeholder="重置密码"
-            />
           </el-form-item>
         </div>
       </el-form>
       <div class="bottom-actions">
         <el-button type="primary" plain @click="onMatchTemplate">匹配模板</el-button>
-        <el-button type="primary" @click="onSave">保存</el-button>
+        <el-button type="primary" v-if="mode !== 'view'" @click="onSave">保存</el-button>
+        <el-button type="primary" v-if="mode === 'view'" @click="onEdit">修改</el-button>
       </div>
     </div>
 
     <TemplateMatchDialog
+      v-if="templateMatchVisible"
       v-model="templateMatchVisible"
       :ae-title-options="aeTitleOptions"
       :default-ae-title="currentAeTitle"
+      :dicomPeer="tableData"
     />
   </el-card>
 </template>

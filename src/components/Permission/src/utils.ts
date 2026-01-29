@@ -12,3 +12,9 @@ export const hasPermi = (value: string) => {
   }
   return false
 }
+
+export const ImageBlobUrl = (ImageData: any) => {
+  const blob = new Blob([ImageData], { type: 'image/jpeg' })
+  const url = URL.createObjectURL(blob)
+  return url
+}

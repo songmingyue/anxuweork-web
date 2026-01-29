@@ -13,6 +13,8 @@ import {
   ElTableColumn
 } from 'element-plus'
 
+import { useCommonStoreWithOut } from '@/store/modules/common'
+
 import {
   getFilmBoxInSample,
   type FilmBoxInSampleItem,
@@ -48,9 +50,12 @@ const loading = ref(false)
 const rows = ref<FilmBoxInSampleItem[]>([])
 const currentRow = ref<FilmBoxInSampleItem | null>(null)
 
+const commonStore = useCommonStoreWithOut()
+const matchStateOptions = computed(() => commonStore.matchState || [])
+
 const form = reactive({
   taskNo: '',
-  printTime: 1 as number | undefined,
+  printTime: -1,
   matchState: '' as string | undefined,
   callingAE: ''
 })
@@ -155,12 +160,21 @@ watch(
       <el-input v-model="form.taskNo" placeholder="任务号" clearable class="ssd-input" />
 
       <el-select v-model="form.printTime" placeholder="打印时间" clearable class="ssd-input">
-        <el-option label="全部" :value="1" />
+        <el-option label="全部" :value="-1" />
+        <el-option label="今天" :value="1" />
+        <el-option label="三天内" :value="3" />
+
+        <el-option label="一周内" :value="7" />
+        <el-option label="一个月内" :value="30" />
       </el-select>
 
       <el-select v-model="form.matchState" placeholder="匹配状态" clearable class="ssd-input">
-        <el-option label="失败" value="1" />
-        <el-option label="成功" value="0" />
+        <el-option
+          v-for="item in matchStateOptions"
+          :key="item.value"
+          :label="item.text"
+          :value="item.value"
+        />
       </el-select>
 
       <el-select v-model="form.callingAE" placeholder="请求设备" clearable class="ssd-input">
@@ -184,6 +198,7 @@ watch(
       height="420"
       highlight-current-row
       @current-change="(row: any) => (currentRow = row)"
+      @row-dblclick="onConfirm"
     >
       <el-table-column prop="taskNo" label="任务号" min-width="120" />
       <el-table-column prop="callingAE" label="请求设备" min-width="120" />

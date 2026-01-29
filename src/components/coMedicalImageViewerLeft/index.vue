@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MedicalImageViewerLeft } from 'vue-computer'
+import { MedicalImageViewer as MedicalImageViewerLeft } from 'vue-computer'
 
 interface Props {
   imageUrl?: string

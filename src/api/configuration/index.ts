@@ -101,9 +101,82 @@ export interface DicomPeer {
   /** 匹配延迟时间（分钟） */
   matchDelayMinutes: number
   /** 匹配样本列表 */
-  matchSamples: any[]
+  matchSamples: MatchSample[]
   /** 模态列表（如MR、CT等） */
   modalities: string[]
+}
+
+export interface MatchStratege {
+  matchLatestExam: boolean
+  /** 最大检查时间差（由后端定义单位，如分钟/小时） */
+  maxExamDiff: number
+}
+
+export interface MatchMethodSpliterMatch {
+  spliter: string
+  count: number
+}
+
+export interface MatchMethodRegexMatch {
+  regex: string
+}
+
+export interface MatchMethodSimiliarMatch {
+  rate: number
+}
+
+export interface MatchMethodConfig {
+  /** 匹配类型（由后端定义枚举） */
+  matchType: number
+  spliterMatch: MatchMethodSpliterMatch
+  regexMatch: MatchMethodRegexMatch
+  similiarMatch: MatchMethodSimiliarMatch
+}
+
+export interface MatchImageProcessConfig {
+  magnification: number
+  /** 旋转（由后端定义枚举/角度） */
+  rotate: number
+  contrastEnhangce: number
+  isReverse: boolean
+  /** 二值化类型（由后端定义枚举） */
+  binaryzationType: number
+  threshold: number
+}
+
+export interface MatchResultProcessItem {
+  /** 处理类型（由后端定义枚举） */
+  processType: number
+  configString: string
+}
+
+export interface MatchOcrMethodConfig {
+  x: number
+  y: number
+  width: number
+  height: number
+  /** 识别类型（由后端定义枚举） */
+  recognizeType: number
+  /** 行号/行数（由后端定义） */
+  rowNumber: number
+  imageProcess: MatchImageProcessConfig
+  matchMethod: MatchMethodConfig
+  resultProcess: MatchResultProcessItem[]
+}
+
+export interface MatchSample {
+  filmSampleID: string
+  dicomPeerID: string
+  sampleName: string
+  filmSize: string
+  filmOrientation: string
+  filmSamplePath: string
+  matchRate: number
+  /** 注意：后端字段名就是 matchStratege（拼写如此） */
+  matchStratege: MatchStratege
+  accMatchMethod: MatchOcrMethodConfig
+  patientIDMatchMethod: MatchOcrMethodConfig
+  patientNameMatch: MatchOcrMethodConfig
 }
 
 export interface UserConfig {

@@ -73,7 +73,7 @@ export interface AdminConfig {
 
 export interface DicomPeer {
   /** DICOM对等节点唯一标识 */
-  dicomPeerID: string
+  dicomPeerID?: string
   /** 主机名称 */
   hostName: string
   /** 对等节点描述 */
@@ -463,6 +463,33 @@ export const getFilmBoxInSample = (
 ): Promise<GetFilmBoxInSampleResponse> => {
   return request.post({
     url: '/Film/GetFilmBoxInSample',
+    data
+  })
+}
+
+export interface GetOCRResultRequest {
+  filmBoxID: string
+  matchMethod: MatchOcrMethodConfig
+}
+
+export interface GetOCRResultResponse extends ServiceStatus {
+  result: string
+}
+
+export const getOCRResult = (data: GetOCRResultRequest): Promise<GetOCRResultResponse> => {
+  return request.post({
+    url: '/Film/GetOCRResult',
+    data
+  })
+}
+
+export interface GetTemplatePreview extends ServiceStatus {
+  filmSource: string
+}
+
+export const getTemplatePreview = (data: GetOCRResultRequest): Promise<GetTemplatePreview> => {
+  return request.post({
+    url: '/Film/GetTemplatePreview',
     data
   })
 }

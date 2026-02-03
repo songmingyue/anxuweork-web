@@ -4,6 +4,7 @@ import type { App } from 'vue'
 import { NO_RESET_WHITE_LIST } from '@/constants'
 import { Layout } from '@/utils/routerHelper'
 import { management } from '@/router/management'
+import { statistics } from '@/router/statistics'
 
 export const constantRouterMap: AppRouteRecordRaw[] = [
   {
@@ -20,18 +21,9 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     path: '/',
     component: Layout,
     name: 'indexs',
+    redirect: '/workstation',
     meta: {},
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/dataPage/index.vue'),
-        name: 'indexPages',
-        meta: {
-          title: '基础信息',
-          icon: ''
-        }
-      }
-    ]
+    children: []
   },
   {
     path: '/404',
@@ -45,61 +37,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   }
 ]
 
-export const asyncRouterMap: AppRouteRecordRaw[] = [
-  {
-    path: '/index',
-    component: Layout,
-    name: 'index',
-    meta: {},
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/dataPage/index.vue'),
-        name: 'indexPage',
-        meta: {
-          title: '基础信息',
-          icon: ''
-        }
-      }
-    ]
-  },
-  {
-    path: '/configuration',
-    component: Layout,
-    name: 'configurations',
-    meta: {},
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/configuration/index.vue'),
-        name: 'configurationChild',
-        meta: {
-          title: '参数配置',
-          icon: ''
-        }
-      }
-    ]
-  },
-  {
-    path: '/clientRegister',
-    component: Layout,
-    name: 'clientRegister',
-    meta: {},
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/clientRegister/index.vue'),
-        name: 'clientRegisterChild',
-        meta: {
-          title: '客户端注册',
-          icon: ''
-        }
-      }
-    ]
-  },
-
-  ...management
-]
+export const asyncRouterMap: AppRouteRecordRaw[] = [...statistics, ...management]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

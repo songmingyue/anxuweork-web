@@ -1,55 +1,37 @@
 export const menuList = [
   {
-    url: '/index',
+    url: '/workstation',
     meta: {
       requiresAuth: true,
-      title: '管理平台'
+      title: '首页'
     }
   },
   {
-    url: '/configuration',
+    url: '/filmStatistics',
     meta: {
       requiresAuth: true,
-      title: '参数设置'
+      title: '胶片统计'
     }
   },
   {
-    url: '/management',
-    children: [
-      {
-        url: '/systemManagement',
-        meta: {
-          requiresAuth: true,
-          title: '参数配置'
-        }
-      },
-      {
-        url: '/scriptManagement',
-        meta: {
-          requiresAuth: true,
-          title: '脚本管理'
-        }
-      }
-    ],
+    url: '/operationalAudit',
     meta: {
       requiresAuth: true,
-      title: '配置管理'
+      title: '操作审计'
     }
   },
   {
-    url: '/client',
-    children: [
-      {
-        url: '/clientRegister',
-        meta: {
-          requiresAuth: true,
-          title: '客户端注册'
-        }
-      }
-    ],
+    url: '/inspectStatistics',
     meta: {
       requiresAuth: true,
-      title: '注册'
+      title: '检查统计'
+    }
+  },
+  {
+    url: '/statisticsInfo',
+    meta: {
+      requiresAuth: true,
+      title: '统计信息'
     }
   }
 ]

@@ -26,3 +26,5 @@
 - 测试机构： admin/TomTaw@HZ1993
 
 ![alt text](image.png)
+
+【@todo:】1。 datapage 页面的删除放到表格里 2. 表格按钮变文字形式 3. 限制和解除限制颜色变化 4. configuration 请求设备，默认第一条

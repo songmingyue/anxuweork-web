@@ -30,7 +30,7 @@ router.beforeEach(async (to, from, next) => {
       setCssVar('--tags-view-height', '0px') // 进入页面时先隐藏标签页 这个标签页不要了
       const redirectPath = from.query.redirect || to.path
       const redirect = decodeURIComponent(redirectPath as string)
-      const nextData = to.path === redirect ? { ...to, replace: true } : { path: '/index' }
+      const nextData = to.path === redirect ? { ...to, replace: true } : { path: '/workstation' }
       permissionStore.setIsAddRouters(true)
       next(nextData)
       getDropDownConfig().then((res) => {

@@ -169,7 +169,7 @@ const signIn = async () => {
           console.log('登录成功，设置用户信息', res)
           userStore.setLocalstorage(res)
           userStore.setUseMsg()
-          const pushUrl = '/index'
+          const pushUrl = '/workstation'
           push(redirect.value || pushUrl)
         }
       } finally {

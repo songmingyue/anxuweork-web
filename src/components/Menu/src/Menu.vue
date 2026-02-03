@@ -26,19 +26,23 @@ const menuIconList = reactive<
   }>
 >([
   {
-    key: '/index',
+    key: '/workstation',
     icon: 'guanli'
   },
   {
-    key: '/configuration',
+    key: '/filmStatistics',
+    icon: 'guanli'
+  },
+  {
+    key: '/operationalAudit',
     icon: 'setting'
   },
   {
-    key: '/management',
+    key: '/inspectStatistics',
     icon: 'peizhiguanli'
   },
   {
-    key: '/client',
+    key: '/statisticsInfo',
     icon: 'chong_ming_ming'
   }
 ])
@@ -85,12 +89,22 @@ function isActiveUrl(url: string): boolean {
   return path === url || path.startsWith(url + '/')
 }
 
+// 判断一个菜单项是否激活：自身激活或任一子项激活
+function isActiveMenu(item: any): boolean {
+  if (!item) return false
+  if (item.url && isActiveUrl(item.url)) return true
+  if (item.children && Array.isArray(item.children)) {
+    return item.children.some((c: any) => isActiveMenu(c))
+  }
+  return false
+}
+
 // 递归渲染菜单，返回VNode数组
 function renderMenu(list: any[]) {
   return list.map((item: any) => {
     if (item.children && item.children.length > 0) {
       const iconName = getMenuIcon(item.url)
-      const isAct = isActiveUrl(item.url)
+      const isAct = isActiveMenu(item)
       return h(
         ElSubMenu,
         { index: item.url, key: item.url },
@@ -215,14 +229,6 @@ function renderMenu(list: any[]) {
 
     .@{elNamespace}-menu-item.is-active {
       position: relative;
-    }
-
-    // 设置子菜单的背景颜色
-    .@{elNamespace}-menu {
-      .@{elNamespace}-sub-menu__title,
-      .@{elNamespace}-menu-item:not(.is-active) {
-        // background-color: #426589 !important;
-      }
     }
   }
 

@@ -159,13 +159,12 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       cssTarget: ['chrome31']
     },
     server: {
-      port: 3001,
+      port: 3002,
       proxy: {
         // 选项写法
-        '/api': {
-          target: 'http://127.0.0.1:8000',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
+        '/Home': {
+          target: 'http://192.168.1.209:8070/',
+          changeOrigin: true
         }
       },
       hmr: {

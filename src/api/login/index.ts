@@ -1,6 +1,7 @@
 import request from '@/axios'
 import type { OrganizationList, UserType } from './types'
 import { UserMsg } from '@/store/modules/user'
+import { ServiceStatus } from '../dataPage'
 
 export const loginApi = (data: any): Promise<UserMsg> => {
   return request.post({
@@ -9,7 +10,7 @@ export const loginApi = (data: any): Promise<UserMsg> => {
   })
 }
 
-export const userLogout = (): Promise<IResponse<UserType>> => {
+export const userLogout = (): Promise<ServiceStatus> => {
   return request.post({
     url: 'Home/Logout'
   })

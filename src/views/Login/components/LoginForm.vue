@@ -159,7 +159,7 @@ const signIn = async () => {
       try {
         const passwordEncrypted: UserLoginTypes = {
           password: CryptoJS.MD5(formData.password).toString(),
-          loginType: 1,
+          loginType: 0,
           account: formData.account || ''
         }
         const res = await loginApi(passwordEncrypted)

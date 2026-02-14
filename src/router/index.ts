@@ -3,7 +3,6 @@ import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
 import { NO_RESET_WHITE_LIST } from '@/constants'
 import { Layout } from '@/utils/routerHelper'
-import { management } from '@/router/management'
 import { statistics } from '@/router/statistics'
 
 export const constantRouterMap: AppRouteRecordRaw[] = [
@@ -37,7 +36,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
   }
 ]
 
-export const asyncRouterMap: AppRouteRecordRaw[] = [...statistics, ...management]
+export const asyncRouterMap: AppRouteRecordRaw[] = [...statistics]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

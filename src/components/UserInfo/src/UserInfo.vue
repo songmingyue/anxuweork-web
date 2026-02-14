@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon } from 'element-plus'
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon, ElMessage } from 'element-plus'
 import { ArrowDown, Avatar } from '@element-plus/icons-vue'
 import { useDesign } from '@/hooks/web/useDesign'
 import UserInfoDialog from './components/UserInfoDialog.vue'
@@ -7,6 +7,8 @@ import { ref, computed } from 'vue'
 import LockPage from './components/LockPage.vue'
 import { useLockStore } from '@/store/modules/lock'
 import { useUserStore } from '@/store/modules/user'
+import { userLogout } from '@/api/login'
+import { useRouter } from 'vue-router'
 
 const userStore = useUserStore()
 
@@ -17,9 +19,15 @@ const getIsLock = computed(() => lockStore.getLockInfo?.isLock ?? false)
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('user-info')
-
-const loginOut = () => {
-  userStore.logoutConfirm()
+const router = useRouter()
+const loginOut = async () => {
+  const { status, desc } = await userLogout()
+  if (status !== 0) {
+    ElMessage.error(desc || '退出失败')
+  } else {
+    userStore.logoutConfirm()
+    router.replace('/login')
+  }
 }
 
 const modalPerson = () => {

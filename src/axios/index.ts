@@ -2,9 +2,8 @@ import service from './service'
 
 const request = (option: AxiosConfig) => {
   const { url, method, params, data, headers, requestTem } = option
-  const baseURL = ''
   return service.request({
-    url: baseURL + url,
+    url: url,
     method,
     params,
     data: data,

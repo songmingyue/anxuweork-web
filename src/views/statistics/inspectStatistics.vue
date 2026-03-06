@@ -1,13 +1,504 @@
 <script setup lang="ts">
-import { ContentWrap } from '@/components/ContentWrap'
+import type { EChartsOption } from 'echarts'
+import type { ComponentPublicInstance } from 'vue'
+import echarts from '@/plugins/echarts'
+import {
+  ElButton,
+  ElCard,
+  ElDatePicker,
+  ElForm,
+  ElFormItem,
+  ElIcon,
+  ElOption,
+  ElSelect,
+  ElTable,
+  ElTableColumn
+} from 'element-plus'
+import {
+  DataAnalysis,
+  Download,
+  FullScreen,
+  Histogram,
+  Refresh,
+  TrendCharts
+} from '@element-plus/icons-vue'
+import { nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 
 defineOptions({
   name: 'InspectStatistics'
 })
+
+const query = reactive({
+  patientType: '',
+  examType: '',
+  dateRange: ['2026-01-01', '2026-02-01'] as string[]
+})
+
+const patientTypeOptions = [
+  { label: '门诊', value: '门诊' },
+  { label: '住院', value: '住院' }
+]
+
+const examTypeOptions = [
+  { label: 'CT', value: 'CT' },
+  { label: 'MR', value: 'MR' },
+  { label: 'DR', value: 'DR' }
+]
+
+const tableData = ref<any[]>([])
+
+type ViewMode = 'chart' | 'table'
+type ChartType = 'line' | 'bar'
+
+const bottomState = reactive({
+  mode: 'chart' as ViewMode,
+  chartType: 'line' as ChartType,
+  initialType: 'line' as ChartType,
+  queried: false
+})
+
+const chartWrapRef = ref<HTMLElement | null>(null)
+let chartRef: Nullable<echarts.ECharts> = null
+
+const chartData = {
+  categories: ['2025-11', '2025-12', '2026-01', '2026-02'],
+  total: [102, 118, 121, 96],
+  print: [76, 84, 90, 72],
+  film: [68, 79, 86, 65],
+  supplement: [6, 8, 7, 5]
+}
+
+const getChartOption = (): EChartsOption => {
+  const isBar = bottomState.chartType === 'bar'
+  const categories = bottomState.queried ? chartData.categories : []
+  const total = bottomState.queried ? chartData.total : []
+  const print = bottomState.queried ? chartData.print : []
+  const film = bottomState.queried ? chartData.film : []
+  const supplement = bottomState.queried ? chartData.supplement : []
+
+  return {
+    grid: {
+      top: 38,
+      left: 36,
+      right: 24,
+      bottom: 28,
+      containLabel: true
+    },
+    legend: {
+      top: 0,
+      icon: 'roundRect',
+      data: ['总检查数', '检查打印量', '胶片打印量', '补费量']
+    },
+    xAxis: {
+      type: 'category',
+      name: '月份',
+      nameLocation: 'end',
+      data: categories,
+      boundaryGap: isBar
+    },
+    yAxis: {
+      type: 'value',
+      name: '使用量'
+    },
+    series: [
+      { name: '总检查数', type: bottomState.chartType, data: total },
+      { name: '检查打印量', type: bottomState.chartType, data: print },
+      { name: '胶片打印量', type: bottomState.chartType, data: film },
+      { name: '补费量', type: bottomState.chartType, data: supplement }
+    ]
+  }
+}
+
+const renderChart = () => {
+  if (!chartWrapRef.value) {
+    return
+  }
+  if (!chartRef) {
+    chartRef = echarts.init(chartWrapRef.value)
+  }
+  chartRef.setOption(getChartOption(), true)
+}
+
+const resizeChart = () => {
+  chartRef?.resize()
+}
+
+const getBottomTableRows = () => {
+  if (!bottomState.queried) {
+    return []
+  }
+  return chartData.categories.map((month, index) => ({
+    month,
+    totalExamCount: chartData.total[index],
+    printCount: chartData.print[index],
+    filmPrintCount: chartData.film[index],
+    compensateCount: chartData.supplement[index]
+  }))
+}
+
+const onSearch = () => {
+  bottomState.queried = true
+  bottomState.mode = 'chart'
+  nextTick(() => renderChart())
+}
+
+const onExport = () => {}
+
+const onDataView = () => {
+  bottomState.mode = 'table'
+}
+
+const onLine = () => {
+  bottomState.mode = 'chart'
+  bottomState.chartType = 'line'
+  nextTick(() => renderChart())
+}
+
+const onBar = () => {
+  bottomState.mode = 'chart'
+  bottomState.chartType = 'bar'
+  nextTick(() => renderChart())
+}
+
+const onRestore = () => {
+  bottomState.mode = 'chart'
+  bottomState.chartType = bottomState.initialType
+  bottomState.queried = false
+  nextTick(() => renderChart())
+}
+
+const downloadByUrl = (url: string, fileName: string) => {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  a.click()
+}
+
+const onSaveImage = () => {
+  if (bottomState.mode === 'table') {
+    const header = ['月份', '总检查数', '检查打印量', '胶片打印量', '补费量']
+    const rows = getBottomTableRows().map((item) => [
+      item.month,
+      String(item.totalExamCount),
+      String(item.printCount),
+      String(item.filmPrintCount),
+      String(item.compensateCount)
+    ])
+    const csv = [header, ...rows].map((line) => line.join(',')).join('\n')
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    downloadByUrl(url, '检查打印量数据.csv')
+    URL.revokeObjectURL(url)
+    return
+  }
+  if (!chartRef) {
+    return
+  }
+  const url = chartRef.getDataURL({
+    type: 'png',
+    pixelRatio: 2,
+    backgroundColor: '#fff'
+  })
+  downloadByUrl(url, 'inspect-statistics-chart.png')
+}
+
+const setBottomPanelRef = (el: Element | ComponentPublicInstance | null) => {
+  chartWrapRef.value = el instanceof HTMLElement ? el : null
+}
+
+const bottomPanelRef = ref<HTMLElement | null>(null)
+
+const setBottomContainerRef = (el: Element | ComponentPublicInstance | null) => {
+  bottomPanelRef.value = el instanceof HTMLElement ? el : null
+}
+
+const onFullscreen = async () => {
+  if (!bottomPanelRef.value) {
+    return
+  }
+  if (document.fullscreenElement === bottomPanelRef.value) {
+    await document.exitFullscreen()
+  } else {
+    await bottomPanelRef.value.requestFullscreen()
+  }
+  setTimeout(() => resizeChart(), 120)
+}
+
+const closeDataView = () => {
+  bottomState.mode = 'chart'
+  nextTick(() => renderChart())
+}
+
+onMounted(() => {
+  nextTick(() => {
+    renderChart()
+    window.addEventListener('resize', resizeChart)
+  })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', resizeChart)
+  chartRef?.dispose()
+  chartRef = null
+})
 </script>
 
 <template>
-  <ContentWrap title="检查统计">
-    <div>inspectStatistics 页面（占位）</div>
-  </ContentWrap>
+  <div class="inspect-page">
+    <ElCard shadow="never" class="section section--top">
+      <div class="section-head">
+        <div class="section-title">检查打印量</div>
+        <ElForm inline>
+          <ElFormItem>
+            <ElSelect
+              v-model="query.patientType"
+              placeholder="请选择患者类型"
+              clearable
+              style="width: 190px"
+            >
+              <ElOption
+                v-for="item in patientTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </ElSelect>
+          </ElFormItem>
+          <ElFormItem>
+            <ElSelect
+              v-model="query.examType"
+              placeholder="请选择检查类型"
+              clearable
+              style="width: 180px"
+            >
+              <ElOption
+                v-for="item in examTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </ElSelect>
+          </ElFormItem>
+          <ElFormItem>
+            <ElDatePicker
+              v-model="query.dateRange"
+              type="daterange"
+              value-format="YYYY-MM-DD"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              unlink-panels
+              style="width: 220px"
+            />
+          </ElFormItem>
+          <ElFormItem>
+            <ElButton type="primary" @click="onSearch">查询</ElButton>
+          </ElFormItem>
+          <ElFormItem>
+            <ElButton @click="onExport">导出Excel</ElButton>
+          </ElFormItem>
+        </ElForm>
+      </div>
+
+      <ElTable :data="tableData" height="calc(100% - 52px)" empty-text="暂无数据" border>
+        <ElTableColumn prop="month" label="月份" min-width="120" />
+        <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" />
+        <ElTableColumn prop="examType" label="检查类型" min-width="120" />
+        <ElTableColumn prop="examCount" label="检查数" min-width="120" />
+        <ElTableColumn prop="personCount" label="检查人数" min-width="120" />
+        <ElTableColumn prop="printCount" label="检查打印数" min-width="120" />
+        <ElTableColumn prop="filmPrintCount" label="胶片打印张数" min-width="120" />
+        <ElTableColumn prop="compensateCount" label="补费次数" min-width="120" />
+      </ElTable>
+    </ElCard>
+
+    <ElCard shadow="never" class="section section--bottom" :ref="(el) => setBottomContainerRef(el)">
+      <div class="chart-wrap">
+        <div
+          v-show="bottomState.mode === 'chart'"
+          class="chart-canvas"
+          :ref="(el) => setBottomPanelRef(el)"
+        ></div>
+        <div v-show="bottomState.mode === 'table'" class="table-view table-view--bottom">
+          <ElTable :data="getBottomTableRows()" height="100%" empty-text="暂无数据" border>
+            <ElTableColumn prop="month" label="月份" min-width="120" />
+            <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" />
+            <ElTableColumn prop="printCount" label="检查打印量" min-width="120" />
+            <ElTableColumn prop="filmPrintCount" label="胶片打印量" min-width="120" />
+            <ElTableColumn prop="compensateCount" label="补费量" min-width="120" />
+          </ElTable>
+          <div class="table-actions">
+            <ElButton type="danger" plain @click="closeDataView">关闭</ElButton>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbox">
+        <button
+          class="tool-btn"
+          :class="{ 'is-active': bottomState.mode === 'table' }"
+          @click="onDataView"
+        >
+          <ElIcon :size="18"><DataAnalysis /></ElIcon>
+          <span>数据视图</span>
+        </button>
+        <button
+          class="tool-btn"
+          :class="{ 'is-active': bottomState.mode === 'chart' && bottomState.chartType === 'line' }"
+          @click="onLine"
+        >
+          <ElIcon :size="18"><TrendCharts /></ElIcon>
+          <span>折线图</span>
+        </button>
+        <button
+          class="tool-btn"
+          :class="{ 'is-active': bottomState.mode === 'chart' && bottomState.chartType === 'bar' }"
+          @click="onBar"
+        >
+          <ElIcon :size="18"><Histogram /></ElIcon>
+          <span>柱状图</span>
+        </button>
+        <button class="tool-btn" @click="onRestore">
+          <ElIcon :size="18"><Refresh /></ElIcon>
+          <span>还原</span>
+        </button>
+        <button class="tool-btn" @click="onSaveImage">
+          <ElIcon :size="18"><Download /></ElIcon>
+          <span>保存为图片</span>
+        </button>
+        <button class="tool-btn" @click="onFullscreen">
+          <ElIcon :size="18"><FullScreen /></ElIcon>
+          <span>全屏显示</span>
+        </button>
+      </div>
+    </ElCard>
+  </div>
 </template>
+
+<style scoped>
+.inspect-page {
+  display: flex;
+  height: calc(100vh - 170px);
+  min-height: 640px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section {
+  flex: 1;
+}
+
+.section :deep(.el-card__body) {
+  height: 100%;
+}
+
+.section--top {
+  min-height: 300px;
+}
+
+.section--top :deep(.el-card__body) {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-head {
+  display: flex;
+  min-height: 44px;
+  margin-bottom: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.section-head :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+.section--bottom {
+  min-height: 300px;
+}
+
+.section--bottom :deep(.el-card__body) {
+  display: flex;
+  height: 100%;
+  padding: 0;
+}
+
+.chart-wrap {
+  height: 100%;
+  min-width: 0;
+  padding: 8px;
+  flex: 1;
+}
+
+.chart-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.toolbox {
+  display: flex;
+  width: 54px;
+  border-left: 1px solid var(--el-border-color-lighter);
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.tool-btn {
+  display: flex;
+  width: 100%;
+  min-height: 28px;
+  padding: 2px;
+  color: #333;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: all var(--el-transition-duration) var(--el-transition-function-ease-in-out-bezier);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.tool-btn span {
+  max-height: 0;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 14px;
+  opacity: 0;
+  transition: all var(--el-transition-duration) var(--el-transition-function-ease-in-out-bezier);
+}
+
+.tool-btn:hover {
+  min-height: 42px;
+  color: var(--el-color-primary);
+}
+
+.tool-btn.is-active {
+  min-height: 42px;
+  color: var(--el-color-primary);
+}
+
+.tool-btn:hover span {
+  max-height: 28px;
+  opacity: 1;
+}
+
+.tool-btn.is-active span {
+  max-height: 28px;
+  opacity: 1;
+}
+
+.table-view--bottom {
+  height: 100%;
+}
+
+.section--bottom:fullscreen {
+  background: var(--el-bg-color);
+}
+</style>

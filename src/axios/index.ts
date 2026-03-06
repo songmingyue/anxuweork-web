@@ -10,7 +10,7 @@ const request = (option: AxiosConfig) => {
     responseType: requestTem ? 'arraybuffer' : 'json',
     headers: {
       ...headers,
-      userid: 'admin'
+      userid: localStorage.getItem('userId') || ''
     }
   })
 }

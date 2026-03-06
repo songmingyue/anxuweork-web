@@ -6,12 +6,12 @@ import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { NO_REDIRECT_WHITE_LIST } from '@/constants'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { setCssVar } from './utils'
-import { getDropDownConfig } from './api/common'
-import { useCommonStoreWithOut } from '@/store/modules/common'
+// import { getAreaNoDropdown, getDropDownConfig } from './api/common'
+// import { useCommonStoreWithOut } from '@/store/modules/common'
 const { start, done } = useNProgress()
 
 const { loadStart, loadDone } = usePageLoading()
-const commonStore = useCommonStoreWithOut()
+// const commonStore = useCommonStoreWithOut()
 const userStore = useUserStoreWithOut()
 router.beforeEach(async (to, from, next) => {
   start()
@@ -33,9 +33,12 @@ router.beforeEach(async (to, from, next) => {
       const nextData = to.path === redirect ? { ...to, replace: true } : { path: '/workstation' }
       permissionStore.setIsAddRouters(true)
       next(nextData)
-      getDropDownConfig().then((res) => {
-        commonStore.setCommonOptionList(res.dropdownConfig)
-      })
+      // getDropDownConfig().then((res) => {
+      //   commonStore.setExamTypeDropdown(res.data)
+      // })
+      // getAreaNoDropdown().then((res) => {
+      //   commonStore.setAreaNoDropdown(res.data)
+      // })
     }
   } else {
     if (NO_REDIRECT_WHITE_LIST.indexOf(to.path) !== -1) {

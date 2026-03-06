@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { getAreaNoDropdown, getDropDownConfig, getPatientTypeDropdown } from '@/api/common'
+import { ExamInfo } from '@/api/workstation'
+import { useCommonStoreWithOut } from '@/store/modules/common'
+import { useWorkStationStoreWithOut } from '@/store/modules/workStation'
 import {
   ElButton,
   ElCard,
@@ -16,7 +20,7 @@ import {
   ElTabs,
   ElTabPane
 } from 'element-plus'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, onMounted } from 'vue'
 
 defineOptions({
   name: 'Workstation'
@@ -24,47 +28,24 @@ defineOptions({
 
 const showMore = ref(false)
 
-const query = reactive({
-  checkNo: '',
-  patientNo: '',
+const query = reactive<ExamInfo>({
+  medRecNo: '',
+  patientID: '',
+  accessionNumber: '',
+  examType: [],
+  patientType: [],
+  areaNo: [],
   patientName: '',
-  filmNo: '',
-  examType: '',
-  visitType: '',
-  applyDept: '',
-  dateRange: [] as string[],
-
-  reportStatus: '',
-  examStatus: ''
+  hasFilm: false,
+  isPrinted: '',
+  dicomPeerIDList: [],
+  reportExists: false,
+  reportPrinted: '',
+  cloudFilmPaid: null,
+  examStartDate: '',
+  examEndDate: '',
+  dateRange: []
 })
-
-const examTypeOptions = ref([
-  { label: '全部', value: '' },
-  { label: 'CT', value: 'CT' },
-  { label: 'MR', value: 'MR' },
-  { label: 'DR', value: 'DR' },
-  { label: 'US', value: 'US' }
-])
-
-const visitTypeOptions = ref([
-  { label: '全部', value: '' },
-  { label: '门诊', value: 'outpatient' },
-  { label: '住院', value: 'inpatient' },
-  { label: '体检', value: 'checkup' }
-])
-
-const reportStatusOptions = ref([
-  { label: '全部', value: '' },
-  { label: '未出报告', value: '0' },
-  { label: '已出报告', value: '1' }
-])
-
-const examStatusOptions = ref([
-  { label: '全部', value: '' },
-  { label: '未检查', value: '0' },
-  { label: '检查中', value: '1' },
-  { label: '已检查', value: '2' }
-])
 
 const manualMatchCount = ref(13)
 
@@ -127,16 +108,22 @@ const onSearch = () => {
 }
 
 const onReset = () => {
-  query.checkNo = ''
-  query.patientNo = ''
+  query.medRecNo = ''
+  query.patientID = ''
+  query.accessionNumber = ''
+  query.examType = []
+  query.patientType = []
+
+  query.areaNo = []
   query.patientName = ''
-  query.filmNo = ''
-  query.examType = ''
-  query.visitType = ''
-  query.applyDept = ''
-  query.dateRange = []
-  query.reportStatus = ''
-  query.examStatus = ''
+  query.hasFilm = false
+  query.isPrinted = ''
+  query.dicomPeerIDList = []
+  query.reportExists = false
+  query.reportPrinted = ''
+  query.cloudFilmPaid = null
+  query.examStartDate = ''
+  query.examEndDate = ''
 }
 
 const toggleMore = () => {
@@ -162,7 +149,27 @@ const onFilmSizeChange = (val: number) => {
   filmPage.pageSize = val
   filmPage.pageNum = 1
 }
-
+const commonStore = useCommonStoreWithOut()
+const workStationStore = useWorkStationStoreWithOut()
+const getOptionList = async () => {
+  await workStationStore.asyncSetTableList()
+  Promise.all([getDropDownConfig(), getAreaNoDropdown(), getPatientTypeDropdown()])
+    .then((responses) => {
+      // responses 是一个数组，顺序与传入的 Promise 数组一致
+      const [examTypeRes, areaNoRes, patientTypeRes] = responses
+      commonStore.setExamTypeDropdown(examTypeRes.data)
+      commonStore.setAreaNoDropdown(areaNoRes.data)
+      commonStore.setPatientTypeDropdown(patientTypeRes.data)
+    })
+    .catch((error) => {
+      // 如果任何一个请求失败，都会进入这里
+      console.error('请求失败:', error)
+      // 这里可以添加统一的错误处理逻辑
+    })
+}
+onMounted(() => {
+  getOptionList()
+})
 const moreText = computed(() => (showMore.value ? '收起' : '更多'))
 </script>
 
@@ -173,12 +180,12 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
         <ElRow :gutter="10" class="ws-form__row">
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.checkNo" placeholder="检查号" clearable />
+              <ElInput v-model="query.accessionNumber" placeholder="检查号" clearable />
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.patientNo" placeholder="患者编号" clearable />
+              <ElInput v-model="query.patientID" placeholder="患者编号" clearable />
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
@@ -188,37 +195,43 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.filmNo" placeholder="病历号" clearable />
+              <ElInput v-model="query.medRecNo" placeholder="病历号" clearable />
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
               <ElSelect v-model="query.examType" placeholder="检查类型" clearable>
                 <ElOption
-                  v-for="o in examTypeOptions"
-                  :key="o.value"
-                  :label="o.label"
-                  :value="o.value"
+                  v-for="o in commonStore.examTypeDropdown"
+                  :key="o.text"
+                  :label="o.text"
+                  :value="o.text"
                 />
               </ElSelect>
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElSelect v-model="query.visitType" placeholder="就诊类别" clearable>
+              <ElSelect v-model="query.patientType" placeholder="就诊类别" clearable>
                 <ElOption
-                  v-for="o in visitTypeOptions"
-                  :key="o.value"
-                  :label="o.label"
-                  :value="o.value"
+                  v-for="o in commonStore.patientTypeDropdown"
+                  :key="o.text"
+                  :label="o.text"
+                  :value="o.text"
                 />
               </ElSelect>
             </ElFormItem>
           </ElCol>
-
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.applyDept" placeholder="申请科室" clearable />
+              <ElSelect v-model="query.areaNo" placeholder="申请科室" clearable>
+                <ElOption
+                  v-for="o in commonStore.areaNoDropdown"
+                  :key="o.text"
+                  :label="o.text"
+                  :value="o.text"
+                />
+              </ElSelect>
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="16" :lg="6">
@@ -248,7 +261,7 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
           </ElCol>
         </ElRow>
 
-        <ElRow v-if="showMore" :gutter="10" class="ws-form__row ws-form__row--more">
+        <!-- <ElRow v-if="showMore" :gutter="10" class="ws-form__row ws-form__row--more">
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
               <ElSelect v-model="query.reportStatus" placeholder="报告状态" clearable>
@@ -273,11 +286,11 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
               </ElSelect>
             </ElFormItem>
           </ElCol>
-        </ElRow>
+        </ElRow> -->
       </ElForm>
     </ElCard>
 
-    <ElCard shadow="never" class="ws-card">
+    <ElCard shadow="never" class="ws-card card-table">
       <div class="ws-sectionHead">
         <div class="ws-sectionHead__title">检查列表</div>
         <div class="ws-sectionHead__actions">
@@ -291,31 +304,22 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
           </ElButton>
         </div>
       </div>
-
       <ElTable
         :data="examTableData"
         :loading="examTableLoading"
         size="small"
-        height="420"
+        height="300"
         class="ws-table"
       >
         <ElTableColumn type="selection" width="42" />
         <ElTableColumn type="index" label="#" width="48" />
-        <ElTableColumn prop="patientNo" label="患者编号" min-width="110" />
-        <ElTableColumn prop="checkNo" label="检查号" min-width="110" />
-        <ElTableColumn prop="name" label="姓名" min-width="90" />
-        <ElTableColumn prop="sex" label="性别" width="70" />
-        <ElTableColumn prop="age" label="年龄" width="70" />
-        <ElTableColumn prop="examType" label="检查类型" min-width="100" />
-        <ElTableColumn prop="reportStatus" label="报告状态" min-width="90" />
-        <ElTableColumn prop="examStatus" label="检查状态" min-width="90" />
-        <ElTableColumn prop="examItem" label="检查项目" min-width="120" />
-        <ElTableColumn prop="examTime" label="检查时间" min-width="140" />
-        <ElTableColumn prop="visitType" label="就诊类别" min-width="90" />
-        <ElTableColumn prop="medicalNo" label="病历号" min-width="110" />
-        <ElTableColumn prop="applyDept" label="申请科室" min-width="110" />
-        <ElTableColumn prop="filmFee" label="胶片费用" min-width="90" />
-        <ElTableColumn prop="idNo" label="身份证号" min-width="150" />
+        <ElTableColumn
+          v-for="item in workStationStore.tableList"
+          :key="item.prop"
+          :prop="item.prop"
+          :label="item.label"
+          :min-width="item.width || 100"
+        />
       </ElTable>
 
       <div class="ws-pagination">
@@ -354,9 +358,8 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
         :data="filmTableData"
         :loading="filmTableLoading"
         size="small"
-        border
         height="230"
-        class="ws-table"
+        class="ws-table card-table"
       >
         <ElTableColumn type="selection" width="42" />
         <ElTableColumn type="index" label="#" width="48" />
@@ -430,9 +433,10 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
 
 .ws-sectionHead {
   display: flex;
+  padding: 0 15px;
+  margin-bottom: 10px;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
 }
 
 .ws-sectionHead__title {
@@ -456,7 +460,7 @@ const moreText = computed(() => (showMore.value ? '收起' : '更多'))
 .ws-pagination {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
   padding-top: 10px;
 }

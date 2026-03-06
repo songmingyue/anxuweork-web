@@ -85,5 +85,22 @@ export const statistics = [
         }
       }
     ]
+  },
+  {
+    path: '/test',
+    component: Layout,
+    name: 'testInfo',
+    meta: {},
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/statistics/test.vue'),
+        name: 'testInfoChild',
+        meta: {
+          title: 'test',
+          icon: ''
+        }
+      }
+    ]
   }
 ]

@@ -12,52 +12,26 @@ import {
   ElRow,
   ElSelect,
   ElTable,
-  ElTableColumn
+  ElTableColumn,
+  ElTag
 } from 'element-plus'
+import { configGetDropDownConfig, getFilmOperate, OperateLog } from '@/api/operationalAudit'
+import { useCommonStoreWithOut } from '@/store/modules/common'
 
 defineOptions({
   name: 'OperationalAudit'
 })
 
-type OperationType = '' | 'PRINT' | 'MATCH' | 'DELETE' | 'OTHER'
-
-interface AuditRow {
-  opType?: string
-  opUser?: string
-  clientAddress?: string
-  opTime?: string
-  taskNo?: string
-  requestDevice?: string
-  requestTime?: string
-  filmSize?: string
-  patientNo?: string
-  checkNo?: string
-  matchStatus?: string
-  printStatus?: string
-  lastPrinterName?: string
-  lastPrintTime?: string
-  printCopies?: number
-  deleteStatus?: string
-}
-
 const query = reactive({
-  patientNo: '',
-  checkNo: '',
-  opType: '' as OperationType,
-  opUser: '',
-  clientAddress: ''
+  accessionNumber: '',
+  clientIP: '',
+  operateType: '',
+  operator: '',
+  patientID: ''
 })
 
-const opTypeOptions: Array<{ label: string; value: OperationType }> = [
-  { label: '全部类型', value: '' },
-  { label: '打印', value: 'PRINT' },
-  { label: '匹配', value: 'MATCH' },
-  { label: '删除', value: 'DELETE' },
-  { label: '其它', value: 'OTHER' }
-]
-
 const tableLoading = ref(false)
-const tableData = ref<AuditRow[]>([])
+const tableData = ref<OperateLog[]>([])
 
 const page = reactive({
   pageNum: 1,
@@ -68,11 +42,18 @@ const page = reactive({
 async function fetchList() {
   tableLoading.value = true
   try {
-    // TODO: 接口待接入
-    // 参数：query.patientNo/query.checkNo/query.opType/query.opUser/query.clientAddress
-    // 分页：page.pageNum/page.pageSize
-    tableData.value = []
-    page.total = 0
+    const queryParams = {
+      ...query,
+      pageInfo: {
+        pageIndex: page.pageNum,
+        pageSize: page.pageSize
+      }
+    }
+    const { operateLog, pageInfo, status } = await getFilmOperate(queryParams)
+    if (status === 0) {
+      tableData.value = operateLog || []
+      page.total = pageInfo?.count || 0
+    }
   } finally {
     tableLoading.value = false
   }
@@ -84,11 +65,11 @@ function onSearch() {
 }
 
 function onReset() {
-  query.patientNo = ''
-  query.checkNo = ''
-  query.opType = ''
-  query.opUser = ''
-  query.clientAddress = ''
+  query.patientID = ''
+  query.accessionNumber = ''
+  query.operateType = ''
+  query.operator = ''
+  query.clientIP = ''
   page.pageNum = 1
   fetchList()
 }
@@ -97,12 +78,38 @@ function onPageChange() {
   fetchList()
 }
 
+const tableTitle = [
+  { label: '操作类型', prop: 'operatorType' },
+  { label: '操作用户', prop: 'operator' },
+  { label: '客户端地址', prop: 'clientIP' },
+  { label: '操作时间', prop: 'operateDate' },
+  { label: '任务号', prop: 'taskNo' },
+  { label: '请求设备', prop: 'callingAE' },
+  { label: '请求时间', prop: 'requestTime' },
+  { label: '胶片尺寸', prop: 'filmSize' },
+  { label: '患者编号', prop: 'patientID' },
+  { label: '检查编号', prop: 'accessionNumber' },
+  { label: '匹配状态', prop: 'matchStatus' },
+  { label: '打印状态', prop: 'printStatus' },
+  { label: '最后打印机名称', prop: 'lastPrinter' },
+  { label: '最后打印时间', prop: 'lastPrintTime' },
+  { label: '打印份数', prop: 'printCount' },
+  { label: '删除状态', prop: 'deleteState' }
+]
+
 function onSizeChange() {
   page.pageNum = 1
   fetchList()
 }
+const commonStore = useCommonStoreWithOut()
+const getCommonList = async () => {
+  await configGetDropDownConfig().then((res) => {
+    commonStore.setCommonOptionList(res.dropdownConfig)
+  })
+}
 
 onMounted(() => {
+  getCommonList()
   fetchList()
 })
 </script>
@@ -114,21 +121,21 @@ onMounted(() => {
         <ElRow :gutter="10" class="oa-form__row">
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.patientNo" placeholder="患者编号" clearable />
+              <ElInput v-model="query.accessionNumber" placeholder="患者编号" clearable />
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.checkNo" placeholder="检查号" clearable />
+              <ElInput v-model="query.patientID" placeholder="检查号" clearable />
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElSelect v-model="query.opType" placeholder="操作类型" clearable>
+              <ElSelect v-model="query.operateType" placeholder="操作类型" clearable>
                 <ElOption
-                  v-for="o in opTypeOptions"
+                  v-for="o in commonStore.dropdownConfig.enumOperateType"
                   :key="o.value || 'ALL'"
-                  :label="o.label"
+                  :label="o.text"
                   :value="o.value"
                 />
               </ElSelect>
@@ -136,12 +143,12 @@ onMounted(() => {
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.opUser" placeholder="操作用户" clearable />
+              <ElInput v-model="query.operator" placeholder="操作用户" clearable />
             </ElFormItem>
           </ElCol>
           <ElCol :xs="24" :sm="12" :md="8" :lg="4">
             <ElFormItem>
-              <ElInput v-model="query.clientAddress" placeholder="客户端地址" clearable />
+              <ElInput v-model="query.clientIP" placeholder="客户端地址" clearable />
             </ElFormItem>
           </ElCol>
 
@@ -166,32 +173,46 @@ onMounted(() => {
         :data="tableData"
         :loading="tableLoading"
         size="small"
-        height="560"
+        height="calc(100vh - 270px)"
         class="oa-table"
         empty-text="暂无数据"
       >
-        <ElTableColumn type="index" label="#" width="52" align="center" />
-        <ElTableColumn prop="opType" label="操作类型" align="center" min-width="90" />
-        <ElTableColumn prop="opUser" label="操作用户" align="center" min-width="90" />
-        <ElTableColumn prop="clientAddress" label="客户端地址" align="center" min-width="130" />
-        <ElTableColumn prop="opTime" label="操作时间" align="center" min-width="150" />
-        <ElTableColumn prop="taskNo" label="任务号" align="center" min-width="110" />
-        <ElTableColumn prop="requestDevice" label="请求设备" align="center" min-width="110" />
-        <ElTableColumn prop="requestTime" label="请求时间" align="center" min-width="150" />
-        <ElTableColumn prop="filmSize" label="胶片尺寸" align="center" min-width="90" />
-        <ElTableColumn prop="patientNo" label="患者编号" align="center" min-width="110" />
-        <ElTableColumn prop="checkNo" label="检查编号" align="center" min-width="110" />
-        <ElTableColumn prop="matchStatus" label="匹配状态" align="center" min-width="90" />
-        <ElTableColumn prop="printStatus" label="打印状态" align="center" min-width="90" />
         <ElTableColumn
-          prop="lastPrinterName"
-          label="最后打印机名称"
+          v-for="col in tableTitle"
+          :key="col.prop"
+          :prop="col.prop"
+          :label="col.label"
           align="center"
-          min-width="130"
-        />
-        <ElTableColumn prop="lastPrintTime" label="最后打印时间" align="center" min-width="150" />
-        <ElTableColumn prop="printCopies" label="打印份数" align="center" min-width="90" />
-        <ElTableColumn prop="deleteStatus" label="删除状态" align="center" min-width="90" />
+          :min-width="80"
+          show-overflow-tooltip
+        >
+          <template
+            v-if="['operatorType', 'matchStatus', 'printStatus', 'deleteState'].includes(col.prop)"
+            #default="{ row }"
+          >
+            <div v-if="col.prop === 'operatorType'">
+              <el-tag type="danger" v-if="row.operatorType === '1'">胶片删除</el-tag>
+              <el-tag type="success" v-if="row.operatorType === '2'">胶片打印</el-tag>
+              <el-tag type="primary" v-if="row.operatorType === '3'">手工匹配</el-tag>
+              <el-tag type="info" v-if="row.operatorType === '4'">自动匹配</el-tag>
+            </div>
+            <div v-else-if="col.prop === 'matchStatus'">
+              <el-tag type="warning" v-if="row.operatorType === '0'">等待</el-tag>
+              <el-tag type="danger" v-if="row.operatorType === '1'">失败</el-tag>
+              <el-tag type="success" v-if="row.operatorType === '2'">成功</el-tag>
+              <el-tag type="primary" v-if="row.operatorType === '3'">手工匹配</el-tag>
+            </div>
+            <div v-else-if="col.prop === 'printStatus'">
+              <el-tag type="warning" v-if="row.operatorType === '0'">等待</el-tag>
+              <el-tag type="danger" v-if="row.operatorType === '1'">失败</el-tag>
+              <el-tag type="success" v-if="row.operatorType === '2'">成功</el-tag>
+            </div>
+            <div v-else-if="col.prop === 'deleteState'">
+              <el-tag type="danger" v-if="row.operatorType === '1'">已删除</el-tag>
+              <el-tag type="success" v-if="row.operatorType === '0'">未删除</el-tag>
+            </div>
+          </template>
+        </ElTableColumn>
       </ElTable>
 
       <div class="oa-pagination">
@@ -246,6 +267,7 @@ onMounted(() => {
 }
 
 .oa-sectionHead__title {
+  margin-left: 15px;
   font-size: 14px;
   font-weight: 600;
   color: var(--el-text-color-primary);
@@ -254,7 +276,7 @@ onMounted(() => {
 .oa-pagination {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: 10px;
 }
 

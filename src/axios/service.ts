@@ -10,8 +10,8 @@ const abortControllerMap: Map<string, AbortController> = new Map()
 
 const axiosInstance: AxiosInstance = axios.create({
   timeout: REQUEST_TIMEOUT,
-  // baseURL: PATH_URL,
-  baseURL: '',
+  // Use runtime env API base path when provided; fallback to same-origin.
+  baseURL: PATH_URL || '',
   withCredentials: true
 })
 

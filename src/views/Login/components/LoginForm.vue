@@ -155,7 +155,7 @@ const signIn = async () => {
     if (isValid) {
       loading.value = true
       const formData = await getFormData<UserLoginTypes>()
-
+      localStorage.setItem('userId', formData.account || '')
       try {
         const passwordEncrypted: UserLoginTypes = {
           password: CryptoJS.MD5(formData.password).toString(),

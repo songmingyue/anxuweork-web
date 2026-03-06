@@ -26,29 +26,41 @@ export interface CommonList {
 
 export interface CommonMsg {
   dropdownConfig: CommonList
+  examTypeDropdown: ArrList[]
+  areaNoDropdown: ArrList[]
+  patientTypeDropdown: ArrList[]
 }
 
 export const useCommonStore = defineStore('commonList', {
-  state: (): CommonList => {
-    return {}
+  state: (): CommonMsg => {
+    return {
+      dropdownConfig: {},
+      examTypeDropdown: [],
+      areaNoDropdown: [],
+      patientTypeDropdown: []
+    }
   },
   getters: {
-    getCommonOptionList(value: string) {
-      return this[value as keyof CommonList]
+    getCommonOptionList: (state) => (value: string) => {
+      return state.dropdownConfig[value as keyof CommonList]
     }
   },
   actions: {
-    // async getDropDownConfig() {
-    //   const { dropdownConfig } = await getDropDownConfig()
-    //   this.setCommonOptionList(dropdownConfig)
-    // },
     setCommonOptionList(value: CommonList) {
-      //   console.log('setCommonOptionList', value)
       const optionNameList = Object.keys(value) as (keyof CommonList)[]
       optionNameList.forEach((item) => {
-        this[item] = value[item]
+        this.dropdownConfig[item] = value[item]
       })
       console.log('setCommonOptionList', this)
+    },
+    setExamTypeDropdown(value: ArrList[]) {
+      this.examTypeDropdown = value
+    },
+    setAreaNoDropdown(value: ArrList[]) {
+      this.areaNoDropdown = value
+    },
+    setPatientTypeDropdown(value: ArrList[]) {
+      this.patientTypeDropdown = value
     }
   },
   persist: true

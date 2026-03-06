@@ -1,11 +1,14 @@
 import request from '@/axios'
 import { ServiceStatus } from '../dataPage'
-import { CommonList } from '@/store/modules/common'
 
-export interface GetDropDownConfig extends ServiceStatus {
-  dropdownConfig: CommonList
+export interface Data {
+  text: string
+  value: string
 }
 
+export interface ExamTypeDropdown extends ServiceStatus {
+  data: Data[]
+}
 export interface Department {
   departmentID: string
   hospitalID: string
@@ -13,18 +16,32 @@ export interface Department {
   departmentName: string
 }
 
-export interface GetDepartment extends ServiceStatus {
-  data: Department[]
-}
-
-export const getDropDownConfig = (): Promise<GetDropDownConfig> => {
+export const getDropDownConfig = (): Promise<ExamTypeDropdown> => {
   return request.get({
-    url: '/Admin/Config/GetDropDownConfig'
+    url: 'Admin/Config/GetExamTypeDropdown'
   })
 }
 
-export const getDepartment = (): Promise<GetDepartment> => {
+export interface GetPatientTypeList {
+  data: string[]
+  desc: string | null
+  status: number
+}
+// Admin/Config/GetPatientTypeList
+export const getPatientTypeList = (): Promise<GetPatientTypeList> => {
   return request.get({
-    url: '/Home/GetDepartment'
+    url: 'Admin/Config/GetPatientTypeList'
+  })
+}
+//
+export const getAreaNoDropdown = (): Promise<ExamTypeDropdown> => {
+  return request.get({
+    url: 'Admin/Config/GetAreaNoDropdown'
+  })
+}
+
+export const getPatientTypeDropdown = (): Promise<ExamTypeDropdown> => {
+  return request.get({
+    url: 'Admin/Config/GetPatientTypeDropdown'
   })
 }

@@ -21,7 +21,7 @@ import {
   TrendCharts
 } from '@element-plus/icons-vue'
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { getFilmMonthlyStatistics, type DicomPeerStatistics } from '@/api/filmStatistics'
+import { getFilmMonthlyStatistics, type FilmMonthlyStatistics } from '@/api/filmStatistics'
 
 defineOptions({
   name: 'FilmMonthlyUsage'
@@ -35,9 +35,12 @@ const formatNumber = (value: unknown) => {
   if (!Number.isFinite(num)) return String(value ?? '')
   return num.toLocaleString('en-US')
 }
-
+const sesonDay = new Date().valueOf() - 93 * 24 * 60 * 60 * 1000
 const query = reactive({
-  monthRange: ['2025-12-05', '2026-03-05'] as string[]
+  deviceRange: [
+    new Date(sesonDay).toISOString().split('T')[0],
+    new Date().toISOString().split('T')[0]
+  ] as string[]
 })
 
 const state = reactive({
@@ -79,22 +82,20 @@ const setPanelRef = (el: Element | ComponentPublicInstance | null) => {
 }
 
 const fetchMonthlyUsage = async () => {
-  const [startDate, endDate] = query.monthRange
+  const [startDate, endDate] = query.deviceRange
   const request = await getFilmMonthlyStatistics({
-    startDate,
-    endDate,
-    printState: null,
-    dicomPeers: []
+    startDate: startDate ? `${startDate} 00:00:00` : '',
+    endDate: endDate ? `${endDate} 23:59:59` : ''
   })
 
-  const peers: DicomPeerStatistics[] = request.dicomPeerStatistics || []
-  categories.value = peers.map((p) => p.peerDes)
+  const months: FilmMonthlyStatistics[] = request.filmMonthlyStatistics || []
+  categories.value = months.map((m) => String(m.month ?? ''))
 
   const sizes: string[] = []
   const sizeSet = new Set<string>()
-  peers.forEach((peer) => {
-    ;(peer.data ?? []).forEach((item) => {
-      const size = item.filmSize
+  months.forEach((m) => {
+    ;(m.data ?? []).forEach((item) => {
+      const size = String(item?.filmSize ?? '')
       if (size && !sizeSet.has(size)) {
         sizeSet.add(size)
         sizes.push(size)
@@ -103,15 +104,13 @@ const fetchMonthlyUsage = async () => {
   })
   filmSizes.value = sizes
 
-  series.value = sizes.map((size) => {
-    return {
-      name: size,
-      data: peers.map((peer) => {
-        const bySize = new Map((peer.data ?? []).map((item) => [item.filmSize, item] as const))
-        return Number(bySize.get(size)?.printCount ?? 0)
-      })
-    }
-  })
+  const monthSizeMaps = months.map(
+    (m) => new Map((m.data ?? []).map((item) => [String(item.filmSize ?? ''), item] as const))
+  )
+  series.value = sizes.map((size) => ({
+    name: size,
+    data: monthSizeMaps.map((map) => Number(map.get(size)?.printCount ?? 0))
+  }))
 }
 
 const getOption = (): EChartsOption => {
@@ -124,7 +123,7 @@ const getOption = (): EChartsOption => {
       top: 30,
       left: 36,
       right: 36,
-      bottom: 28,
+      bottom: 0,
       containLabel: true
     },
     legend: { top: 0, icon: 'roundRect' },
@@ -143,7 +142,11 @@ const getOption = (): EChartsOption => {
       name: '月份',
       nameLocation: 'end',
       data: xData,
-      boundaryGap: state.chartType === 'bar'
+      boundaryGap: state.chartType === 'bar',
+      axisLabel: {
+        rotate: 45,
+        margin: 12
+      }
     },
     yAxis: {
       type: 'value',
@@ -270,7 +273,7 @@ onBeforeUnmount(() => {
       <ElForm inline>
         <ElFormItem>
           <ElDatePicker
-            v-model="query.monthRange"
+            v-model="query.deviceRange"
             type="daterange"
             value-format="YYYY-MM-DD"
             start-placeholder="开始日期"

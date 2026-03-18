@@ -28,3 +28,10 @@
 ![alt text](image.png)
 
 【@todo:】1。 接口文档2.接口接入
+
+1. 双击查看报告
+2. Admin/Config/GetDWDeleteFilmSetting
+
+![付费状态修改](image-1.png)
+
+打报告是浏览器默认的，打胶片是传给后端

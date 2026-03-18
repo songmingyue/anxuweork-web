@@ -24,7 +24,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'v
 import {
   getDicomPeerDropDown,
   getMatchRateStatistics,
-  type DicomPeerStatistics,
+  MatchRateStatistics,
   type OptionList
 } from '@/api/filmStatistics'
 
@@ -47,8 +47,14 @@ const formatRate = (value: unknown) => {
   return String(Number(num.toFixed(3)))
 }
 
+const startTime = new Date(new Date().valueOf() - 92 * 24 * 60 * 60 * 1000)
+  .toISOString()
+  .split('T')[0]
+const endTime = new Date().toISOString().split('T')[0]
+
 const query = reactive({
-  matchRange: ['2025-12-05', '2026-03-05'] as string[]
+  dicomPeers: [] as string[],
+  matchRange: [startTime, endTime] as string[]
 })
 
 const state = reactive({
@@ -59,6 +65,7 @@ const state = reactive({
 })
 
 const dicomPeerOptions = ref<OptionList[]>([])
+const dicomPeerLoading = ref(false)
 
 const dicomPeerTextMap = computed(() => {
   const map = new Map<string, string>()
@@ -74,20 +81,15 @@ const getPeerText = (peerKey: unknown) => {
   return dicomPeerTextMap.value.get(key) ?? key
 }
 
-const categories = ref<string[]>([])
+const devices = ref<string[]>([])
 const autoMatchCounts = ref<number[]>([])
 const matchRates = ref<number[]>([])
 
-type MatchTableRow = {
-  device: string
-  filmTotal: number
-  matchRate: number
-  filmSize: string
-  autoMatch: number
-  matchFail: number
-}
-
-const tableRows = ref<MatchTableRow[]>([])
+const rawTableRows = ref<number[]>([])
+const tableRows = computed(() => {
+  if (!state.queried) return []
+  return rawTableRows.value
+})
 
 const chartRef = ref<HTMLElement | null>(null)
 const panelRef = ref<HTMLElement | null>(null)
@@ -102,79 +104,78 @@ const setPanelRef = (el: Element | ComponentPublicInstance | null) => {
 }
 
 const ensurePeerOptions = async () => {
-  if (dicomPeerOptions.value.length > 0) return
-  const res = await getDicomPeerDropDown()
-  dicomPeerOptions.value = res?.dicomPeers ?? []
+  if (dicomPeerOptions.value.length === 0) {
+    dicomPeerLoading.value = true
+    try {
+      const res = await getDicomPeerDropDown()
+      dicomPeerOptions.value = res?.dicomPeers ?? []
+    } finally {
+      dicomPeerLoading.value = false
+    }
+  }
+
+  if (!query.dicomPeers?.length) {
+    query.dicomPeers = dicomPeerOptions.value.map((item) => item.value)
+  }
+}
+
+const getdicomPeers = async () => {
+  query.dicomPeers = []
+  await ensurePeerOptions()
+  query.dicomPeers = dicomPeerOptions.value.map((item) => item.value)
+  await onSearch()
 }
 
 const fetchMatchRate = async () => {
   await ensurePeerOptions()
 
   const [startDate, endDate] = query.matchRange
-  const dicomPeers = dicomPeerOptions.value.map((item) => item.value)
-
+  const dicomPeers = query.dicomPeers ?? []
   const request = await getMatchRateStatistics({
-    startDate,
-    endDate,
+    startDate: startDate ? `${startDate} 00:00:00` : '',
+    endDate: endDate ? `${endDate} 23:59:59` : '',
     printState: null,
     dicomPeers
   })
 
-  const peers: DicomPeerStatistics[] = request.dicomPeerStatistics || []
+  const peers: MatchRateStatistics[] = request.matchRateStatistics || []
+  const yData: { autoMatch: number; manualMatch: number; matchRate: number }[] = []
+  peers.map((item) => {
+    const manualMatch = item.data?.reduce((total, items) => total + items.manualMatch, 0)
+    const autoMatch = item.data?.reduce((total, items) => total + items.autoMatch, 0)
 
-  const nextCategories: string[] = []
-  const nextAutoMatch: number[] = []
-  const nextRates: number[] = []
-  const nextRows: MatchTableRow[] = []
-
-  peers.forEach((peer) => {
-    const items = peer.data ?? []
-    const autoMatchTotal = items.reduce((sum, item) => sum + Number(item.printCount ?? 0), 0)
-    const total = items.reduce((sum, item) => sum + Number(item.totalCount ?? 0), 0)
-    const rate = total > 0 ? autoMatchTotal / total : 0
-    const rateRounded = Number(rate.toFixed(3))
-
-    nextCategories.push(peer.peerDes)
-    nextAutoMatch.push(autoMatchTotal)
-    nextRates.push(rateRounded)
-
-    if (items.length === 0) {
-      nextRows.push({
-        device: getPeerText(peer.peerDes),
-        filmTotal: total,
-        matchRate: rateRounded,
-        filmSize: '-',
-        autoMatch: 0,
-        matchFail: 0
-      })
-      return
-    }
-
-    items.forEach((item) => {
-      const autoMatch = Number(item.printCount ?? 0)
-      const totalBySize = Number(item.totalCount ?? 0)
-      nextRows.push({
-        device: getPeerText(peer.peerDes),
-        filmTotal: total,
-        matchRate: rateRounded,
-        filmSize: item.filmSize,
-        autoMatch,
-        matchFail: Math.max(0, totalBySize - autoMatch)
-      })
+    yData.push({
+      autoMatch: autoMatch ?? 0,
+      manualMatch: manualMatch ?? 0,
+      matchRate: item.matchRate ?? 0
     })
   })
+  const nextDevices: string[] = []
+  const nextAutoMatch: number[] = [] // 自动匹配总数
+  const matchRate: number[] = [] // 匹配率
+  const totalCatch: number[] = [] // 失败总数
+  peers.forEach((peer) => {
+    const items = peer.data ?? []
+    nextDevices.push(peer.peerDes ?? '')
+    const autoMatchTotal = items.reduce((sum, item) => sum + Number(item.autoMatch ?? 0), 0) // 自动匹配总数
+    nextAutoMatch.push(autoMatchTotal) // 自动匹配总数list
+    matchRate.push(peer.matchRate ?? 0)
+    const matchFail = items.reduce((sum, item) => sum + Number(item.manualMatch ?? 0), 0)
+    totalCatch.push(matchFail)
+  })
 
-  categories.value = nextCategories
-  autoMatchCounts.value = nextAutoMatch
-  matchRates.value = nextRates
-  tableRows.value = nextRows
+  devices.value = nextDevices
+  autoMatchCounts.value = nextAutoMatch // 自动匹配总数
+  matchRates.value = matchRate // 匹配率
+  rawTableRows.value = totalCatch // 失败总数
 }
 
 const getOption = (): EChartsOption => {
   const hasData = state.queried
-  const xData = hasData ? categories.value : []
+  const xData = hasData ? devices.value : []
   const barData = hasData ? autoMatchCounts.value : []
   const rateData = hasData ? matchRates.value : []
+  const catchData = hasData ? rawTableRows.value : []
 
   return {
     grid: {
@@ -214,6 +215,10 @@ const getOption = (): EChartsOption => {
     yAxis: [
       {
         type: 'value',
+        name: '匹配失败'
+      },
+      {
+        type: 'value',
         name: '使用量'
       },
       {
@@ -225,6 +230,12 @@ const getOption = (): EChartsOption => {
     ],
     series: [
       {
+        name: '匹配失败',
+        type: state.chartType,
+        data: catchData,
+        yAxisIndex: 0
+      },
+      {
         name: '自动匹配',
         type: state.chartType,
         data: barData,
@@ -232,7 +243,7 @@ const getOption = (): EChartsOption => {
       },
       {
         name: '匹配率',
-        type: 'line',
+        type: state.chartType,
         data: rateData,
         yAxisIndex: 1
       }
@@ -296,7 +307,7 @@ const downloadByUrl = (url: string, fileName: string) => {
 
 const exportCsv = () => {
   const header = ['设备', '胶片总数', '匹配率', '胶片尺寸', '自动匹配', '匹配失败']
-  const rows = tableRows.value.map((item) => [
+  const rows = tableRows.value.map((item: any) => [
     item.device,
     String(item.filmTotal),
     formatRate(item.matchRate),
@@ -336,7 +347,7 @@ const onFullscreen = async () => {
 }
 
 onMounted(() => {
-  ensurePeerOptions()
+  getdicomPeers()
   nextTick(() => {
     renderChart()
     window.addEventListener('resize', onResize)

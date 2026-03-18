@@ -117,19 +117,19 @@ onMounted(() => {
 <template>
   <div class="oa-page">
     <ElCard shadow="never" class="oa-card">
-      <ElForm :model="query" class="oa-form">
+      <ElForm :model="query" class="oa-form" line>
         <ElRow :gutter="10" class="oa-form__row">
-          <ElCol :xs="24" :sm="12" :md="8" :lg="4">
+          <ElCol :span="4">
             <ElFormItem>
               <ElInput v-model="query.accessionNumber" placeholder="患者编号" clearable />
             </ElFormItem>
           </ElCol>
-          <ElCol :xs="24" :sm="12" :md="8" :lg="4">
+          <ElCol :span="4">
             <ElFormItem>
               <ElInput v-model="query.patientID" placeholder="检查号" clearable />
             </ElFormItem>
           </ElCol>
-          <ElCol :xs="24" :sm="12" :md="8" :lg="4">
+          <ElCol :span="4">
             <ElFormItem>
               <ElSelect v-model="query.operateType" placeholder="操作类型" clearable>
                 <ElOption
@@ -141,18 +141,18 @@ onMounted(() => {
               </ElSelect>
             </ElFormItem>
           </ElCol>
-          <ElCol :xs="24" :sm="12" :md="8" :lg="4">
+          <ElCol :span="4">
             <ElFormItem>
               <ElInput v-model="query.operator" placeholder="操作用户" clearable />
             </ElFormItem>
           </ElCol>
-          <ElCol :xs="24" :sm="12" :md="8" :lg="4">
+          <ElCol :span="4">
             <ElFormItem>
               <ElInput v-model="query.clientIP" placeholder="客户端地址" clearable />
             </ElFormItem>
           </ElCol>
 
-          <ElCol :xs="24" :sm="24" :md="24" :lg="4">
+          <ElCol :span="4">
             <ElFormItem>
               <div class="oa-form__actions">
                 <ElButton type="primary" @click="onSearch">查询</ElButton>

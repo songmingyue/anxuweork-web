@@ -9,6 +9,7 @@ import {
   ElForm,
   ElFormItem,
   ElIcon,
+  ElMessage,
   ElOption,
   ElSelect,
   ElTable,
@@ -26,7 +27,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'v
 import {
   getExamTypeDropdown,
   getExamTypePrintStatistic,
-  type DicomPeerStatistics,
+  type FilDayData,
   type OptionList
 } from '@/api/filmStatistics'
 
@@ -46,9 +47,14 @@ const formatNumber = (value: unknown) => {
 const examTypeOptions = ref<OptionList[]>([])
 const examTypeLoading = ref(false)
 
+const now = new Date().toISOString().split('T')[0]
+const lastWork = new Date(new Date().valueOf() - 7 * 24 * 60 * 60 * 1000)
+  .toISOString()
+  .split('T')[0]
+
 const query = reactive({
-  examType: '' as string,
-  dateRange: ['2026-02-21', '2026-02-28'] as string[]
+  examType: [] as string[],
+  dateRange: [lastWork, now] as string[]
 })
 
 const state = reactive({
@@ -59,14 +65,22 @@ const state = reactive({
 })
 
 const categories = ref<string[]>([])
-const usage = ref<number[]>([])
+type SeriesItem = { key: string; name: string; data: number[] }
+const series = ref<SeriesItem[]>([])
 
 const tableRows = computed(() => {
   if (!state.queried) return []
-  return categories.value.map((date, index) => ({
-    date,
-    usage: usage.value[index] ?? 0
-  }))
+  return categories.value.map((date, dateIndex) => {
+    const row: Record<string, any> = { date }
+    let total = 0
+    series.value.forEach((s) => {
+      const val = Number(s.data?.[dateIndex] ?? 0)
+      row[s.key] = val
+      total += val
+    })
+    row.usageTotal = total
+    return row
+  })
 })
 
 const chartRef = ref<HTMLElement | null>(null)
@@ -92,56 +106,57 @@ const ensureExamTypeOptions = async () => {
   }
 }
 
-const isDateLike = (value: string) => /^\d{4}-\d{2}-\d{2}/.test(value)
-
 const fetchDailyUsage = async () => {
+  if (!query.dateRange || query.dateRange.length !== 2) {
+    ElMessage.warning('请选择正确的日期范围')
+    return
+  }
   const [startDate, endDate] = query.dateRange
   const request = await getExamTypePrintStatistic({
-    startDate,
-    endDate,
-    printState: null,
-    dicomPeers: [],
-    examType: query.examType || null
+    startDate: startDate + ' 00:00:00',
+    endDate: endDate + ' 23:59:59',
+    examType: query.examType
   })
 
-  const peers: DicomPeerStatistics[] = request.dicomPeerStatistics || []
-  if (!peers.length) {
+  const days: FilDayData[] = request.data ?? []
+  if (!days.length) {
     categories.value = []
-    usage.value = []
+    series.value = []
     return
   }
 
-  // 兼容两类返回结构：
-  // A) peerDes=日期，data=胶片尺寸明细(累计为当天使用量)
-  // B) peerDes=检查类型，data.filmSize=日期(直接取 printCount)
-  const peerDesLooksLikeDate = peers.every((p) => isDateLike(String(p.peerDes ?? '')))
-  if (peerDesLooksLikeDate) {
-    categories.value = peers.map((p) => String(p.peerDes ?? ''))
-    usage.value = peers.map((p) => {
-      return (p.data ?? []).reduce((sum, item) => sum + Number(item.printCount ?? 0), 0)
+  categories.value = days.map((d) => String(d.date ?? ''))
+
+  const typeKeys: string[] = []
+  const typeSet = new Set<string>()
+  days.forEach((d) => {
+    ;(d.details ?? []).forEach((item) => {
+      const key = String(item?.examType ?? '')
+      if (key && !typeSet.has(key)) {
+        typeSet.add(key)
+        typeKeys.push(key)
+      }
     })
-    return
-  }
+  })
 
-  if (
-    peers.length === 1 &&
-    (peers[0].data ?? []).every((d) => isDateLike(String(d.filmSize ?? '')))
-  ) {
-    categories.value = (peers[0].data ?? []).map((d) => String(d.filmSize ?? ''))
-    usage.value = (peers[0].data ?? []).map((d) => Number(d.printCount ?? 0))
-    return
-  }
-
-  categories.value = peers.map((p) => String(p.peerDes ?? ''))
-  usage.value = peers.map((p) =>
-    (p.data ?? []).reduce((sum, item) => sum + Number(item.printCount ?? 0), 0)
+  const labelMap = new Map(
+    (examTypeOptions.value ?? []).map((o) => [String(o.value ?? ''), String(o.text ?? '')] as const)
   )
+  const dayTypeMaps = days.map(
+    (d) => new Map((d.details ?? []).map((item) => [String(item.examType ?? ''), item] as const))
+  )
+
+  series.value = typeKeys.map((key) => ({
+    key,
+    name: labelMap.get(key) || key,
+    data: dayTypeMaps.map((map) => Number(map.get(key)?.printCount ?? 0))
+  }))
 }
 
 const getOption = (): EChartsOption => {
   const hasData = state.queried
   const xData = hasData ? categories.value : []
-  const yData = hasData ? usage.value : []
+  const chartSeries = hasData ? series.value : []
 
   return {
     grid: {
@@ -151,6 +166,7 @@ const getOption = (): EChartsOption => {
       bottom: 28,
       containLabel: true
     },
+    legend: { top: 0, icon: 'roundRect' },
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: state.chartType === 'bar' ? 'shadow' : 'line' },
@@ -172,13 +188,11 @@ const getOption = (): EChartsOption => {
       type: 'value',
       name: '使用量'
     },
-    series: [
-      {
-        name: '使用量',
-        type: state.chartType,
-        data: yData
-      }
-    ]
+    series: chartSeries.map((s) => ({
+      name: s.name,
+      type: state.chartType,
+      data: s.data
+    }))
   }
 }
 
@@ -197,6 +211,7 @@ const onResize = () => {
 const onSearch = async () => {
   state.queried = true
   state.mode = 'chart'
+  await ensureExamTypeOptions()
   await fetchDailyUsage()
   await nextTick(() => renderChart())
 }
@@ -237,11 +252,11 @@ const downloadByUrl = (url: string, fileName: string) => {
 }
 
 const exportCsv = () => {
-  const header = ['日期', '使用量']
-  const rows = tableRows.value.map((item) => [
-    String((item as any).date ?? ''),
-    String((item as any).usage ?? 0)
-  ])
+  const header = ['日期', ...series.value.map((s) => s.name), '使用总量']
+  const rows = tableRows.value.map((item) => {
+    const values = series.value.map((s) => String((item as any)[s.key] ?? 0))
+    return [String((item as any).date ?? ''), ...values, String((item as any).usageTotal ?? 0)]
+  })
   const csv = [header, ...rows].map((line) => line.join(',')).join('\n')
   const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
@@ -297,6 +312,7 @@ onBeforeUnmount(() => {
           <ElSelect
             v-model="query.examType"
             placeholder="请选择"
+            multiple
             style="width: 180px"
             clearable
             filterable
@@ -304,9 +320,9 @@ onBeforeUnmount(() => {
           >
             <ElOption
               v-for="item in examTypeOptions"
-              :key="item.value"
+              :key="item.text"
               :label="item.text"
-              :value="item.value"
+              :value="item.text"
             />
           </ElSelect>
         </ElFormItem>
@@ -337,7 +353,16 @@ onBeforeUnmount(() => {
         <div v-show="state.mode === 'table'" class="table-view">
           <ElTable :data="tableRows" height="100%" empty-text="暂无数据" border>
             <ElTableColumn prop="date" label="日期" min-width="120" />
-            <ElTableColumn prop="usage" label="使用量" min-width="120" />
+            <ElTableColumn label="使用量">
+              <ElTableColumn
+                v-for="item in series"
+                :key="item.key"
+                :prop="item.key"
+                :label="item.name"
+                min-width="120"
+              />
+            </ElTableColumn>
+            <ElTableColumn prop="usageTotal" label="使用总量" min-width="120" />
           </ElTable>
           <div class="table-actions">
             <ElButton plain type="primary" @click="exportCsv">导出</ElButton>

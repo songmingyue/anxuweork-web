@@ -119,7 +119,7 @@ const tableTitle = [
   { label: '就诊类别', prop: 'patientType', sort: 'custom' },
   { label: '检查类型', prop: 'examType', sort: 'custom' },
   { label: '检查量', prop: 'examTypeTotal', sort: false },
-  { label: '检查打印量', prop: 'printCount', sort: false },
+  { label: '检查打印量', prop: 'examPrinted', sort: false },
   { label: '胶片打印量', prop: 'filmPrinted', sort: false },
   { label: '补费量', prop: 'filmPaid', sort: false }
 ]
@@ -141,7 +141,7 @@ const onExport = () => {
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1')
 
-  XLSX.writeFile(workbook, '用户列表.xlsx')
+  XLSX.writeFile(workbook, '统计详情.xlsx')
 }
 
 type SortOrder = 'ascending' | 'descending' | null

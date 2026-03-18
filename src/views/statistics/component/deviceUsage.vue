@@ -51,10 +51,15 @@ const acceptDeviceOptions = [
   { label: '打印设备', value: '3' }
 ]
 
+const sesonDay = new Date().valueOf() - 93 * 24 * 60 * 60 * 1000
+
 const query = reactive({
   acceptDevice: '1',
   dicomPeers: [] as string[],
-  deviceRange: ['2025-12-05', '2026-03-05'] as string[]
+  deviceRange: [
+    new Date(sesonDay).toISOString().split('T')[0],
+    new Date().toISOString().split('T')[0]
+  ] as string[]
 })
 
 const state = reactive({
@@ -85,7 +90,7 @@ const devices = ref<string[]>([])
 const filmSizes = ref<string[]>([])
 const series = ref<Array<{ name: string; data: number[] }>>([])
 
-const metricLabel = computed(() => (query.acceptDevice === '1' ? '接收量' : '打印量'))
+const metricLabel = computed(() => (query.acceptDevice === '1' ? '请求量' : '打印量'))
 
 const tableRows = computed(() => {
   if (!state.queried) return []
@@ -148,21 +153,21 @@ const getdicomPeers = async (value?: string) => {
 const fetchDeviceStatistics = async () => {
   const [startDate, endDate] = query.deviceRange
   const dicomPeers = query.dicomPeers ?? []
-  const metricKey = query.acceptDevice === '1' ? 'totalCount' : 'printCount'
+  const metricKey = 'printCount'
 
   let res: DicomPeerStatistics[] = []
   if (query.acceptDevice === '3') {
     const request = await getPrinterStatistics({
-      startDate,
-      endDate,
+      startDate: startDate ? startDate + ' 00:00:00' : '',
+      endDate: endDate ? endDate + ' 23:59:59' : '',
       printState: null,
       dicomPeers
     })
     res = request.dicomPeerStatistics || []
   } else {
     const request = await getDicomPeerStatistics({
-      startDate,
-      endDate,
+      startDate: startDate ? startDate + ' 00:00:00' : '',
+      endDate: endDate ? endDate + ' 23:59:59' : '',
       printState: null,
       dicomPeers
     })
@@ -198,15 +203,14 @@ const fetchDeviceStatistics = async () => {
 
 const getOption = (): EChartsOption => {
   const hasData = state.queried
-  const xData = hasData ? devices.value : []
   const chartSeries = hasData ? series.value : []
 
   return {
     grid: {
-      top: 30,
-      left: 36,
-      right: 36,
-      bottom: 28,
+      top: 60,
+      left: 26,
+      right: 46,
+      bottom: 0,
       containLabel: true
     },
     legend: { top: 0, icon: 'roundRect' },
@@ -225,7 +229,7 @@ const getOption = (): EChartsOption => {
       type: 'category',
       name: '设备',
       nameLocation: 'end',
-      data: xData,
+      data: query.dicomPeers,
       axisLabel: {
         formatter: (value: string) => getPeerText(value)
       },
@@ -355,7 +359,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <ElCard shadow="never" class="stats-panel" :ref="(el) => setPanelRef(el)">
+  <ElCard shadow="never" class="stats-panel card-table" :ref="(el) => setPanelRef(el)">
     <div class="panel-head">
       <div class="panel-title">设备用量</div>
       <ElForm inline size="small">
@@ -363,7 +367,7 @@ onBeforeUnmount(() => {
           <ElSelect
             v-model="query.acceptDevice"
             placeholder="请选择设备接收室"
-            style="width: 150px"
+            style="width: 120px"
             @change="getdicomPeers"
           >
             <ElOption
@@ -417,18 +421,19 @@ onBeforeUnmount(() => {
           :ref="(el) => setChartRef(el)"
         ></div>
         <div v-show="state.mode === 'table'" class="table-view">
-          <ElTable :data="tableRows" height="100%" empty-text="暂无数据" border>
-            <ElTableColumn prop="requestDevice" label="请求设备" min-width="120" />
-            <ElTableColumn label="请求量">
+          <ElTable :data="tableRows" height="100%" empty-text="暂无数据">
+            <ElTableColumn prop="requestDevice" label="请求设备" min-width="120" align="center" />
+            <ElTableColumn label="请求量" align="center">
               <ElTableColumn
                 v-for="size in filmSizes"
                 :key="size"
                 :prop="size"
                 :label="size"
                 min-width="120"
+                align="center"
               />
             </ElTableColumn>
-            <ElTableColumn prop="requestTotal" label="请求总量" min-width="120" />
+            <ElTableColumn prop="requestTotal" align="center" label="请求总量" min-width="120" />
           </ElTable>
           <div class="table-actions">
             <ElButton plain type="primary" @click="exportCsv">导出</ElButton>
@@ -437,8 +442,8 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="toolbox">
-        <div class="tool-btn" :class="{ 'is-active': state.mode === 'table' }" @click="onDataView">
+      <div class="toolbox" v-if="state.mode !== 'table'">
+        <div class="tool-btn" @click="onDataView">
           <ElIcon :size="18"><DataAnalysis /></ElIcon>
           <span>数据视图</span>
         </div>
@@ -485,6 +490,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   min-height: 48px;
+  padding: 0 12px;
 }
 
 .panel-title {

@@ -23,29 +23,58 @@ import {
   TrendCharts
 } from '@element-plus/icons-vue'
 import { nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { getExamPrintMonthlyStatistics } from '@/api/statisticsInfo'
+import { Data, getDropDownConfig, getPatientTypeList } from '@/api/common'
 
 defineOptions({
   name: 'InspectStatistics'
 })
 
 const query = reactive({
-  patientType: '',
-  examType: '',
+  patientType: [],
+  examType: [],
   dateRange: ['2026-01-01', '2026-02-01'] as string[]
 })
 
-const patientTypeOptions = [
-  { label: '门诊', value: '门诊' },
-  { label: '住院', value: '住院' }
-]
+const patientTypeOptions = ref<string[]>([])
 
-const examTypeOptions = [
-  { label: 'CT', value: 'CT' },
-  { label: 'MR', value: 'MR' },
-  { label: 'DR', value: 'DR' }
-]
+const examTypeOptions = ref<Data[]>([])
 
-const tableData = ref<any[]>([])
+type InspectRow = {
+  month: string
+  totalExamCount: number
+  examType: string
+  examCount: number
+  personCount: number
+  printCount: number
+  filmPrintCount: number
+  compensateCount: number
+}
+
+const tableData = ref<InspectRow[]>([])
+
+const tableSpanMethod = ({ column, rowIndex }: any) => {
+  const prop = column?.property
+  if (prop !== 'month' && prop !== 'totalExamCount') {
+    return
+  }
+  const rows = tableData.value
+  const current = rows[rowIndex]
+  if (!current) return
+
+  const month = current.month
+  const prev = rows[rowIndex - 1]
+  if (prev?.month === month) {
+    return [0, 0]
+  }
+
+  let rowspan = 1
+  for (let i = rowIndex + 1; i < rows.length; i += 1) {
+    if (rows[i]?.month !== month) break
+    rowspan += 1
+  }
+  return [rowspan, 1]
+}
 
 type ViewMode = 'chart' | 'table'
 type ChartType = 'line' | 'bar'
@@ -61,11 +90,11 @@ const chartWrapRef = ref<HTMLElement | null>(null)
 let chartRef: Nullable<echarts.ECharts> = null
 
 const chartData = {
-  categories: ['2025-11', '2025-12', '2026-01', '2026-02'],
-  total: [102, 118, 121, 96],
-  print: [76, 84, 90, 72],
-  film: [68, 79, 86, 65],
-  supplement: [6, 8, 7, 5]
+  categories: [] as string[],
+  total: [] as number[],
+  print: [] as number[],
+  film: [] as number[],
+  supplement: [] as number[]
 }
 
 const getChartOption = (): EChartsOption => {
@@ -136,10 +165,54 @@ const getBottomTableRows = () => {
   }))
 }
 
-const onSearch = () => {
+const onSearch = async () => {
+  const [startDate, endDate] = query.dateRange ?? []
+
+  const result = await getExamPrintMonthlyStatistics({
+    examType: query.examType,
+    patientType: query.patientType,
+    startDate: startDate ? startDate + ' 00:00:00' : '',
+    endDate: endDate ? endDate + ' 23:59:59' : ''
+  })
+
+  const list = (result?.examPrintResult ?? [])
+    .slice()
+    .sort((a, b) => String(a.month ?? '').localeCompare(String(b.month ?? '')))
+
+  chartData.categories = list.map((item) => String(item.month ?? ''))
+  chartData.total = list.map((item) => Number(item.examTotal ?? 0))
+  chartData.print = list.map((item) =>
+    (item.examPrintDetail ?? []).reduce((sum, d) => sum + Number(d.examPrinted ?? 0), 0)
+  )
+  chartData.film = list.map((item) =>
+    (item.examPrintDetail ?? []).reduce((sum, d) => sum + Number(d.filmPrinted ?? 0), 0)
+  )
+  chartData.supplement = list.map((item) =>
+    (item.examPrintDetail ?? []).reduce((sum, d) => sum + Number(d.filmPaid ?? 0), 0)
+  )
+
+  const rows: InspectRow[] = []
+  list.forEach((item) => {
+    ;(item.examPrintDetail ?? []).forEach((d) => {
+      rows.push({
+        month: String(item.month ?? ''),
+        totalExamCount: Number(item.examTotal ?? 0),
+        examType: String(d.examType ?? ''),
+        examCount: Number(d.examTypeTotal ?? 0),
+        personCount: Number(d.examPatientTotal ?? 0),
+        printCount: Number(d.examPrinted ?? 0),
+        filmPrintCount: Number(d.filmPrinted ?? 0),
+        compensateCount: Number(d.filmPaid ?? 0)
+      })
+    })
+  })
+  tableData.value = rows.sort(
+    (a, b) => a.month.localeCompare(b.month) || a.examType.localeCompare(b.examType)
+  )
+
   bottomState.queried = true
   bottomState.mode = 'chart'
-  nextTick(() => renderChart())
+  await nextTick(() => renderChart())
 }
 
 const onExport = () => {}
@@ -229,7 +302,19 @@ const closeDataView = () => {
   nextTick(() => renderChart())
 }
 
+const getOption = async () => {
+  const { data, status } = await getDropDownConfig()
+  if (status === 0) {
+    examTypeOptions.value = data
+  }
+  const { data: data1, status: status1 } = await getPatientTypeList()
+  if (status1 === 0) {
+    patientTypeOptions.value = data1
+  }
+}
+
 onMounted(() => {
+  getOption()
   nextTick(() => {
     renderChart()
     window.addEventListener('resize', resizeChart)
@@ -245,41 +330,43 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="inspect-page">
-    <ElCard shadow="never" class="section section--top">
+    <ElCard shadow="never" class="section section--top card-table">
       <div class="section-head">
         <div class="section-title">检查打印量</div>
         <ElForm inline>
-          <ElFormItem>
+          <ElFormItem style="margin-right: 10px">
             <ElSelect
               v-model="query.patientType"
               placeholder="请选择患者类型"
+              multiple
               clearable
               style="width: 190px"
             >
               <ElOption
                 v-for="item in patientTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item"
+                :label="item"
+                :value="item"
               />
             </ElSelect>
           </ElFormItem>
-          <ElFormItem>
+          <ElFormItem style="margin-right: 10px">
             <ElSelect
               v-model="query.examType"
               placeholder="请选择检查类型"
+              multiple
               clearable
               style="width: 180px"
             >
               <ElOption
                 v-for="item in examTypeOptions"
                 :key="item.value"
-                :label="item.label"
+                :label="item.text"
                 :value="item.value"
               />
             </ElSelect>
           </ElFormItem>
-          <ElFormItem>
+          <ElFormItem style="margin-right: 10px">
             <ElDatePicker
               v-model="query.dateRange"
               type="daterange"
@@ -290,28 +377,43 @@ onBeforeUnmount(() => {
               style="width: 220px"
             />
           </ElFormItem>
-          <ElFormItem>
-            <ElButton type="primary" @click="onSearch">查询</ElButton>
+          <ElFormItem style="margin-right: 10px">
+            <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
           </ElFormItem>
-          <ElFormItem>
-            <ElButton @click="onExport">导出Excel</ElButton>
+          <ElFormItem style="margin-right: 10px">
+            <ElButton type="danger" @click="onExport" plain>导出Excel</ElButton>
           </ElFormItem>
         </ElForm>
       </div>
 
-      <ElTable :data="tableData" height="calc(100% - 52px)" empty-text="暂无数据" border>
-        <ElTableColumn prop="month" label="月份" min-width="120" />
-        <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" />
-        <ElTableColumn prop="examType" label="检查类型" min-width="120" />
-        <ElTableColumn prop="examCount" label="检查数" min-width="120" />
-        <ElTableColumn prop="personCount" label="检查人数" min-width="120" />
-        <ElTableColumn prop="printCount" label="检查打印数" min-width="120" />
-        <ElTableColumn prop="filmPrintCount" label="胶片打印张数" min-width="120" />
-        <ElTableColumn prop="compensateCount" label="补费次数" min-width="120" />
+      <ElTable
+        :data="tableData"
+        empty-text="暂无数据"
+        :span-method="tableSpanMethod"
+        :header-cell-style="{
+          backgroundColor: '#f5f7fa',
+          color: '#999',
+          fontWeight: 700,
+          textAlign: 'center'
+        }"
+        border
+      >
+        <ElTableColumn prop="month" label="月份" min-width="120" align="center" />
+        <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" align="center" />
+        <ElTableColumn prop="examType" label="检查类型" min-width="120" align="center" />
+        <ElTableColumn prop="examCount" label="检查数" min-width="120" align="center" />
+        <ElTableColumn prop="personCount" label="检查人数" min-width="120" align="center" />
+        <ElTableColumn prop="printCount" label="检查打印数" min-width="120" align="center" />
+        <ElTableColumn prop="filmPrintCount" label="胶片打印张数" min-width="120" align="center" />
+        <ElTableColumn prop="compensateCount" label="补费次数" min-width="120" align="center" />
       </ElTable>
     </ElCard>
 
-    <ElCard shadow="never" class="section section--bottom" :ref="(el) => setBottomContainerRef(el)">
+    <ElCard
+      shadow="never"
+      class="section section--bottom card-table"
+      :ref="(el) => setBottomContainerRef(el)"
+    >
       <div class="chart-wrap">
         <div
           v-show="bottomState.mode === 'chart'"
@@ -319,15 +421,34 @@ onBeforeUnmount(() => {
           :ref="(el) => setBottomPanelRef(el)"
         ></div>
         <div v-show="bottomState.mode === 'table'" class="table-view table-view--bottom">
-          <ElTable :data="getBottomTableRows()" height="100%" empty-text="暂无数据" border>
-            <ElTableColumn prop="month" label="月份" min-width="120" />
-            <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" />
-            <ElTableColumn prop="printCount" label="检查打印量" min-width="120" />
-            <ElTableColumn prop="filmPrintCount" label="胶片打印量" min-width="120" />
-            <ElTableColumn prop="compensateCount" label="补费量" min-width="120" />
+          <ElTable
+            :data="tableData"
+            height="100%"
+            size="small"
+            border
+            empty-text="暂无数据"
+            :span-method="tableSpanMethod"
+            :header-cell-style="{
+              backgroundColor: '#f5f7fa',
+              color: '#999',
+              fontWeight: 700,
+              textAlign: 'center'
+            }"
+          >
+            <ElTableColumn prop="month" label="月份" min-width="120" align="center" />
+            <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" align="center" />
+            <ElTableColumn prop="printCount" label="检查打印量" min-width="120" align="center" />
+            <ElTableColumn
+              prop="filmPrintCount"
+              label="胶片打印量"
+              min-width="120"
+              align="center"
+            />
+            <ElTableColumn prop="compensateCount" label="补费量" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
             <ElButton type="danger" plain @click="closeDataView">关闭</ElButton>
+            <ElButton type="primary" plain @click="closeDataView">导出</ElButton>
           </div>
         </div>
       </div>
@@ -377,7 +498,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .inspect-page {
   display: flex;
-  height: calc(100vh - 170px);
+  height: calc(100vh - 70px);
   min-height: 640px;
   flex-direction: column;
   gap: 8px;
@@ -406,11 +527,12 @@ onBeforeUnmount(() => {
   margin-bottom: 8px;
   align-items: center;
   justify-content: space-between;
+  margin-left: 15px;
 }
 
 .section-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--el-text-color-primary);
 }
 
@@ -495,7 +617,11 @@ onBeforeUnmount(() => {
 }
 
 .table-view--bottom {
-  height: 100%;
+  height: calc(100% - 39px);
+}
+
+.table-actions {
+  margin-top: 8px;
 }
 
 .section--bottom:fullscreen {

@@ -44,8 +44,8 @@ export interface DicomPeerStatisticsOptions {
   startDate: string
   endDate: string
   printState?: null
-  dicomPeers: string[]
-  examType?: string | null
+  dicomPeers?: string[]
+  examType?: string[]
 }
 
 export interface DicomPeerStatisticsDataItem {
@@ -81,30 +81,78 @@ export const getPrinterStatistics = (
     data
   })
 }
+
+export interface MatchRateStatisticsDataItem {
+  autoMatch: number
+  filmSize: string
+  manualMatch: number
+}
 // 匹配率
+
+export interface MatchRateStatistics {
+  data: MatchRateStatisticsDataItem[]
+  peerDes: string
+  matchRate: number
+  totalCount: number
+}
+
+export interface GetMatchRateStatistics {
+  matchRateStatistics: MatchRateStatistics[]
+  status: number
+}
 export const getMatchRateStatistics = (
   data: DicomPeerStatisticsOptions
-): Promise<DicomPeerStatisticsData> => {
+): Promise<GetMatchRateStatistics> => {
   return request.post({
     url: 'Statistic/GetMatchRateStatistics',
     data
   })
 }
 // 胶片月用量
+export interface FilMonthlyData {
+  filmSize: string
+  printCount: number
+  totalCount: number
+}
+
+export interface FilmMonthlyStatistics {
+  month: string
+  data: FilMonthlyData[]
+}
+
+export interface GetFilmMonthlyStatistics {
+  filmMonthlyStatistics: FilmMonthlyStatistics[]
+  status: number
+}
 
 export const getFilmMonthlyStatistics = (
   data: DicomPeerStatisticsOptions
-): Promise<DicomPeerStatisticsData> => {
+): Promise<GetFilmMonthlyStatistics> => {
   return request.post({
     url: 'Statistic/GetFilmMonthlyStatistics',
     data
   })
 }
 
+export interface FilDayData {
+  date: string
+  details: FilDayDataItem[]
+}
+
+export interface FilDayDataItem {
+  examType: string
+  printCount: number
+  totalCount: number
+}
+export interface GetExamTypePrintStatistic {
+  data: FilDayData[]
+  status: number
+}
+
 // 胶片日用量
 export const getExamTypePrintStatistic = (
   data: DicomPeerStatisticsOptions
-): Promise<DicomPeerStatisticsData> => {
+): Promise<GetExamTypePrintStatistic> => {
   return request.post({
     url: 'Statistic/GetExamTypePrintStatistic',
     data

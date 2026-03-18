@@ -31,11 +31,15 @@ axiosInstance.interceptors.request.use((res: any) => {
 })
 
 const whiteList = ['/Admin/Config/GetUserPermissionList', '/Film/GetImageByFilmBox']
-
+// 二进制/非标准 {status,desc,data} 返回的接口，直接透传 res.data
+const justData = ['Film/GetImageByFilmBox', '/Film/GetImageByFilmBox']
 axiosInstance.interceptors.response.use(
   (res: any) => {
     if (res.status == 200) {
       const { data } = res
+      if (justData.includes(res.config.url || '')) {
+        return data
+      }
       if (data.status !== 0) {
         if (whiteList.includes(res.config.url || '')) {
           return res.data

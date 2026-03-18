@@ -92,8 +92,8 @@ importers:
         specifier: 3.5.13
         version: 3.5.13(typescript@5.7.3)
       vue-computer:
-        specifier: http://localhost:4873/vue-computer/-/vue-computer-1.0.1.tgz
-        version: http://localhost:4873/vue-computer/-/vue-computer-1.0.1.tgz(@element-plus/icons-vue@2.3.2(vue@3.5.13(typescript@5.7.3)))(element-plus@2.9.2(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
+        specifier: 1.0.24
+        version: 1.0.24(@element-plus/icons-vue@2.3.2(vue@3.5.13(typescript@5.7.3)))(element-plus@2.9.2(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
       vue-draggable-plus:
         specifier: ^0.6.0
         version: 0.6.1(@types/sortablejs@1.15.9)
@@ -5495,9 +5495,8 @@ packages:
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
-  vue-computer@http://localhost:4873/vue-computer/-/vue-computer-1.0.1.tgz:
-    resolution: {tarball: http://localhost:4873/vue-computer/-/vue-computer-1.0.1.tgz}
-    version: 1.0.1
+  vue-computer@1.0.24:
+    resolution: {integrity: sha512-qz7Kp9NVuDgvPg6HFkOeJfYP+Uv6OOR1GjlL2Dw8rjplB+AfJdEJ7L3Wf9QHz9AlpK2POtWdtP02PmuoTFyB+g==}
     peerDependencies:
       '@element-plus/icons-vue': ^2.3.2
       element-plus: 2.9.2
@@ -11401,7 +11400,7 @@ snapshots:
 
   vscode-uri@3.1.0: {}
 
-  vue-computer@http://localhost:4873/vue-computer/-/vue-computer-1.0.1.tgz(@element-plus/icons-vue@2.3.2(vue@3.5.13(typescript@5.7.3)))(element-plus@2.9.2(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3)):
+  vue-computer@1.0.24(@element-plus/icons-vue@2.3.2(vue@3.5.13(typescript@5.7.3)))(element-plus@2.9.2(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3)):
     dependencies:
       '@element-plus/icons-vue': 2.3.2(vue@3.5.13(typescript@5.7.3))
       element-plus: 2.9.2(vue@3.5.13(typescript@5.7.3))

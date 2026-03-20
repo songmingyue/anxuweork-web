@@ -57,7 +57,7 @@ import {
   ElEmpty
 } from 'element-plus'
 import { computed, nextTick, reactive, ref, watch, onMounted } from 'vue'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown, ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import { ImageBlobUrl } from '@/components/Permission/src/utils'
 import { getDicomPeerDropDown } from '@/api/filmStatistics'
@@ -132,6 +132,328 @@ const cleanupViewObjectUrls = () => {
 const printOf = () => {
   window.print()
 }
+const printingReport = ref(false)
+const reportPrintObjectUrls = ref<string[]>([])
+
+const cleanupReportPrintObjectUrls = () => {
+  reportPrintObjectUrls.value.forEach((url) => URL.revokeObjectURL(url))
+  reportPrintObjectUrls.value = []
+}
+
+const getAuthToken = () => {
+  try {
+    const userMsg = JSON.parse(localStorage.getItem('userMsg') || '{}')
+    return String(userMsg?.token || '')
+  } catch {
+    return ''
+  }
+}
+
+const getReportUrlBase = () => {
+  const envBase = String(import.meta.env.VITE_API_BASE_PATH || '').trim()
+  return envBase || window.location.origin
+}
+
+const resolveReportUrl = (input: string) => {
+  const raw = String(input || '').trim()
+  if (!raw) return ''
+  if (raw.startsWith('data:image/') || raw.startsWith('blob:')) return raw
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (raw.startsWith('//')) return `${window.location.protocol}${raw}`
+  try {
+    return new URL(raw, getReportUrlBase()).toString()
+  } catch {
+    return raw
+  }
+}
+
+const fetchReportImgAsObjectUrl = async (url: string) => {
+  const token = getAuthToken()
+  const headers: Record<string, string> = {}
+  if (token) headers.authorization = token
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers,
+    credentials: 'include'
+  })
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`)
+  }
+
+  const contentType = String(res.headers.get('content-type') || '').toLowerCase()
+  if (!contentType.startsWith('image/') && !contentType.includes('octet-stream')) {
+    throw new Error(`Unexpected content-type: ${contentType || 'unknown'}`)
+  }
+
+  const blob = await res.blob()
+  const objectUrl = URL.createObjectURL(blob)
+  reportPrintObjectUrls.value.push(objectUrl)
+  return objectUrl
+}
+
+const toPrintableReportImgSrc = async (src: string) => {
+  const normalized = String(src || '')
+  if (!normalized) return ''
+  if (normalized.startsWith('data:image/') || normalized.startsWith('blob:')) return normalized
+
+  const url = resolveReportUrl(normalized)
+  try {
+    return await fetchReportImgAsObjectUrl(url)
+  } catch {
+    return url
+  }
+}
+
+const getReportImgSrc = (img: string) => {
+  const raw = (img || '').trim().replace(/\s+/g, '')
+  if (!raw) return ''
+  if (raw.startsWith('data:image/') || raw.startsWith('blob:')) return raw
+  if (/^https?:\/\//i.test(raw) || raw.startsWith('//')) return resolveReportUrl(raw)
+
+  const isJpegBase64 = raw.startsWith('/9j/')
+  const isPngBase64 = raw.startsWith('iVBOR')
+  const isGifBase64 = raw.startsWith('R0lGOD')
+  const isWebpBase64 = raw.startsWith('UklGR')
+  const isBmpBase64 = raw.startsWith('Qk0')
+
+  // TIFF 常见 base64 头：SUkq(小端), TU0A(大端)
+  const isTiffBase64 = raw.startsWith('SUkq') || raw.startsWith('TU0A')
+
+  if (isJpegBase64 || isPngBase64 || isGifBase64 || isWebpBase64 || isBmpBase64 || isTiffBase64) {
+    const mime = isJpegBase64
+      ? 'image/jpeg'
+      : isPngBase64
+        ? 'image/png'
+        : isGifBase64
+          ? 'image/gif'
+          : isWebpBase64
+            ? 'image/webp'
+            : isBmpBase64
+              ? 'image/bmp'
+              : 'image/tiff'
+    return `data:${mime};base64,${raw}`
+  }
+
+  if (raw.startsWith('/') || raw.startsWith('./') || raw.startsWith('../'))
+    return resolveReportUrl(raw)
+
+  // 兼容接口返回相对路径（不带 / 开头）的情况：不要误判成 base64
+  if (raw.includes('?') || raw.includes('#') || raw.includes('.')) return resolveReportUrl(raw)
+  if (raw.includes('/')) {
+    const base64Like = /^[A-Za-z0-9+/=]+$/.test(raw)
+    if (!base64Like || raw.length <= 200) return resolveReportUrl(raw)
+  }
+  return `data:image/jpeg;base64,${raw}`
+}
+
+const escapeHtmlAttr = (text: string) =>
+  String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+
+const buildReportPrintHtml = (imageSrcList: string[], title: string) => {
+  const pages = imageSrcList
+    .map(
+      (src) =>
+        `<div class="page"><img class="img" src="${escapeHtmlAttr(src)}" alt="" loading="eager" /></div>`
+    )
+    .join('')
+
+  return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtmlAttr(title)}</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      @page { margin: 0; }
+      .page {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        page-break-after: always;
+        break-after: page;
+      }
+      .page:last-child { page-break-after: auto; break-after: auto; }
+      .img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 95vh;
+        object-fit: contain;
+      }
+    </style>
+  </head>
+  <body>${pages}</body>
+</html>`
+}
+
+const createHiddenPrintIframe = () => {
+  const iframe = document.createElement('iframe')
+  iframe.setAttribute('aria-hidden', 'true')
+  iframe.style.position = 'fixed'
+  iframe.style.left = '-100000px'
+  iframe.style.top = '0'
+  // 保持一个实际尺寸，避免浏览器因为 0x0/hidden 而不加载后续图片
+  iframe.style.width = '210mm'
+  iframe.style.height = '297mm'
+  iframe.style.border = '0'
+  iframe.style.opacity = '0'
+  iframe.style.pointerEvents = 'none'
+  return iframe
+}
+
+const waitForIframeImages = async (iframe: HTMLIFrameElement, timeoutMs = 60_000) => {
+  const doc = iframe.contentDocument
+  if (!doc) return
+  const images = Array.from(doc.images || []) as HTMLImageElement[]
+  if (!images.length) return
+
+  const waitOne = (img: HTMLImageElement) =>
+    new Promise<void>((resolve) => {
+      if (img.complete) return resolve()
+      const done = () => resolve()
+      img.addEventListener('load', done, { once: true })
+      img.addEventListener('error', done, { once: true })
+    })
+
+  await Promise.race([
+    Promise.all(images.map(waitOne)),
+    new Promise<void>((resolve) => window.setTimeout(resolve, timeoutMs))
+  ])
+
+  const decodeTasks = images
+    .filter((img) => img.complete && img.naturalWidth > 0 && typeof img.decode === 'function')
+    .map((img) => img.decode().catch(() => undefined))
+
+  if (decodeTasks.length) {
+    await Promise.race([
+      Promise.all(decodeTasks).then(() => undefined),
+      new Promise<void>((resolve) => window.setTimeout(resolve, timeoutMs))
+    ])
+  }
+}
+
+const printReportByIframe = async (imageSrcList: string[], title: string) => {
+  const iframe = createHiddenPrintIframe()
+  document.body.appendChild(iframe)
+
+  const doc = iframe.contentDocument
+  const win = iframe.contentWindow
+  if (!doc || !win) {
+    iframe.remove()
+    throw new Error('打印组件初始化失败')
+  }
+
+  doc.open()
+  doc.write(buildReportPrintHtml(imageSrcList, title))
+  doc.close()
+
+  await waitForIframeImages(iframe)
+  await new Promise<void>((resolve) => window.setTimeout(resolve, 50))
+
+  await new Promise<void>((resolve) => {
+    let cleaned = false
+    const cleanup = () => {
+      if (cleaned) return
+      cleaned = true
+      try {
+        iframe.remove()
+      } catch {
+        // ignore
+      }
+      resolve()
+    }
+
+    const onAfterPrint = () => {
+      window.removeEventListener('afterprint', onAfterPrint)
+      cleanup()
+    }
+
+    // 部分浏览器 afterprint 只会在父窗口触发
+    window.addEventListener('afterprint', onAfterPrint)
+    win.onafterprint = onAfterPrint
+
+    // 兜底：避免 afterprint 不触发导致 iframe 残留
+    window.setTimeout(() => {
+      window.removeEventListener('afterprint', onAfterPrint)
+      cleanup()
+    }, 5 * 60_000)
+
+    try {
+      win.focus()
+      win.print()
+    } catch {
+      window.removeEventListener('afterprint', onAfterPrint)
+      cleanup()
+    }
+  })
+}
+
+const printReport = async (row: TExamResult) => {
+  if (printingReport.value) return
+  const accessionNumber = String(row?.accessionNumber || '').trim()
+  if (!accessionNumber) {
+    ElMessage.warning('检查号为空')
+    return
+  }
+
+  printingReport.value = true
+  try {
+    const { reportImg, status } = await getReportListByAccNum({
+      accessionNumber
+    })
+
+    if (status !== 0) {
+      ElMessage.error('获取报告失败')
+      printingReport.value = false
+      return
+    }
+
+    const srcList = (reportImg || []).map(getReportImgSrc).filter(Boolean)
+    if (!srcList.length) {
+      ElMessage.warning('暂无报告')
+      printingReport.value = false
+      return
+    }
+
+    await ElMessageBox.confirm(
+      `当前选择 1 个检查，共计 ${srcList.length} 个报告，是否确认全部打印？`,
+      '提示',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    cleanupReportPrintObjectUrls()
+    const printable = (await Promise.all(srcList.map((s) => toPrintableReportImgSrc(s)))).filter(
+      Boolean
+    )
+
+    // 使用隐藏 iframe 打印（不新开页面）
+    await printReportByIframe(printable, `报告-${accessionNumber}`)
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') {
+      console.error('打印报告失败', error)
+      ElMessage.error('打印报告失败')
+    }
+  } finally {
+    printingReport.value = false
+    cleanupReportPrintObjectUrls()
+  }
+}
 
 const deleteFilmBtn = () => {
   ElMessageBox.confirm('确认删除该胶片吗?', '提示', {
@@ -141,7 +463,9 @@ const deleteFilmBtn = () => {
   })
     .then(async () => {
       if (activedRow.value) {
-        await deleteFilm({ filmBoxID: activedRow.value?.filmResult[0].filmBoxID })
+        await deleteFilm({
+          filmBoxID: activedRow.value?.filmResult[viewActiveIndex.value].filmBoxID
+        })
       }
     })
     .catch(() => {
@@ -157,14 +481,43 @@ const watchReport = async (row: TExamResult, type: 'film' | 'report') => {
   viewDialogVisible.value = true
   activedRow.value = row
   if (type === 'film') {
-    const url = ImageBlobUrl(await getImageByFilmBox(row.filmResult[0].filmBoxID))
-    viewObjectUrls.value = [url]
-    viewUrlList.value = [url]
+    const filmList = row?.filmResult || []
+    if (!filmList.length) {
+      ElMessage.warning('暂无胶片')
+      return
+    }
+
+    const results = await Promise.allSettled(
+      filmList.map(async (film) => {
+        const filmBoxID = String(film?.filmBoxID || '').trim()
+        if (!filmBoxID) return ''
+        const buffer = await getImageByFilmBox(filmBoxID)
+        return ImageBlobUrl(buffer)
+      })
+    )
+
+    const urls = results
+      .filter((r): r is PromiseFulfilledResult<string> => r.status === 'fulfilled')
+      .map((r) => r.value)
+      .filter(Boolean)
+
+    const failedCount = results.filter((r) => r.status === 'rejected').length
+    if (failedCount > 0) {
+      ElMessage.warning(`部分胶片获取失败（${failedCount}/${filmList.length}）`)
+    }
+
+    if (!urls.length) {
+      ElMessage.error('获取胶片失败')
+      return
+    }
+
+    viewObjectUrls.value = urls
+    viewUrlList.value = urls
   } else {
     const { reportImg } = await getReportListByAccNum({
       accessionNumber: row.accessionNumber
     })
-    viewUrlList.value = reportImg
+    viewUrlList.value = (reportImg || []).map(getReportImgSrc).filter(Boolean)
   }
 }
 
@@ -585,10 +938,15 @@ const payStatus = (row: TExamResult) => {
     type: 'warning'
   })
     .then(async () => {
-      await updateFilmPaidTag({
+      const { status } = await updateFilmPaidTag({
         accessionNumberList: [row.accessionNumber],
         paidTag: !row.cloudFilmPaid
       })
+      if (status === 0) {
+        await onSearch()
+      } else {
+        ElMessage.error('状态修改失败')
+      }
     })
     .catch(() => {
       // 取消操作
@@ -602,13 +960,15 @@ const examPrintRestrict = async (row: TExamResult) => {
     type: 'warning'
   })
     .then(async () => {
-      await updateExamPrintRestrict({
+      const { status } = await updateExamPrintRestrict({
         accessionNumber: row.accessionNumber,
         flag: !row.autoPrint
       })
-      ElMessageBox.alert(`${row.autoPrint ? '已解除限制' : '已限制打印'}`, '提示', {
-        confirmButtonText: '确定'
-      })
+      if (status === 0) {
+        await onSearch()
+      } else {
+        ElMessage.error('状态修改失败')
+      }
     })
     .catch(() => {
       // 取消操作
@@ -734,7 +1094,13 @@ const submitSetPrinter = async (andPrint: boolean) => {
           </ElCol>
           <ElCol :span="2" style="min-width: 100px">
             <ElFormItem>
-              <ElSelect v-model="query.examType" placeholder="检查类型" clearable>
+              <ElSelect
+                v-model="query.examType"
+                placeholder="检查类型"
+                collapse-tags
+                multiple
+                clearable
+              >
                 <ElOption
                   v-for="o in commonStore.examTypeDropdown"
                   :key="o.text"
@@ -746,7 +1112,13 @@ const submitSetPrinter = async (andPrint: boolean) => {
           </ElCol>
           <ElCol :span="2" style="min-width: 100px">
             <ElFormItem>
-              <ElSelect v-model="query.patientType" placeholder="就诊类别" clearable>
+              <ElSelect
+                v-model="query.patientType"
+                collapse-tags
+                placeholder="就诊类别"
+                multiple
+                clearable
+              >
                 <ElOption
                   v-for="o in commonStore.patientTypeDropdown"
                   :key="o.text"
@@ -758,7 +1130,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
           </ElCol>
           <ElCol :span="2" style="min-width: 100px">
             <ElFormItem>
-              <ElSelect v-model="query.areaNo" placeholder="申请科室" clearable>
+              <ElSelect v-model="query.areaNo" multiple placeholder="申请科室" clearable>
                 <ElOption
                   v-for="o in commonStore.areaNoDropdown"
                   :key="o.text"
@@ -965,10 +1337,10 @@ const submitSetPrinter = async (andPrint: boolean) => {
               text
               size="small"
               type="success"
-              style=" width: 36px;padding: 5px; margin: 0"
+              style="width: 36px; padding: 5px; margin: 0"
               v-if="isShowPayBtn"
               @click="payStatus(scope.row)"
-              >{{ scope.row.autoPrint ? '付费' : '未付费' }}</ElButton
+              >{{ scope.row.cloudFilmPaid ? '未付费' : '付费' }}</ElButton
             >
 
             <el-dropdown>
@@ -1015,7 +1387,8 @@ const submitSetPrinter = async (andPrint: boolean) => {
                       size="small"
                       type="primary"
                       plain
-                      :disabled="!scope.row.reportPrinted"
+                      :disabled="!scope.row.reportExists"
+                      @click="printReport(scope.row)"
                       >打印报告</ElButton
                     ></el-dropdown-item
                   >
@@ -1152,9 +1525,27 @@ const submitSetPrinter = async (andPrint: boolean) => {
       </template>
 
       <div class="viewer-body">
-        <div>
-          <span @click="changeImgPicture('last')">上一张</span>
-          <span @click="changeImgPicture('next')">下一张</span>
+        <div v-if="viewUrlList.length > 1" class="viewer-nav">
+          <div class="viewer-nav__item">
+            <el-button
+              class="viewer-nav__circle"
+              circle
+              :icon="ArrowLeftBold"
+              :disabled="viewActiveIndex === 0"
+              @click="changeImgPicture('last')"
+            />
+            <div class="viewer-nav__label">上一张</div>
+          </div>
+          <div class="viewer-nav__item">
+            <el-button
+              class="viewer-nav__circle"
+              circle
+              :icon="ArrowRightBold"
+              :disabled="viewActiveIndex >= viewUrlList.length - 1"
+              @click="changeImgPicture('next')"
+            />
+            <div class="viewer-nav__label">下一张</div>
+          </div>
         </div>
 
         <div v-if="viewCurrentSrc" class="viewer-plugin">
@@ -1406,8 +1797,85 @@ const submitSetPrinter = async (andPrint: boolean) => {
 }
 
 .viewer-body {
+  position: relative;
   height: calc(100vh - 90px);
   min-height: 520px;
+}
+
+.viewer-nav {
+  position: absolute;
+  top: 78px;
+  right: 24px;
+  z-index: 10;
+  display: -webkit-box;
+  display: flex;
+  display: flex;
+  padding: 10px 14px;
+
+  /* background: var(--el-mask-color); */
+  pointer-events: none;
+  background: #00000059;
+  border-radius: 8px;
+  transform: translateY(-50%);
+  transform: translateY(-50%);
+  -webkit-box-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.viewer-nav__item {
+  display: flex;
+  pointer-events: auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.viewer-nav__circle {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  color: var(--el-color-white);
+  background: transparent;
+  border-color: var(--el-color-white);
+  border-width: 2px;
+  border-radius: 13px !important;
+}
+
+.viewer-nav__circle:hover,
+.viewer-nav__circle:focus,
+.viewer-nav__circle:active {
+  color: var(--el-color-white);
+  background: transparent;
+  border-color: var(--el-color-white);
+}
+
+.viewer-nav__circle :deep(.el-icon) {
+  font-size: 18px;
+}
+
+.viewer-nav__circle.is-disabled {
+  opacity: 0.45;
+}
+
+.viewer-nav__circle.is-disabled:hover,
+.viewer-nav__circle.is-disabled:focus,
+.viewer-nav__circle.is-disabled:active {
+  color: var(--el-color-white);
+  background: transparent;
+  border-color: var(--el-color-white);
+}
+
+.viewer-nav__label {
+  font-size: 12px;
+  line-height: 1;
+  color: var(--el-color-white);
+  user-select: none;
 }
 
 .viewer-header {

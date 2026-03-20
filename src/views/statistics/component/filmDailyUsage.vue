@@ -290,6 +290,7 @@ const onFullscreen = async () => {
 
 onMounted(() => {
   ensureExamTypeOptions()
+  onSearch()
   nextTick(() => {
     renderChart()
     window.addEventListener('resize', onResize)
@@ -307,7 +308,7 @@ onBeforeUnmount(() => {
   <ElCard shadow="never" class="stats-panel" :ref="(el) => setPanelRef(el)">
     <div class="panel-head">
       <div class="panel-title">胶片日用量 /<span class="panel-sub"> 检查类型</span></div>
-      <ElForm inline>
+      <ElForm inline size="small">
         <ElFormItem>
           <ElSelect
             v-model="query.examType"
@@ -352,17 +353,18 @@ onBeforeUnmount(() => {
         ></div>
         <div v-show="state.mode === 'table'" class="table-view">
           <ElTable :data="tableRows" height="100%" empty-text="暂无数据" border>
-            <ElTableColumn prop="date" label="日期" min-width="120" />
-            <ElTableColumn label="使用量">
+            <ElTableColumn prop="date" label="日期" align="center" min-width="120" />
+            <ElTableColumn label="使用量" align="center">
               <ElTableColumn
                 v-for="item in series"
                 :key="item.key"
                 :prop="item.key"
                 :label="item.name"
                 min-width="120"
+                align="center"
               />
             </ElTableColumn>
-            <ElTableColumn prop="usageTotal" label="使用总量" min-width="120" />
+            <ElTableColumn prop="usageTotal" label="使用总量" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
             <ElButton plain type="primary" @click="exportCsv">导出</ElButton>
@@ -371,8 +373,8 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="toolbox">
-        <div class="tool-btn" :class="{ 'is-active': state.mode === 'table' }" @click="onDataView">
+      <div class="toolbox" v-if="state.mode !== 'table'">
+        <div class="tool-btn" @click="onDataView">
           <ElIcon :size="18"><DataAnalysis /></ElIcon>
           <span>数据视图</span>
         </div>

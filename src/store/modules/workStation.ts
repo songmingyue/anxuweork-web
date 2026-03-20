@@ -32,7 +32,7 @@ export const useWorkStationStore = defineStore('workStation', {
     async asyncSetTableList() {
       const { data, status, desc } = await getTableConfig()
       if (status === 0) {
-        this.tableList = data
+        this.tableList = data.filter((item) => item.selected)
       } else {
         console.error('获取失败', desc)
       }

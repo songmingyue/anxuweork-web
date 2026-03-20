@@ -837,6 +837,7 @@ onBeforeUnmount(() => {
                   :prop="item.prop"
                   :label="item.label"
                   min-width="120"
+                  align="center"
                 />
               </ElTable>
               <div class="table-actions">
@@ -931,6 +932,7 @@ onBeforeUnmount(() => {
                   :key="item.prop"
                   :prop="item.prop"
                   :label="item.label"
+                  align="center"
                   min-width="120"
                 />
               </ElTable>

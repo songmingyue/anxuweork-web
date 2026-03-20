@@ -9,6 +9,7 @@ import {
   ElForm,
   ElFormItem,
   ElIcon,
+  ElMessage,
   ElOption,
   ElSelect,
   ElTable,
@@ -25,7 +26,7 @@ import {
 import { nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { getExamPrintMonthlyStatistics } from '@/api/statisticsInfo'
 import { Data, getDropDownConfig, getPatientTypeList } from '@/api/common'
-
+import * as XLSX from 'xlsx'
 defineOptions({
   name: 'InspectStatistics'
 })
@@ -167,7 +168,10 @@ const getBottomTableRows = () => {
 
 const onSearch = async () => {
   const [startDate, endDate] = query.dateRange ?? []
-
+  if (!startDate || !endDate) {
+    ElMessage.warning('请选择日期范围')
+    return
+  }
   const result = await getExamPrintMonthlyStatistics({
     examType: query.examType,
     patientType: query.patientType,
@@ -215,7 +219,57 @@ const onSearch = async () => {
   await nextTick(() => renderChart())
 }
 
-const onExport = () => {}
+const onExport = () => {
+  if (!tableData.value.length) return ElMessage.warning('暂无数据可导出')
+  const header = [
+    '月份',
+    '总检查数',
+    '检查类型',
+    '检查数',
+    '检查人数',
+    '检查打印数',
+    '胶片打印张数',
+    '补费次数'
+  ]
+  const data = tableData.value.map((item) => [
+    item.month,
+    item.totalExamCount,
+    item.examType,
+    item.examCount,
+    item.personCount,
+    item.printCount,
+    item.filmPrintCount,
+    item.compensateCount
+  ])
+
+  const sheet = XLSX.utils.aoa_to_sheet([header, ...data])
+
+  const merges: XLSX.Range[] = []
+  const rows = tableData.value
+  let startIndex = 0
+  while (startIndex < rows.length) {
+    const month = rows[startIndex]?.month
+    let endIndex = startIndex
+    while (endIndex + 1 < rows.length && rows[endIndex + 1]?.month === month) {
+      endIndex += 1
+    }
+    if (endIndex > startIndex) {
+      const startRow = startIndex + 1
+      const endRow = endIndex + 1
+      merges.push({ s: { r: startRow, c: 0 }, e: { r: endRow, c: 0 } })
+      merges.push({ s: { r: startRow, c: 1 }, e: { r: endRow, c: 1 } })
+    }
+    startIndex = endIndex + 1
+  }
+  if (merges.length > 0) {
+    sheet['!merges'] = merges
+  }
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1')
+
+  XLSX.writeFile(workbook, `请求设备用量-${query.dateRange[0]}.xlsx`)
+}
 
 const onDataView = () => {
   bottomState.mode = 'table'
@@ -339,6 +393,7 @@ onBeforeUnmount(() => {
               v-model="query.patientType"
               placeholder="请选择患者类型"
               multiple
+              collapse-tags
               clearable
               style="width: 190px"
             >
@@ -354,6 +409,7 @@ onBeforeUnmount(() => {
             <ElSelect
               v-model="query.examType"
               placeholder="请选择检查类型"
+              collapse-tags
               multiple
               clearable
               style="width: 180px"
@@ -448,7 +504,7 @@ onBeforeUnmount(() => {
           </ElTable>
           <div class="table-actions">
             <ElButton type="danger" plain @click="closeDataView">关闭</ElButton>
-            <ElButton type="primary" plain @click="closeDataView">导出</ElButton>
+            <ElButton type="primary" plain @click="onExport">导出</ElButton>
           </div>
         </div>
       </div>

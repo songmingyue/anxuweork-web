@@ -253,6 +253,7 @@ const onFullscreen = async () => {
 }
 
 onMounted(() => {
+  onSearch()
   nextTick(() => {
     renderChart()
     window.addEventListener('resize', onResize)
@@ -270,7 +271,7 @@ onBeforeUnmount(() => {
   <ElCard shadow="never" class="stats-panel" :ref="(el) => setPanelRef(el)">
     <div class="panel-head">
       <div class="panel-title">胶片月用量 /<span class="panel-sub"> 胶片尺寸</span></div>
-      <ElForm inline>
+      <ElForm inline size="small">
         <ElFormItem>
           <ElDatePicker
             v-model="query.deviceRange"
@@ -297,17 +298,18 @@ onBeforeUnmount(() => {
         ></div>
         <div v-show="state.mode === 'table'" class="table-view">
           <ElTable :data="tableRows" height="100%" empty-text="暂无数据" border>
-            <ElTableColumn prop="month" label="月份" min-width="120" />
-            <ElTableColumn label="使用量">
+            <ElTableColumn prop="month" label="月份" min-width="120" align="center" />
+            <ElTableColumn label="使用量" align="center">
               <ElTableColumn
                 v-for="size in filmSizes"
                 :key="size"
                 :prop="size"
                 :label="size"
                 min-width="120"
+                align="center"
               />
             </ElTableColumn>
-            <ElTableColumn prop="usageTotal" label="使用总量" min-width="120" />
+            <ElTableColumn prop="usageTotal" label="使用总量" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
             <ElButton plain type="primary" @click="exportCsv">导出</ElButton>
@@ -316,8 +318,8 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="toolbox">
-        <div class="tool-btn" :class="{ 'is-active': state.mode === 'table' }" @click="onDataView">
+      <div class="toolbox" v-if="state.mode !== 'table'">
+        <div class="tool-btn" @click="onDataView">
           <ElIcon :size="18"><DataAnalysis /></ElIcon>
           <span>数据视图</span>
         </div>

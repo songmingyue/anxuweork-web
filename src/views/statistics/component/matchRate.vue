@@ -35,6 +35,15 @@ defineOptions({
 type ViewMode = 'chart' | 'table'
 type ChartType = 'line' | 'bar'
 
+type MatchRateTableRow = {
+  device: string
+  filmTotal: number
+  matchRate: number
+  filmSize: string
+  autoMatch: number
+  matchFail: number
+}
+
 const formatNumber = (value: unknown) => {
   const num = Number(value)
   if (!Number.isFinite(num)) return String(value ?? '')
@@ -85,11 +94,34 @@ const devices = ref<string[]>([])
 const autoMatchCounts = ref<number[]>([])
 const matchRates = ref<number[]>([])
 
-const rawTableRows = ref<number[]>([])
+const matchFailCounts = ref<number[]>([])
+
+const rawTableRows = ref<MatchRateTableRow[]>([])
 const tableRows = computed(() => {
   if (!state.queried) return []
   return rawTableRows.value
 })
+
+const tableSpanMethod = ({ column, rowIndex }: { column: any; rowIndex: number }) => {
+  const prop = String(column?.property ?? '')
+  if (prop !== 'device' && prop !== 'filmTotal' && prop !== 'matchRate') return [1, 1]
+
+  const rows = tableRows.value
+  const device = rows[rowIndex]?.device
+  if (!device) return [1, 1]
+
+  if (rowIndex > 0 && rows[rowIndex - 1]?.device === device) {
+    return [0, 0]
+  }
+
+  let rowspan = 1
+  for (let i = rowIndex + 1; i < rows.length; i++) {
+    if (rows[i]?.device !== device) break
+    rowspan++
+  }
+
+  return [rowspan, 1]
+}
 
 const chartRef = ref<HTMLElement | null>(null)
 const panelRef = ref<HTMLElement | null>(null)
@@ -139,35 +171,50 @@ const fetchMatchRate = async () => {
   })
 
   const peers: MatchRateStatistics[] = request.matchRateStatistics || []
-  const yData: { autoMatch: number; manualMatch: number; matchRate: number }[] = []
-  peers.map((item) => {
-    const manualMatch = item.data?.reduce((total, items) => total + items.manualMatch, 0)
-    const autoMatch = item.data?.reduce((total, items) => total + items.autoMatch, 0)
-
-    yData.push({
-      autoMatch: autoMatch ?? 0,
-      manualMatch: manualMatch ?? 0,
-      matchRate: item.matchRate ?? 0
-    })
-  })
   const nextDevices: string[] = []
   const nextAutoMatch: number[] = [] // 自动匹配总数
   const matchRate: number[] = [] // 匹配率
   const totalCatch: number[] = [] // 失败总数
+
+  const nextTableRows: MatchRateTableRow[] = []
   peers.forEach((peer) => {
     const items = peer.data ?? []
     nextDevices.push(peer.peerDes ?? '')
     const autoMatchTotal = items.reduce((sum, item) => sum + Number(item.autoMatch ?? 0), 0) // 自动匹配总数
     nextAutoMatch.push(autoMatchTotal) // 自动匹配总数list
     matchRate.push(peer.matchRate ?? 0)
-    const matchFail = items.reduce((sum, item) => sum + Number(item.manualMatch ?? 0), 0)
-    totalCatch.push(matchFail)
+    const matchFailTotal = items.reduce((sum, item) => sum + Number(item.manualMatch ?? 0), 0)
+    totalCatch.push(matchFailTotal)
+
+    if (!items.length) {
+      nextTableRows.push({
+        device: peer.peerDes ?? '',
+        filmTotal: peer.totalCount ?? 0,
+        matchRate: peer.matchRate ?? 0,
+        filmSize: '',
+        autoMatch: 0,
+        matchFail: 0
+      })
+      return
+    }
+
+    items.forEach((item) => {
+      nextTableRows.push({
+        device: peer.peerDes ?? '',
+        filmTotal: peer.totalCount ?? 0,
+        matchRate: peer.matchRate ?? 0,
+        filmSize: item.filmSize ?? '',
+        autoMatch: Number(item.autoMatch ?? 0),
+        matchFail: Number(item.manualMatch ?? 0)
+      })
+    })
   })
 
   devices.value = nextDevices
   autoMatchCounts.value = nextAutoMatch // 自动匹配总数
   matchRates.value = matchRate // 匹配率
-  rawTableRows.value = totalCatch // 失败总数
+  matchFailCounts.value = totalCatch // 失败总数（图表）
+  rawTableRows.value = nextTableRows
 }
 
 const getOption = (): EChartsOption => {
@@ -175,7 +222,7 @@ const getOption = (): EChartsOption => {
   const xData = hasData ? devices.value : []
   const barData = hasData ? autoMatchCounts.value : []
   const rateData = hasData ? matchRates.value : []
-  const catchData = hasData ? rawTableRows.value : []
+  const catchData = hasData ? matchFailCounts.value : []
 
   return {
     grid: {
@@ -293,8 +340,8 @@ const onBar = () => {
 
 const onRestore = () => {
   state.mode = 'chart'
-  state.chartType = state.initialType
-  state.queried = false
+  state.chartType = 'bar'
+  // state.queried = false
   nextTick(() => renderChart())
 }
 
@@ -347,6 +394,7 @@ const onFullscreen = async () => {
 }
 
 onMounted(() => {
+  onSearch()
   getdicomPeers()
   nextTick(() => {
     renderChart()
@@ -391,13 +439,19 @@ onBeforeUnmount(() => {
           :ref="(el) => setChartRef(el)"
         ></div>
         <div v-show="state.mode === 'table'" class="table-view">
-          <ElTable :data="tableRows" height="100%" empty-text="暂无数据" border>
-            <ElTableColumn prop="device" label="设备" min-width="120" />
-            <ElTableColumn prop="filmTotal" label="胶片总数" min-width="120" />
-            <ElTableColumn prop="matchRate" label="匹配率" min-width="120" />
-            <ElTableColumn prop="filmSize" label="胶片尺寸" min-width="120" />
-            <ElTableColumn prop="autoMatch" label="自动匹配" min-width="120" />
-            <ElTableColumn prop="matchFail" label="匹配失败" min-width="120" />
+          <ElTable
+            :data="tableRows"
+            :span-method="tableSpanMethod"
+            height="100%"
+            empty-text="暂无数据"
+            border
+          >
+            <ElTableColumn prop="device" label="设备" min-width="120" align="center" />
+            <ElTableColumn prop="filmTotal" label="胶片总数" min-width="120" align="center" />
+            <ElTableColumn prop="matchRate" label="匹配率" min-width="120" align="center" />
+            <ElTableColumn prop="filmSize" label="胶片尺寸" min-width="120" align="center" />
+            <ElTableColumn prop="autoMatch" label="自动匹配" min-width="120" align="center" />
+            <ElTableColumn prop="matchFail" label="匹配失败" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
             <ElButton plain type="primary" @click="exportCsv">导出</ElButton>
@@ -406,8 +460,8 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="toolbox">
-        <div class="tool-btn" :class="{ 'is-active': state.mode === 'table' }" @click="onDataView">
+      <div class="toolbox" v-if="state.mode !== 'table'">
+        <div class="tool-btn" @click="onDataView">
           <ElIcon :size="18"><DataAnalysis /></ElIcon>
           <span>数据视图</span>
         </div>

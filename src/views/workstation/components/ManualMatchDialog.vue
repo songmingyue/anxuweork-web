@@ -341,7 +341,7 @@ onMounted(() => {
 
       <div class="mm-right">
         <el-form label-width="0px" :inline="true" class="form-computer-inline" size="small">
-          <el-form-item style=" margin-right: 8px;margin-bottom: 6px">
+          <el-form-item style="margin-right: 8px; margin-bottom: 6px">
             <el-date-picker
               v-model="filter.dateRange"
               style="width: 320px"
@@ -353,7 +353,7 @@ onMounted(() => {
             />
           </el-form-item>
 
-          <el-form-item class="mm-item" style=" margin-right: 8px;margin-bottom: 6px">
+          <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 6px">
             <el-select
               v-model="filter.matchState"
               placeholder="匹配状态"
@@ -369,7 +369,7 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item class="mm-item" style=" margin-right: 8px;margin-bottom: 6px">
+          <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 6px">
             <el-select
               v-model="filter.device"
               placeholder="请求设备"
@@ -388,11 +388,11 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item class="mm-item mm-item--task" style=" margin-right: 8px;margin-bottom: 6px">
+          <el-form-item class="mm-item mm-item--task" style="margin-right: 8px; margin-bottom: 6px">
             <el-input v-model="filter.taskNo" style="width: 150px" clearable placeholder="任务号" />
           </el-form-item>
 
-          <el-form-item class="mm-item" style=" margin-right: 8px;margin-bottom: 6px">
+          <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 6px">
             <el-input
               style="width: 150px"
               v-model="filter.accessionNumber"
@@ -400,7 +400,7 @@ onMounted(() => {
               placeholder="检查号"
             />
           </el-form-item>
-          <el-form-item style=" margin-right: 8px;margin-bottom: 6px"
+          <el-form-item style="margin-right: 8px; margin-bottom: 6px"
             ><el-button type="primary" @click="handleSearch">查询</el-button></el-form-item
           >
         </el-form>
@@ -442,7 +442,7 @@ onMounted(() => {
         <div class="mm-bottom">
           <el-form size="small">
             <div class="mm-filter-row mm-filter-row--compact">
-              <el-form-item class="mm-item" style=" margin-right: 8px;margin-bottom: 0">
+              <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 0">
                 <el-input
                   placeholder="检查号"
                   style="width: 150px"
@@ -450,7 +450,7 @@ onMounted(() => {
                   clearable
                 />
               </el-form-item>
-              <el-form-item class="mm-item" style=" margin-right: 8px;margin-bottom: 0">
+              <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 0">
                 <el-input
                   placeholder="患者编号"
                   style="width: 150px"
@@ -458,7 +458,7 @@ onMounted(() => {
                   clearable
                 />
               </el-form-item>
-              <el-form-item style=" margin-right: 8px;margin-bottom: 0">
+              <el-form-item style="margin-right: 8px; margin-bottom: 0">
                 <el-button type="primary" :loading="examLoading" @click="handleExamSearch"
                   >查询</el-button
                 >

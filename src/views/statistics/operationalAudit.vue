@@ -131,10 +131,21 @@ onMounted(() => {
           </ElCol>
           <ElCol :span="4">
             <ElFormItem>
-              <ElSelect v-model="query.operateType" placeholder="操作类型" clearable>
+              <ElSelect
+                v-model="query.operateType"
+                placeholder="操作类型"
+                clearable
+                @change="
+                  (val) => {
+                    if (!val) {
+                      query.operateType = ''
+                    }
+                  }
+                "
+              >
                 <ElOption
                   v-for="o in commonStore.dropdownConfig.enumOperateType"
-                  :key="o.value || 'ALL'"
+                  :key="o.value"
                   :label="o.text"
                   :value="o.value"
                 />
@@ -183,7 +194,7 @@ onMounted(() => {
           :prop="col.prop"
           :label="col.label"
           align="center"
-          :min-width="80"
+          :min-width="100"
           show-overflow-tooltip
         >
           <template

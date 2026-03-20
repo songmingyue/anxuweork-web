@@ -289,8 +289,7 @@ const onBar = () => {
 
 const onRestore = () => {
   state.mode = 'chart'
-  state.chartType = state.initialType
-  state.queried = false
+  state.chartType = 'bar'
   nextTick(() => renderChart())
 }
 

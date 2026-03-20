@@ -9,6 +9,7 @@ import {
   ElForm,
   ElFormItem,
   ElIcon,
+  ElMessage,
   ElTable,
   ElTableColumn
 } from 'element-plus'
@@ -22,6 +23,7 @@ import {
 } from '@element-plus/icons-vue'
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { getFilmMonthlyStatistics, type FilmMonthlyStatistics } from '@/api/filmStatistics'
+import * as XLSX from 'xlsx'
 
 defineOptions({
   name: 'FilmMonthlyUsage'
@@ -82,6 +84,10 @@ const setPanelRef = (el: Element | ComponentPublicInstance | null) => {
 }
 
 const fetchMonthlyUsage = async () => {
+  if (!query.deviceRange?.length) {
+    ElMessage.warning('请选择日期范围')
+    return
+  }
   const [startDate, endDate] = query.deviceRange
   const request = await getFilmMonthlyStatistics({
     startDate: startDate ? `${startDate} 00:00:00` : '',
@@ -214,23 +220,65 @@ const downloadByUrl = (url: string, fileName: string) => {
   a.click()
 }
 
-const exportCsv = () => {
-  const header = ['月份', ...filmSizes.value, '使用总量']
+const exportExcel = () => {
+  if (!tableRows.value.length) {
+    ElMessage.warning('暂无数据可导出')
+    return
+  }
+  const fileName = `胶片月用量数据-${query.deviceRange?.[0]}.xlsx`
+
+  const sizeCount = filmSizes.value.length
+
+  // 没有“使用量”子列时，退化为普通表头
+  if (sizeCount === 0) {
+    const header = ['月份', '使用总量']
+    const rows = tableRows.value.map((item) => [
+      String((item as any).month ?? ''),
+      Number((item as any).usageTotal ?? 0)
+    ])
+
+    const sheet = XLSX.utils.aoa_to_sheet([header, ...rows])
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1')
+    XLSX.writeFile(workbook, fileName)
+    return
+  }
+
+  // 生成两行表头，模拟 ElTable 的分组表头：
+  // 第 1 行：月份 | 使用量(合并) | 使用总量
+  // 第 2 行：     | 各胶片尺寸列  |
+  const headerRow1 = [
+    '月份',
+    '使用量',
+    ...Array.from({ length: sizeCount - 1 }, () => ''),
+    '使用总量'
+  ]
+  const headerRow2 = ['', ...filmSizes.value, '']
+
   const rows = tableRows.value.map((item) => {
-    const values = filmSizes.value.map((size) => String((item as any)[size] ?? 0))
-    return [String((item as any).month ?? ''), ...values, String((item as any).usageTotal ?? 0)]
+    const values = filmSizes.value.map((size) => Number((item as any)[size] ?? 0))
+    return [String((item as any).month ?? ''), ...values, Number((item as any).usageTotal ?? 0)]
   })
 
-  const csv = [header, ...rows].map((line) => line.join(',')).join('\n')
-  const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  downloadByUrl(url, '胶片月用量数据.csv')
-  URL.revokeObjectURL(url)
+  const sheet = XLSX.utils.aoa_to_sheet([headerRow1, headerRow2, ...rows])
+  const merges: XLSX.Range[] = [
+    // “月份” 纵向合并两行
+    { s: { r: 0, c: 0 }, e: { r: 1, c: 0 } },
+    // “使用量” 横向合并尺寸列
+    { s: { r: 0, c: 1 }, e: { r: 0, c: sizeCount } },
+    // “使用总量” 纵向合并两行
+    { s: { r: 0, c: sizeCount + 1 }, e: { r: 1, c: sizeCount + 1 } }
+  ]
+  sheet['!merges'] = merges
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1')
+  XLSX.writeFile(workbook, fileName)
 }
 
 const onSave = () => {
   if (state.mode === 'table') {
-    exportCsv()
+    exportExcel()
     return
   }
   if (!chartInstance) return
@@ -312,7 +360,7 @@ onBeforeUnmount(() => {
             <ElTableColumn prop="usageTotal" label="使用总量" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
-            <ElButton plain type="primary" @click="exportCsv">导出</ElButton>
+            <ElButton plain type="primary" @click="exportExcel">导出</ElButton>
             <ElButton type="danger" plain @click="closeTableView">关闭</ElButton>
           </div>
         </div>

@@ -231,21 +231,11 @@ const onExport = () => {
     '胶片打印张数',
     '补费次数'
   ]
-  const data = tableData.value.map((item) => [
-    item.month,
-    item.totalExamCount,
-    item.examType,
-    item.examCount,
-    item.personCount,
-    item.printCount,
-    item.filmPrintCount,
-    item.compensateCount
-  ])
 
-  const sheet = XLSX.utils.aoa_to_sheet([header, ...data])
-
-  const merges: XLSX.Range[] = []
   const rows = tableData.value
+  const data: Array<(string | number)[]> = []
+  const merges: XLSX.Range[] = []
+
   let startIndex = 0
   while (startIndex < rows.length) {
     const month = rows[startIndex]?.month
@@ -253,17 +243,36 @@ const onExport = () => {
     while (endIndex + 1 < rows.length && rows[endIndex + 1]?.month === month) {
       endIndex += 1
     }
+
+    for (let i = startIndex; i <= endIndex; i += 1) {
+      const item = rows[i]
+      if (!item) continue
+      const isFirst = i === startIndex
+      data.push([
+        isFirst ? item.month : '',
+        isFirst ? item.totalExamCount : '',
+        item.examType,
+        item.examCount,
+        item.personCount,
+        item.printCount,
+        item.filmPrintCount,
+        item.compensateCount
+      ])
+    }
+
     if (endIndex > startIndex) {
+      // XLSX.Range 的 r/c 均为 0-based；第 0 行是 header，所以数据从第 1 行开始
       const startRow = startIndex + 1
       const endRow = endIndex + 1
       merges.push({ s: { r: startRow, c: 0 }, e: { r: endRow, c: 0 } })
       merges.push({ s: { r: startRow, c: 1 }, e: { r: endRow, c: 1 } })
     }
+
     startIndex = endIndex + 1
   }
-  if (merges.length > 0) {
-    sheet['!merges'] = merges
-  }
+
+  const sheet = XLSX.utils.aoa_to_sheet([header, ...data])
+  if (merges.length > 0) sheet['!merges'] = merges
 
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1')

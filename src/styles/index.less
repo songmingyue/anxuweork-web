@@ -122,6 +122,21 @@ a:active {
   border-radius: 0px !important;
 }
 
+/* 修复 ElSelect 多选标签关闭按钮在部分布局下不可点击的问题 */
+.el-select__selection .el-tag {
+  position: relative;
+  z-index: 2;
+}
+
+.el-select__selection .el-tag__close {
+  pointer-events: auto;
+}
+
+.el-select__selection .el-select__input {
+  position: relative;
+  z-index: 1;
+}
+
 .el-menu-item:hover {
   background-color: var(--el-color-primary-light-9) !important;
 }

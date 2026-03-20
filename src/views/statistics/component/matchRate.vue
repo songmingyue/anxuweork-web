@@ -9,6 +9,7 @@ import {
   ElForm,
   ElFormItem,
   ElIcon,
+  ElMessage,
   ElTable,
   ElTableColumn
 } from 'element-plus'
@@ -27,6 +28,7 @@ import {
   MatchRateStatistics,
   type OptionList
 } from '@/api/filmStatistics'
+import * as XLSX from 'xlsx'
 
 defineOptions({
   name: 'MatchRate'
@@ -56,7 +58,7 @@ const formatRate = (value: unknown) => {
   return String(Number(num.toFixed(3)))
 }
 
-const startTime = new Date(new Date().valueOf() - 92 * 24 * 60 * 60 * 1000)
+const startTime = new Date(new Date().valueOf() - 90 * 24 * 60 * 60 * 1000)
   .toISOString()
   .split('T')[0]
 const endTime = new Date().toISOString().split('T')[0]
@@ -160,7 +162,10 @@ const getdicomPeers = async () => {
 
 const fetchMatchRate = async () => {
   await ensurePeerOptions()
-
+  if (!query.matchRange?.length) {
+    ElMessage.warning('请选择日期范围')
+    return
+  }
   const [startDate, endDate] = query.matchRange
   const dicomPeers = query.dicomPeers ?? []
   const request = await getMatchRateStatistics({
@@ -262,12 +267,13 @@ const getOption = (): EChartsOption => {
     yAxis: [
       {
         type: 'value',
-        name: '匹配失败'
-      },
-      {
-        type: 'value',
         name: '使用量'
       },
+      // {
+      //   type: 'value',
+      //   name: '匹配失败'
+      // },
+
       {
         type: 'value',
         name: '匹配率',
@@ -277,15 +283,15 @@ const getOption = (): EChartsOption => {
     ],
     series: [
       {
-        name: '匹配失败',
-        type: state.chartType,
-        data: catchData,
-        yAxisIndex: 0
-      },
-      {
         name: '自动匹配',
         type: state.chartType,
         data: barData,
+        yAxisIndex: 0
+      },
+      {
+        name: '匹配失败',
+        type: state.chartType,
+        data: catchData,
         yAxisIndex: 0
       },
       {
@@ -352,26 +358,66 @@ const downloadByUrl = (url: string, fileName: string) => {
   a.click()
 }
 
-const exportCsv = () => {
+const exportExcel = () => {
+  if (!tableRows.value.length) {
+    ElMessage.warning('暂无数据可导出')
+    return
+  }
+
+  const startDate = String(query.matchRange?.[0] ?? '').trim()
+  const fileName = `匹配率数据-${startDate || '导出'}.xlsx`
+
   const header = ['设备', '胶片总数', '匹配率', '胶片尺寸', '自动匹配', '匹配失败']
-  const rows = tableRows.value.map((item: any) => [
-    item.device,
-    String(item.filmTotal),
-    formatRate(item.matchRate),
-    String(item.filmSize ?? ''),
-    String(item.autoMatch),
-    String(item.matchFail)
-  ])
-  const csv = [header, ...rows].map((line) => line.join(',')).join('\n')
-  const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  downloadByUrl(url, '匹配率数据.csv')
-  URL.revokeObjectURL(url)
+  const rows = tableRows.value
+
+  const data: Array<(string | number)[]> = []
+  const merges: XLSX.Range[] = []
+
+  let startIndex = 0
+  while (startIndex < rows.length) {
+    const device = rows[startIndex]?.device
+    let endIndex = startIndex
+    while (endIndex + 1 < rows.length && rows[endIndex + 1]?.device === device) {
+      endIndex += 1
+    }
+
+    for (let i = startIndex; i <= endIndex; i += 1) {
+      const item = rows[i]
+      if (!item) continue
+      const isFirst = i === startIndex
+      data.push([
+        isFirst ? item.device : '',
+        isFirst ? Number(item.filmTotal ?? 0) : '',
+        isFirst ? Number(Number(item.matchRate ?? 0).toFixed(3)) : '',
+        String(item.filmSize ?? ''),
+        Number(item.autoMatch ?? 0),
+        Number(item.matchFail ?? 0)
+      ])
+    }
+
+    if (endIndex > startIndex) {
+      // 第 0 行是表头，数据从第 1 行开始
+      const startRow = startIndex + 1
+      const endRow = endIndex + 1
+      merges.push({ s: { r: startRow, c: 0 }, e: { r: endRow, c: 0 } })
+      merges.push({ s: { r: startRow, c: 1 }, e: { r: endRow, c: 1 } })
+      merges.push({ s: { r: startRow, c: 2 }, e: { r: endRow, c: 2 } })
+    }
+
+    startIndex = endIndex + 1
+  }
+
+  const sheet = XLSX.utils.aoa_to_sheet([header, ...data])
+  if (merges.length > 0) sheet['!merges'] = merges
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1')
+  XLSX.writeFile(workbook, fileName)
 }
 
 const onSave = () => {
   if (state.mode === 'table') {
-    exportCsv()
+    exportExcel()
     return
   }
   if (!chartInstance) return
@@ -413,7 +459,7 @@ onBeforeUnmount(() => {
   <ElCard shadow="never" class="stats-panel" :ref="(el) => setPanelRef(el)">
     <div class="panel-head">
       <div class="panel-title">匹配率</div>
-      <ElForm inline>
+      <ElForm inline size="small">
         <ElFormItem>
           <ElDatePicker
             v-model="query.matchRange"
@@ -454,7 +500,7 @@ onBeforeUnmount(() => {
             <ElTableColumn prop="matchFail" label="匹配失败" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
-            <ElButton plain type="primary" @click="exportCsv">导出</ElButton>
+            <ElButton plain type="primary" @click="exportExcel">导出</ElButton>
             <ElButton type="danger" plain @click="closeTableView">关闭</ElButton>
           </div>
         </div>

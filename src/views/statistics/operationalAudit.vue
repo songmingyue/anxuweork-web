@@ -208,19 +208,19 @@ onMounted(() => {
               <el-tag type="info" v-if="row.operatorType === '4'">自动匹配</el-tag>
             </div>
             <div v-else-if="col.prop === 'matchStatus'">
-              <el-tag type="warning" v-if="row.operatorType === '0'">等待</el-tag>
-              <el-tag type="danger" v-if="row.operatorType === '1'">失败</el-tag>
-              <el-tag type="success" v-if="row.operatorType === '2'">成功</el-tag>
-              <el-tag type="primary" v-if="row.operatorType === '3'">手工匹配</el-tag>
+              <el-tag type="warning" v-if="row.matchState === '0'">等待</el-tag>
+              <el-tag type="danger" v-if="row.matchState === '1'">失败</el-tag>
+              <el-tag type="success" v-if="row.matchState === '2'">成功</el-tag>
+              <el-tag type="primary" v-if="row.matchState === '3'">手工匹配</el-tag>
             </div>
             <div v-else-if="col.prop === 'printStatus'">
-              <el-tag type="warning" v-if="row.operatorType === '0'">等待</el-tag>
-              <el-tag type="danger" v-if="row.operatorType === '1'">失败</el-tag>
-              <el-tag type="success" v-if="row.operatorType === '2'">成功</el-tag>
+              <el-tag type="warning" v-if="row.printeState === '0'">等待</el-tag>
+              <el-tag type="danger" v-if="row.printeState === '1'">失败</el-tag>
+              <el-tag type="success" v-if="row.printeState === '2'">成功</el-tag>
             </div>
             <div v-else-if="col.prop === 'deleteState'">
-              <el-tag type="danger" v-if="row.operatorType === '1'">已删除</el-tag>
-              <el-tag type="success" v-if="row.operatorType === '0'">未删除</el-tag>
+              <el-tag type="danger" v-if="row.deleteState === '1'">已删除</el-tag>
+              <el-tag type="success" v-if="row.deleteState === '0'">未删除</el-tag>
             </div>
           </template>
         </ElTableColumn>

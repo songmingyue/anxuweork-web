@@ -129,8 +129,35 @@ const cleanupViewObjectUrls = () => {
   viewActiveIndex.value = 0
 }
 
-const printOf = () => {
-  window.print()
+const printOf = async () => {
+  if (printingReport.value) return
+
+  const src = String(viewCurrentSrc.value || '').trim()
+  if (!src) {
+    ElMessage.warning('暂无可打印的图片')
+    return
+  }
+
+  const accessionNumber = String(activedRow.value?.accessionNumber || '').trim()
+  const titleBase = accessionNumber ? `报告-${accessionNumber}` : '报告'
+  const title = `${titleBase}-第${viewActiveIndex.value + 1}张`
+
+  printingReport.value = true
+  try {
+    cleanupReportPrintObjectUrls()
+    const printable = await toPrintableReportImgSrc(src)
+    if (!printable) {
+      ElMessage.warning('暂无可打印的图片')
+      return
+    }
+    await printReportByIframe([printable], title)
+  } catch (error) {
+    console.error('打印失败', error)
+    ElMessage.error('打印失败')
+  } finally {
+    printingReport.value = false
+    cleanupReportPrintObjectUrls()
+  }
 }
 const printingReport = ref(false)
 const reportPrintObjectUrls = ref<string[]>([])
@@ -1817,13 +1844,10 @@ const submitSetPrinter = async (andPrint: boolean) => {
   background: #00000059;
   border-radius: 8px;
   transform: translateY(-50%);
-  transform: translateY(-50%);
   -webkit-box-align: center;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
-  flex-direction: column;
-  align-items: center;
   align-items: center;
   gap: 14px;
 }

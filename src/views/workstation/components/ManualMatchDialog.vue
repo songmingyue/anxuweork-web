@@ -340,7 +340,7 @@ onMounted(() => {
       </div>
 
       <div class="mm-right">
-        <el-form label-width="0px" :inline="true" class="form-computer-inline" size="small">
+        <el-form label-width="0px" :inline="true" class="form-computer-inline">
           <el-form-item style="margin-right: 8px; margin-bottom: 6px">
             <el-date-picker
               v-model="filter.dateRange"
@@ -357,7 +357,7 @@ onMounted(() => {
             <el-select
               v-model="filter.matchState"
               placeholder="匹配状态"
-              style="width: 150px"
+              style="width: 161px"
               clearable
             >
               <el-option
@@ -373,7 +373,7 @@ onMounted(() => {
             <el-select
               v-model="filter.device"
               placeholder="请求设备"
-              style="width: 150px"
+              style="width: 161px"
               clearable
               filterable
               :loading="loadingDevice"
@@ -389,7 +389,7 @@ onMounted(() => {
           </el-form-item>
 
           <el-form-item class="mm-item mm-item--task" style="margin-right: 8px; margin-bottom: 6px">
-            <el-input v-model="filter.taskNo" style="width: 150px" clearable placeholder="任务号" />
+            <el-input v-model="filter.taskNo" style="width: 161px" clearable placeholder="任务号" />
           </el-form-item>
 
           <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 6px">
@@ -440,7 +440,7 @@ onMounted(() => {
         />
 
         <div class="mm-bottom">
-          <el-form size="small">
+          <el-form>
             <div class="mm-filter-row mm-filter-row--compact">
               <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 0">
                 <el-input

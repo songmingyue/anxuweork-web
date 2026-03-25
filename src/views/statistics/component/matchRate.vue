@@ -456,7 +456,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <ElCard shadow="never" class="stats-panel" :ref="(el) => setPanelRef(el)">
+  <ElCard shadow="never" class="stats-panel card-table" :ref="(el) => setPanelRef(el)">
     <div class="panel-head">
       <div class="panel-title">匹配率</div>
       <ElForm inline size="small">
@@ -472,7 +472,7 @@ onBeforeUnmount(() => {
           />
         </ElFormItem>
         <ElFormItem>
-          <ElButton type="primary" @click="onSearch">查询</ElButton>
+          <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
         </ElFormItem>
       </ElForm>
     </div>
@@ -489,8 +489,8 @@ onBeforeUnmount(() => {
             :data="tableRows"
             :span-method="tableSpanMethod"
             height="100%"
-            empty-text="暂无数据"
             border
+            empty-text="暂无数据"
           >
             <ElTableColumn prop="device" label="设备" min-width="120" align="center" />
             <ElTableColumn prop="filmTotal" label="胶片总数" min-width="120" align="center" />
@@ -554,6 +554,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   min-height: 48px;
+  padding: 0 12px;
 }
 
 .panel-title {
@@ -628,6 +629,7 @@ onBeforeUnmount(() => {
   display: flex;
   height: 100%;
   flex-direction: column;
+  padding: 15px;
 }
 
 .table-view :deep(.el-table) {

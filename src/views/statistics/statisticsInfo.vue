@@ -192,7 +192,7 @@ const handleSort = (data: { prop: string; order: SortOrder }) => {
     <ElCard shadow="never" class="detail-card">
       <div class="detail-head">
         <div class="detail-title">统计详情</div>
-        <ElForm inline class="detail-form" size="small">
+        <ElForm inline class="detail-form">
           <ElFormItem style="margin-right: 10px">
             <ElSelect
               v-model="query.patientType"

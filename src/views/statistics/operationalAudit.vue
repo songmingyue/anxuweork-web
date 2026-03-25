@@ -166,8 +166,8 @@ onMounted(() => {
           <ElCol :span="4">
             <ElFormItem>
               <div class="oa-form__actions">
-                <ElButton type="primary" @click="onSearch">查询</ElButton>
-                <ElButton @click="onReset">重置</ElButton>
+                <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
+                <ElButton @click="onReset" plain>重置</ElButton>
               </div>
             </ElFormItem>
           </ElCol>

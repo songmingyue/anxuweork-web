@@ -455,7 +455,7 @@ onBeforeUnmount(() => {
           />
         </ElFormItem>
         <ElFormItem>
-          <ElButton type="primary" @click="onSearch">查询</ElButton>
+          <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
         </ElFormItem>
       </ElForm>
     </div>

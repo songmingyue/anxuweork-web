@@ -54,7 +54,8 @@ import {
   ElMessage,
   ElMessageBox,
   ElDialog,
-  ElEmpty
+  ElEmpty,
+  ElTag
 } from 'element-plus'
 import { computed, nextTick, reactive, ref, watch, onMounted } from 'vue'
 import { ArrowDown, ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue'
@@ -490,9 +491,15 @@ const deleteFilmBtn = () => {
   })
     .then(async () => {
       if (activedRow.value) {
-        await deleteFilm({
+        const { status } = await deleteFilm({
           filmBoxID: activedRow.value?.filmResult[viewActiveIndex.value].filmBoxID
         })
+        if (status === 0) {
+          ElMessage.success('删除成功')
+          await onSearch()
+        } else {
+          ElMessage.error('删除失败')
+        }
       }
     })
     .catch(() => {
@@ -1167,7 +1174,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
               </ElSelect>
             </ElFormItem>
           </ElCol>
-          <ElCol :span="4" style="min-width: 200px">
+          <ElCol :span="4" style="min-width: 243px">
             <ElFormItem>
               <ElDatePicker
                 v-model="query.dateRange"
@@ -1182,7 +1189,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
             </ElFormItem>
           </ElCol>
 
-          <ElCol :span="3" style="min-width: 150px">
+          <ElCol :span="3" style="min-width: 170px">
             <ElFormItem>
               <div class="ws-form__actions">
                 <el-popover placement="top-start" :width="200" trigger="click">
@@ -1290,7 +1297,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
                     </ElFormItem>
                   </template>
                 </el-popover>
-                <ElButton type="primary" @click="onSearch">查询</ElButton>
+                <ElButton type="primary" plain @click="onSearch">查询</ElButton>
                 <ElButton @click="onReset">重置</ElButton>
               </div>
             </ElFormItem>
@@ -1336,16 +1343,24 @@ const submitSetPrinter = async (andPrint: boolean) => {
               <span>{{ row.filmResult?.length || 0 }}</span>
             </div>
             <div v-if="item.label === '报告'">
-              <span>{{ row.reportExists ? '有' : '无' }}</span>
+              <el-tag :type="row.reportExists ? 'success' : 'danger'">{{
+                row.reportExists ? '有' : '无'
+              }}</el-tag>
             </div>
             <div v-if="item.label === '报告状态'">
-              <span>{{ row.reportPrinted ? '已打印' : '未打印' }}</span>
+              <el-tag :type="row.reportPrinted ? 'success' : 'danger'">{{
+                row.reportPrinted ? '已打印' : '未打印'
+              }}</el-tag>
             </div>
             <div v-if="item.label === '胶片费用'">
-              <span>{{ row.cloudFilmPaid ? '已付费' : '未付费' }}</span>
+              <el-tag :type="row.cloudFilmPaid ? 'success' : 'danger'">{{
+                row.cloudFilmPaid ? '已付费' : '未付费'
+              }}</el-tag>
             </div>
             <div v-if="item.label === '打印限制'">
-              <span>{{ row.autoPrint ? '已解除限制' : '已限制打印' }}</span>
+              <el-tag :type="row.autoPrint ? 'success' : 'danger'">{{
+                row.autoPrint ? '已解除限制' : '已限制打印'
+              }}</el-tag>
             </div>
           </template>
         </ElTableColumn>
@@ -1650,7 +1665,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
   justify-content: flex-end;
   align-items: center;
   gap: 0;
-  width: 100%;
+  width: 172px;
 }
 
 .ws-form__more {

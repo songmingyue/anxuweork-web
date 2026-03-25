@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MedicalImageViewer as MedicalImageViewerLeft } from 'vue-computer'
+import { MedicalImageViewerLeft11 } from 'vue-computer'
 
 interface Props {
   imageUrl?: string
@@ -18,7 +18,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <div class="co-miv-left">
-    <MedicalImageViewerLeft :image-url="props.imageUrl" :show-select="false" :show-rotate="true" />
+    <MedicalImageViewerLeft11
+      :image-url="props.imageUrl"
+      :show-select="false"
+      :show-rotate="true"
+    />
   </div>
 </template>
 

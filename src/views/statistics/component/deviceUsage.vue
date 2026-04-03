@@ -32,6 +32,7 @@ import {
   type DicomPeerStatistics,
   type OptionList
 } from '@/api/filmStatistics'
+import { commonDateRangeShortcuts } from '@/utils/dateRangeShortcuts'
 import * as XLSX from 'xlsx'
 
 defineOptions({
@@ -451,6 +452,7 @@ onBeforeUnmount(() => {
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             unlink-panels
+            :shortcuts="commonDateRangeShortcuts"
             style="width: 220px"
           />
         </ElFormItem>
@@ -552,7 +554,7 @@ onBeforeUnmount(() => {
 
 .panel-body {
   display: flex;
-  height: 300px;
+  height: calc(50vh - 130px);
   border-top: 1px solid var(--el-border-color-lighter);
 }
 

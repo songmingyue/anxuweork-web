@@ -35,3 +35,9 @@
 ![付费状态修改](image-1.png)
 
 打报告是浏览器默认的，打胶片是传给后端
+
+# 背景色#f3f3f3
+
+card: #fefefe table backgrdound: #fafafa
+
+table=》 选中 #89bbe0

@@ -60,7 +60,7 @@ const deviceOptions = ref<OptionList[]>([])
 
 const filter = reactive({
   dateRange: [] as string[],
-  matchState: '',
+  matchState: '1',
   device: '',
   taskNo: '' as string,
   accessionNumber: '' as string
@@ -331,6 +331,7 @@ onMounted(() => {
     width="92vw"
     top="4vh"
     class="manual-match-dialog"
+    style="padding-right: 0"
     :close-on-click-modal="false"
     @closed="emit('closed')"
   >
@@ -401,7 +402,9 @@ onMounted(() => {
             />
           </el-form-item>
           <el-form-item style="margin-right: 8px; margin-bottom: 6px"
-            ><el-button type="primary" @click="handleSearch">查询</el-button></el-form-item
+            ><el-button type="primary" class="class-btn-padding-special" @click="handleSearch"
+              >查询</el-button
+            ></el-form-item
           >
         </el-form>
 
@@ -416,13 +419,25 @@ onMounted(() => {
           :current-row-key="currentFilmBoxID"
           @row-click="handleFilmRowClick"
         >
-          <el-table-column type="index" label="#" width="60" />
-          <el-table-column prop="taskNo" label="任务号" min-width="90" />
-          <el-table-column prop="requestTime" label="请求时间" min-width="120" />
-          <el-table-column prop="filmSize" label="规格大小" min-width="120" />
-          <el-table-column prop="peerDes" label="设备描述" min-width="120" />
-          <el-table-column prop="callingAE" label="请求设备" min-width="120" />
-          <el-table-column prop="accessionNumber" label="检查号" min-width="120" />
+          <el-table-column type="index" label="#" width="40" align="center" />
+          <el-table-column
+            prop="taskNo"
+            label="任务号"
+            min-width="60"
+            align="center"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="requestTime"
+            label="请求时间"
+            min-width="80"
+            align="center"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="filmSize" label="规格大小" min-width="80" align="center" />
+          <el-table-column prop="peerDes" label="设备描述" min-width="80" align="center" />
+          <el-table-column prop="callingAE" label="请求设备" min-width="80" align="center" />
+          <el-table-column prop="accessionNumber" label="检查号" min-width="80" align="center" />
         </el-table>
 
         <el-pagination
@@ -459,10 +474,16 @@ onMounted(() => {
                 />
               </el-form-item>
               <el-form-item style="margin-right: 8px; margin-bottom: 0">
-                <el-button type="primary" :loading="examLoading" @click="handleExamSearch"
+                <el-button
+                  type="primary"
+                  :loading="examLoading"
+                  class="class-btn-padding-special"
+                  @click="handleExamSearch"
                   >查询</el-button
                 >
-                <el-button type="success" @click="handleMatch">匹配</el-button>
+                <el-button type="success" class="class-btn-padding-special" @click="handleMatch"
+                  >匹配</el-button
+                >
               </el-form-item>
             </div>
           </el-form>
@@ -495,7 +516,6 @@ onMounted(() => {
 <style scoped>
 .mm-body {
   display: flex;
-  gap: 12px;
   height: 80vh;
   min-height: 640px;
 }
@@ -521,7 +541,7 @@ onMounted(() => {
 .mm-pagination {
   display: flex;
   margin-top: 6px;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .mm-filter-row {
@@ -529,6 +549,7 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 10px 12px;
   align-items: center;
+  margin-left: 20px;
 }
 
 .mm-item--date {
@@ -556,6 +577,12 @@ onMounted(() => {
   margin-top: 6px;
   flex-direction: column;
   gap: 10px;
+}
+
+.form-computer-inline {
+  margin-left: 20px;
+
+  /* margin-right: 20px; */
 }
 
 /* 只展示 MedicalImageViewer 左侧（隐藏右侧占位面板） */

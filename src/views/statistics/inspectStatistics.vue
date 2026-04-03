@@ -24,11 +24,12 @@ import {
   TrendCharts
 } from '@element-plus/icons-vue'
 import { nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import dayjs from 'dayjs'
 import { getExamPrintMonthlyStatistics } from '@/api/statisticsInfo'
 import { Data, getDropDownConfig, getPatientTypeList } from '@/api/common'
 import * as XLSX from 'xlsx'
 defineOptions({
-  name: 'InspectStatistics'
+  name: 'inspectStatisticsChild'
 })
 
 const query = reactive({
@@ -36,6 +37,73 @@ const query = reactive({
   examType: [],
   dateRange: ['2026-01-01', '2026-02-01'] as string[]
 })
+
+const dateRangeShortcuts = [
+  {
+    text: '今天',
+    value: () => {
+      const start = dayjs().startOf('day').toDate()
+      const end = dayjs().endOf('day').toDate()
+      return [start, end]
+    }
+  },
+  {
+    text: '近两天',
+    value: () => {
+      const end = dayjs().endOf('day')
+      const start = end.subtract(1, 'day').startOf('day')
+      return [start.toDate(), end.toDate()]
+    }
+  },
+  {
+    text: '近三天',
+    value: () => {
+      const end = dayjs().endOf('day')
+      const start = end.subtract(2, 'day').startOf('day')
+      return [start.toDate(), end.toDate()]
+    }
+  },
+  {
+    text: '近一周',
+    value: () => {
+      const end = dayjs().endOf('day')
+      const start = end.subtract(6, 'day').startOf('day')
+      return [start.toDate(), end.toDate()]
+    }
+  },
+  {
+    text: '近一个月',
+    value: () => {
+      const end = dayjs().endOf('day')
+      const start = end.subtract(1, 'month').startOf('day')
+      return [start.toDate(), end.toDate()]
+    }
+  },
+  {
+    text: '近三个月',
+    value: () => {
+      const end = dayjs().endOf('day')
+      const start = end.subtract(3, 'month').startOf('day')
+      return [start.toDate(), end.toDate()]
+    }
+  },
+  {
+    text: '近半年',
+    value: () => {
+      const end = dayjs().endOf('day')
+      const start = end.subtract(6, 'month').startOf('day')
+      return [start.toDate(), end.toDate()]
+    }
+  },
+  {
+    text: '近一年',
+    value: () => {
+      const end = dayjs().endOf('day')
+      const start = end.subtract(1, 'year').startOf('day')
+      return [start.toDate(), end.toDate()]
+    }
+  }
+]
 
 const patientTypeOptions = ref<string[]>([])
 
@@ -107,6 +175,13 @@ const getChartOption = (): EChartsOption => {
   const supplement = bottomState.queried ? chartData.supplement : []
 
   return {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: isBar ? 'shadow' : 'line',
+        snap: true
+      }
+    },
     grid: {
       top: 38,
       left: 36,
@@ -124,18 +199,57 @@ const getChartOption = (): EChartsOption => {
       name: '月份',
       nameLocation: 'end',
       data: categories,
-      boundaryGap: isBar
+      boundaryGap: isBar,
+      axisPointer: {
+        type: isBar ? 'shadow' : 'line'
+      }
     },
     yAxis: {
       type: 'value',
       name: '使用量'
     },
     series: [
-      { name: '总检查数', type: bottomState.chartType, data: total },
-      { name: '检查打印量', type: bottomState.chartType, data: print },
-      { name: '胶片打印量', type: bottomState.chartType, data: film },
-      { name: '补费量', type: bottomState.chartType, data: supplement }
-    ]
+      {
+        name: '总检查数',
+        type: bottomState.chartType,
+        data: total,
+        emphasis: {
+          focus: 'series',
+          lineStyle: { width: 3 },
+          itemStyle: { opacity: 0.85 }
+        }
+      },
+      {
+        name: '检查打印量',
+        type: bottomState.chartType,
+        data: print,
+        emphasis: {
+          focus: 'series',
+          lineStyle: { width: 3 },
+          itemStyle: { opacity: 0.85 }
+        }
+      },
+      {
+        name: '胶片打印量',
+        type: bottomState.chartType,
+        data: film,
+        emphasis: {
+          focus: 'series',
+          lineStyle: { width: 3 },
+          itemStyle: { opacity: 0.85 }
+        }
+      },
+      {
+        name: '补费量',
+        type: bottomState.chartType,
+        data: supplement,
+        emphasis: {
+          focus: 'series',
+          lineStyle: { width: 3 },
+          itemStyle: { opacity: 0.85 }
+        }
+      }
+    ] as any
   }
 }
 
@@ -395,8 +509,8 @@ onBeforeUnmount(() => {
   <div class="inspect-page">
     <ElCard shadow="never" class="section section--top card-table">
       <div class="section-head">
-        <div class="section-title">检查打印量</div>
-        <ElForm inline>
+        <div class="section-title">检查统计</div>
+        <ElForm inline class="section-form">
           <ElFormItem style="margin-right: 10px">
             <ElSelect
               v-model="query.patientType"
@@ -438,12 +552,15 @@ onBeforeUnmount(() => {
               value-format="YYYY-MM-DD"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              :shortcuts="dateRangeShortcuts"
               unlink-panels
               style="width: 220px"
             />
           </ElFormItem>
           <ElFormItem style="margin-right: 10px">
-            <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
+            <ElButton type="primary" @click="onSearch" plain class="class-btn-padding-special"
+              >查询</ElButton
+            >
           </ElFormItem>
           <ElFormItem style="margin-right: 10px">
             <ElButton type="danger" @click="onExport" plain>导出Excel</ElButton>
@@ -451,18 +568,7 @@ onBeforeUnmount(() => {
         </ElForm>
       </div>
 
-      <ElTable
-        :data="tableData"
-        empty-text="暂无数据"
-        :span-method="tableSpanMethod"
-        :header-cell-style="{
-          backgroundColor: '#f5f7fa',
-          color: '#999',
-          fontWeight: 700,
-          textAlign: 'center'
-        }"
-        border
-      >
+      <ElTable :data="tableData" empty-text="暂无数据" :span-method="tableSpanMethod" border>
         <ElTableColumn prop="month" label="月份" min-width="120" align="center" />
         <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" align="center" />
         <ElTableColumn prop="examType" label="检查类型" min-width="120" align="center" />
@@ -489,7 +595,6 @@ onBeforeUnmount(() => {
           <ElTable
             :data="tableData"
             height="100%"
-            size="small"
             border
             empty-text="暂无数据"
             :span-method="tableSpanMethod"
@@ -589,16 +694,23 @@ onBeforeUnmount(() => {
 .section-head {
   display: flex;
   min-height: 44px;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
   align-items: center;
   justify-content: space-between;
   margin-left: 15px;
 }
 
 .section-title {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--el-text-color-primary);
+}
+
+.section-form {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .section-head :deep(.el-form-item) {

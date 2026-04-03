@@ -28,6 +28,7 @@ import {
   MatchRateStatistics,
   type OptionList
 } from '@/api/filmStatistics'
+import { commonDateRangeShortcuts } from '@/utils/dateRangeShortcuts'
 import * as XLSX from 'xlsx'
 
 defineOptions({
@@ -231,10 +232,10 @@ const getOption = (): EChartsOption => {
 
   return {
     grid: {
-      top: 30,
-      left: 36,
-      right: 36,
-      bottom: 28,
+      top: 60,
+      left: 26,
+      right: 46,
+      bottom: 0,
       containLabel: true
     },
     legend: { top: 0, icon: 'roundRect' },
@@ -468,6 +469,7 @@ onBeforeUnmount(() => {
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             unlink-panels
+            :shortcuts="commonDateRangeShortcuts"
             style="width: 220px"
           />
         </ElFormItem>
@@ -569,7 +571,7 @@ onBeforeUnmount(() => {
 
 .panel-body {
   display: flex;
-  height: 300px;
+  height: calc(50vh - 130px);
   border-top: 1px solid var(--el-border-color-lighter);
 }
 

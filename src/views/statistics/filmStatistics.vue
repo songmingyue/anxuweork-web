@@ -4,7 +4,7 @@ import MatchRate from './component/matchRate.vue'
 import FilmDailyUsage from './component/filmDailyUsage.vue'
 import FilmMonthlyUsage from './component/filmMonthlyUsage.vue'
 defineOptions({
-  name: 'FilmStatistics'
+  name: 'filmStatisticsChild'
 })
 </script>
 

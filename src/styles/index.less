@@ -1,6 +1,18 @@
 @import './var.css';
 @import 'element-plus/theme-chalk/dark/css-vars.css';
 
+:root {
+  --el-fill-color-light: #c8e6fc;
+  --new-disabled-input--bg-color: #f5f7fa;
+  --new-bg-colr: #f3f3f3;
+  --new-table-bg-color: #fafafa;
+  --new-body-bg-color: #fefefe;
+}
+
+html.dark {
+  --el-fill-color-light: #c8e6fc;
+}
+
 .padding-none {
   .el-card__body {
     padding-bottom: 0px !important;
@@ -87,6 +99,24 @@ a:active {
 .from-inline-margin .el-form-item__label {
   font-size: 12px !important;
 }
+.el-form-item__label {
+  font-size: 12px !important;
+}
+.el-input__inner {
+  font-size: 12px !important;
+}
+.el-select-dropdown__item {
+  font-size: 12px !important;
+}
+.el-select__selection {
+  font-size: 12px !important;
+}
+.el-select__input is-default {
+  font-size: 12px !important;
+}
+.el-select__input ::placeholder {
+  font-size: 12x; /* 这里专门设置占位符的字体大小 */
+}
 .from-inline-margin {
   .el-dropdown-link {
     font-size: 12px !important;
@@ -145,11 +175,25 @@ a:active {
   padding: 0 9px !important;
 }
 .el-table__body tr.current-row > td.el-table__cell {
-  // background-color: rgba(66, 101, 137, 0.3) !important;
-  border-bottom: 1px solid rgba(66, 101, 137) !important;
+  background-color: var(--el-color-primary) !important;
+  border-bottom: 1px solid #2f5f83 !important;
+}
+.el-table__body tr.hover-row.current-row > td.el-table_ cell,
+.el-table body tr.hover-row.el-table row--striped.current-row > td.el-table_ cell,
+.el-table__body tr.hover-row.el-table__row--striped > td.el-table cell,
+.el-table body tr.hover-row > td.el-table_ cell,
+.el-table_ body tr > td.hover-cell {
+  background: #c8e6fc;
 }
 .el-table--default .cell {
   padding: 0 4px !important;
+  font-size: 12px !important;
+}
+.el-date-editor .el-range-input {
+  font-size: 12px !important;
+}
+.el-button {
+  font-size: 12px !important;
 }
 
 .card-table {
@@ -250,6 +294,7 @@ a:active {
   padding: 16px 0 !important;
   .el-dialog__header {
     padding: 10px 32px;
+    border-bottom: 1px solid var(--el-card-border-color) !important;
   }
 }
 .form-computer-inline {
@@ -266,4 +311,100 @@ a:active {
   .el-dialog__body {
     padding: 0 !important;
   }
+}
+.el-divider-line {
+  width: calc(100% + 40px) !important;
+  margin: 0px 0px 10px -20px !important;
+}
+
+.class-btn-padding-special {
+  padding: 10px 30px !important;
+}
+.card-padding-special {
+  .el-card__body {
+    padding: 10px 0px !important;
+  }
+}
+.el-divider-line-special {
+  width: calc(100% + 40px) !important;
+  margin: 0px 0px 0px -20px !important;
+}
+.padding-popover {
+  .el-popover__content {
+    padding: 25px !important;
+  }
+}
+.hover__cell {
+  background-color: #c8e6fc !important;
+}
+.tab-card {
+  background: var(--new-table-bg-color);
+  .el-card__body {
+    padding-top: 10px !important;
+  }
+}
+.tab-header {
+  padding: 0px 4px 10px !important;
+}
+.card-table {
+  .tab-header {
+    padding: 0px 24px 10px !important;
+  }
+}
+
+.list-card {
+  .el-card__body {
+    padding: 10px 20px;
+  }
+}
+.manual-match-dialog {
+  padding-right: 0px !important;
+  .el-dialog__body {
+    padding-right: 0px !important;
+  }
+}
+.miv-toolbar {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.ssd-dialog {
+  padding: 20px 0px !important;
+  .el-dialog__body {
+    padding: 0px !important;
+  }
+  .el-dialog__header {
+    padding: 0px 20px !important;
+  }
+}
+.el-card__body {
+  background-color: var(--new-body-bg-color) !important;
+}
+.el-card__header {
+  background-color: var(--new-body-bg-color) !important;
+}
+.el-table:not(.el-table--border) .el-table__cell {
+  background-color: var(--new-table-bg-color);
+}
+.el-select__wrapper.is-disabled {
+  background-color: var(--new-disabled-input--bg-color) !important;
+}
+.el-input.is-disabled .el-input__wrapper {
+  background-color: var(--new-disabled-input--bg-color) !important;
+}
+.el-table thead.is-group th.el-table__cell {
+  background: var(--new-table-bg-color) !important;
+}
+.el-table th.el-table__cell {
+  background: var(--new-table-bg-color) !important;
+}
+.el-card {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.el-tag-customer {
+  cursor: pointer;
+}
+.el-tag-left {
+  margin-right: 8px;
 }

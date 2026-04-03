@@ -12,10 +12,18 @@ export interface TagsViewState {
   selectedTag?: RouteLocationNormalizedLoaded
 }
 
+const ALWAYS_CACHED_VIEWS = [
+  'workstationChild',
+  'operationalAuditChild',
+  'filmStatisticsChild',
+  'inspectStatisticsChild',
+  'statisticsInfoChild'
+]
+
 export const useTagsViewStore = defineStore('tagsView', {
   state: (): TagsViewState => ({
     visitedViews: [],
-    cachedViews: new Set(),
+    cachedViews: new Set(ALWAYS_CACHED_VIEWS),
     selectedTag: undefined
   }),
   getters: {
@@ -57,6 +65,10 @@ export const useTagsViewStore = defineStore('tagsView', {
         const name = item.name as string
         cacheMap.add(name)
       }
+
+      // Always keep these key pages cached
+      ALWAYS_CACHED_VIEWS.forEach((name) => cacheMap.add(name))
+
       if (Array.from(this.cachedViews).sort().toString() === Array.from(cacheMap).sort().toString())
         return
       this.cachedViews = cacheMap

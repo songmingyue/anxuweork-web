@@ -23,6 +23,7 @@ import {
 } from '@element-plus/icons-vue'
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { getFilmMonthlyStatistics, type FilmMonthlyStatistics } from '@/api/filmStatistics'
+import { commonDateRangeShortcuts } from '@/utils/dateRangeShortcuts'
 import * as XLSX from 'xlsx'
 
 defineOptions({
@@ -126,9 +127,9 @@ const getOption = (): EChartsOption => {
 
   return {
     grid: {
-      top: 30,
-      left: 36,
-      right: 36,
+      top: 60,
+      left: 26,
+      right: 46,
       bottom: 0,
       containLabel: true
     },
@@ -328,6 +329,7 @@ onBeforeUnmount(() => {
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             unlink-panels
+            :shortcuts="commonDateRangeShortcuts"
             style="width: 220px"
           />
         </ElFormItem>
@@ -433,7 +435,7 @@ onBeforeUnmount(() => {
 
 .panel-body {
   display: flex;
-  height: 300px;
+  height: calc(50vh - 130px);
   border-top: 1px solid var(--el-border-color-lighter);
 }
 

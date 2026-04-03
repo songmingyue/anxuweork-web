@@ -15,7 +15,7 @@ import {
 import { onMounted, reactive, ref } from 'vue'
 import * as XLSX from 'xlsx'
 defineOptions({
-  name: 'StatisticsInfo'
+  name: 'statisticsInfoChild'
 })
 
 const query = reactive({
@@ -192,7 +192,7 @@ const handleSort = (data: { prop: string; order: SortOrder }) => {
     <ElCard shadow="never" class="detail-card">
       <div class="detail-head">
         <div class="detail-title">统计详情</div>
-        <ElForm inline class="detail-form">
+        <ElForm inline class="detail-form" size="small">
           <ElFormItem style="margin-right: 10px">
             <ElSelect
               v-model="query.patientType"

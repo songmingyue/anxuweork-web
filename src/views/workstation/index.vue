@@ -55,19 +55,108 @@ import {
   ElMessageBox,
   ElDialog,
   ElEmpty,
-  ElTag
+  ElTag,
+  ElDivider
 } from 'element-plus'
-import { computed, nextTick, reactive, ref, watch, onMounted } from 'vue'
+import { computed, nextTick, reactive, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { ArrowDown, ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import { ImageBlobUrl } from '@/components/Permission/src/utils'
 import { getDicomPeerDropDown } from '@/api/filmStatistics'
 
 defineOptions({
-  name: 'Workstation'
+  name: 'workstationChild'
 })
 
-const showMore = ref(false)
+const splitTopVh = ref(50)
+const isSplitDragging = ref(false)
+let splitDragStartY = 0
+let splitDragStartVh = 50
+
+const FILM_BOTTOM_INIT_HEIGHT_PX = 170 // 初始下面表格高度
+const FILM_BOTTOM_OFFSET_PX = 260
+
+const getSplitLimits = () => {
+  const viewportHeight = Math.max(1, window.innerHeight || 1)
+
+  // 预留出两个卡片各自的固定区域（标题/分割线/分页等）后，给表格留最小可用高度
+  const topMinPx = 240
+  const bottomMinPx = 320
+
+  const min = (topMinPx / viewportHeight) * 100
+  const max = 100 - (bottomMinPx / viewportHeight) * 100
+  return { min, max }
+}
+
+const clampSplitTopVh = (value: number) => {
+  const { min, max } = getSplitLimits()
+  if (max <= min) return 50
+  return Math.min(Math.max(value, min), max)
+}
+
+const examTableDynamicStyle = computed(() => ({
+  height: `calc(${splitTopVh.value}vh - 75px)`
+}))
+
+const filmTableDynamicStyle = computed(() => ({
+  height: `calc(${100 - splitTopVh.value}vh - 260px)`
+}))
+
+const filmThumbDynamicStyle = computed(() => ({
+  height: `calc(${100 - splitTopVh.value}vh - 260px)`
+}))
+
+const stopSplitDrag = () => {
+  if (!isSplitDragging.value) return
+  isSplitDragging.value = false
+  document.removeEventListener('mousemove', onSplitDragMouseMove)
+  document.removeEventListener('mouseup', onSplitDragMouseUp)
+}
+
+const onSplitDragMouseMove = (event: MouseEvent) => {
+  if (!isSplitDragging.value) return
+  const viewportHeight = Math.max(1, window.innerHeight || 1)
+  const deltaVh = ((event.clientY - splitDragStartY) / viewportHeight) * 100
+  splitTopVh.value = clampSplitTopVh(splitDragStartVh + deltaVh)
+}
+
+const onSplitDragMouseUp = () => {
+  stopSplitDrag()
+}
+
+const onSplitDragMouseDown = (event: MouseEvent) => {
+  // 只响应左键拖拽
+  if (event.button !== 0) return
+
+  isSplitDragging.value = true
+  splitDragStartY = event.clientY
+  splitDragStartVh = splitTopVh.value
+
+  document.addEventListener('mousemove', onSplitDragMouseMove)
+  document.addEventListener('mouseup', onSplitDragMouseUp)
+  event.preventDefault()
+}
+
+const ensureSplitInRange = () => {
+  splitTopVh.value = clampSplitTopVh(splitTopVh.value)
+}
+
+const initSplitFromBottomHeight = (bottomHeightPx: number) => {
+  const viewportHeight = Math.max(1, window.innerHeight || 1)
+  const bottomVh = ((bottomHeightPx + FILM_BOTTOM_OFFSET_PX) / viewportHeight) * 100
+  splitTopVh.value = clampSplitTopVh(100 - bottomVh)
+}
+
+onMounted(() => {
+  window.addEventListener('resize', ensureSplitInRange)
+  initSplitFromBottomHeight(FILM_BOTTOM_INIT_HEIGHT_PX)
+  ensureSplitInRange()
+})
+
+onBeforeUnmount(() => {
+  stopSplitDrag()
+  window.removeEventListener('resize', ensureSplitInRange)
+})
 
 const getDefaultDateRange = (): string[] => {
   const end = dayjs()
@@ -97,7 +186,7 @@ const query = reactive<ExamInfo>({
 })
 // dialog 组件相关
 const dialogWidth = ref('70vw')
-const handMatchFitMode = ref<'natural' | 'fitHeight'>('natural')
+const handMatchFitMode = ref<'natural' | 'fitHeight'>('fitHeight')
 function setHandMatchMode(mode: 'natural' | 'fitHeight') {
   handMatchFitMode.value = mode
 }
@@ -128,6 +217,7 @@ const cleanupViewObjectUrls = () => {
   viewObjectUrls.value = []
   viewUrlList.value = []
   viewActiveIndex.value = 0
+  viewDialogVisible.value = false
 }
 
 const printOf = async () => {
@@ -555,6 +645,44 @@ const watchReport = async (row: TExamResult, type: 'film' | 'report') => {
   }
 }
 
+const watchReportOnce = async (item: FilmResultItem[], whitch: FilmResultItem) => {
+  cleanupViewObjectUrls()
+  viewActiveIndex.value = item.indexOf(whitch)
+  viewDialogVisible.value = true
+  const filmList = item || []
+  if (!filmList.length) {
+    ElMessage.warning('暂无胶片')
+    return
+  }
+
+  const results = await Promise.allSettled(
+    filmList.map(async (film) => {
+      const filmBoxID = String(film?.filmBoxID || '').trim()
+      if (!filmBoxID) return ''
+      const buffer = await getImageByFilmBox(filmBoxID)
+      return ImageBlobUrl(buffer)
+    })
+  )
+
+  const urls = results
+    .filter((r): r is PromiseFulfilledResult<string> => r.status === 'fulfilled')
+    .map((r) => r.value)
+    .filter(Boolean)
+
+  const failedCount = results.filter((r) => r.status === 'rejected').length
+  if (failedCount > 0) {
+    ElMessage.warning(`部分胶片获取失败（${failedCount}/${filmList.length}）`)
+  }
+
+  if (!urls.length) {
+    ElMessage.error('获取胶片失败')
+    return
+  }
+
+  viewObjectUrls.value = urls
+  viewUrlList.value = urls
+}
+
 const search = async () => {
   // tableLoading.value = true
   // try {
@@ -963,7 +1091,6 @@ onMounted(() => {
   getOptionList()
   getCountNum()
 })
-const moreText = computed(() => (showMore.value ? '收起' : '更多'))
 // 付费状态
 const payStatus = (row: TExamResult) => {
   ElMessageBox.confirm(`确认状态修改为${row.cloudFilmPaid ? '未付费' : '已付费'}吗?`, '提示', {
@@ -1102,9 +1229,9 @@ const submitSetPrinter = async (andPrint: boolean) => {
 </script>
 
 <template>
-  <div class="ws-page">
+  <div class="ws-page" :class="{ 'is-splitting': isSplitDragging }">
     <ElCard shadow="never" class="ws-card">
-      <ElForm :model="query" label-width="0" class="ws-form" size="small">
+      <ElForm :model="query" label-width="0" class="ws-form">
         <ElRow :gutter="10" class="ws-form__row">
           <ElCol :span="2" style="min-width: 100px">
             <ElFormItem>
@@ -1164,7 +1291,13 @@ const submitSetPrinter = async (andPrint: boolean) => {
           </ElCol>
           <ElCol :span="2" style="min-width: 100px">
             <ElFormItem>
-              <ElSelect v-model="query.areaNo" multiple placeholder="申请科室" clearable>
+              <ElSelect
+                v-model="query.areaNo"
+                collapse-tags
+                multiple
+                placeholder="申请科室"
+                clearable
+              >
                 <ElOption
                   v-for="o in commonStore.areaNoDropdown"
                   :key="o.text"
@@ -1189,116 +1322,163 @@ const submitSetPrinter = async (andPrint: boolean) => {
             </ElFormItem>
           </ElCol>
 
-          <ElCol :span="3" style="min-width: 170px">
+          <ElCol :span="3" style="min-width: 317px">
             <ElFormItem>
               <div class="ws-form__actions">
-                <el-popover placement="top-start" :width="200" trigger="click">
+                <el-popover :width="630" trigger="click" class="padding-popover">
                   <template #reference>
-                    <el-button class="m-2">{{ moreText }}</el-button>
+                    <span class="more-text"> 更多>> </span>
                   </template>
                   <template #default>
-                    <ElFormItem>
-                      <el-select
-                        v-model="query.hasFilm"
-                        placeholder="胶片有无"
-                        :teleported="false"
-                        clearable
-                        style="width: 100%"
-                      >
-                        <el-option
-                          v-for="o in hasFilmOptions"
-                          :key="o.label"
-                          :label="o.label"
-                          :value="o.value"
-                        />
-                      </el-select>
-                    </ElFormItem>
-
-                    <ElFormItem v-if="query.hasFilm === '0' || query.hasFilm === '1'">
-                      <el-select
-                        v-model="query.isPrinted"
-                        placeholder="胶片是否打印"
-                        :teleported="false"
-                        clearable
-                        style="width: 100%"
-                      >
-                        <el-option
-                          v-for="o in isPrintedOptions"
-                          :key="o.label"
-                          :label="o.label"
-                          :value="o.value"
-                        />
-                      </el-select>
-                    </ElFormItem>
-                    <ElFormItem v-if="query.hasFilm === '0' || query.hasFilm === '1'">
-                      <el-select
-                        v-model="query.dicomPeerIDList"
-                        placeholder="请求设备"
-                        :teleported="false"
-                        multiple
-                        clearable
-                        style="width: 100%"
-                      >
-                        <el-option
-                          v-for="o in optionList"
-                          :key="o.text"
-                          :label="o.text"
-                          :value="o.value"
-                        />
-                      </el-select>
-                    </ElFormItem>
-                    <ElFormItem>
-                      <el-select
-                        v-model="query.reportExists"
-                        placeholder="报告有无"
-                        :teleported="false"
-                        clearable
-                        style="width: 100%"
-                      >
-                        <el-option
-                          v-for="o in reportExistsOptions"
-                          :key="o.label"
-                          :label="o.label"
-                          :value="o.value"
-                        />
-                      </el-select>
-                    </ElFormItem>
-                    <ElFormItem v-if="query.reportExists === '0' || query.reportExists === '1'">
-                      <el-select
-                        v-model="query.reportPrinted"
-                        placeholder="报告是否打印"
-                        :teleported="false"
-                        clearable
-                        style="width: 100%"
-                      >
-                        <el-option
-                          v-for="o in reportPrintedOptions"
-                          :key="o.label"
-                          :label="o.label"
-                          :value="o.value"
-                        />
-                      </el-select>
-                    </ElFormItem>
-                    <ElFormItem>
-                      <el-select
-                        v-model="query.cloudFilmPaid"
-                        placeholder="是否付费"
-                        :teleported="false"
-                        clearable
-                        style="width: 100%"
-                      >
-                        <el-option
-                          v-for="o in cloudFilmPaidOptions"
-                          :key="o.label"
-                          :label="o.label"
-                          :value="o.value"
-                        />
-                      </el-select>
-                    </ElFormItem>
+                    <div style="padding: 5px; margin-left: -35px">
+                      <el-row class="status-row">
+                        <el-col :span="8"
+                          ><span class="status-title title-one">标识/状态</span></el-col
+                        >
+                        <el-col :span="8"
+                          ><span class="status-title title-two">打印状态</span></el-col
+                        >
+                        <el-col :span="8"
+                          ><span class="status-title title-three">请求设备</span></el-col
+                        >
+                      </el-row>
+                      <el-row>
+                        <el-col :span="8">
+                          <ElFormItem label="胶片" label-width="80px">
+                            <el-select
+                              v-model="query.hasFilm"
+                              placeholder="胶片有无"
+                              :teleported="false"
+                              clearable
+                              style="width: 130px"
+                            >
+                              <el-option
+                                v-for="o in hasFilmOptions"
+                                :key="o.label"
+                                :label="o.label"
+                                :value="o.value"
+                              />
+                            </el-select>
+                          </ElFormItem>
+                        </el-col>
+                        <el-col :span="8">
+                          <ElFormItem label="胶片打印" label-width="80px">
+                            <el-select
+                              v-model="query.isPrinted"
+                              placeholder="胶片是否打印"
+                              :teleported="false"
+                              :disabled="query.hasFilm === '2'"
+                              clearable
+                              style="width: 130px"
+                            >
+                              <el-option
+                                v-for="o in isPrintedOptions"
+                                :key="o.label"
+                                :label="o.label"
+                                :value="o.value"
+                              />
+                            </el-select>
+                          </ElFormItem>
+                        </el-col>
+                        <el-col :span="8">
+                          <ElFormItem label="请求设备" label-width="80px">
+                            <el-select
+                              v-model="query.dicomPeerIDList"
+                              placeholder="请求设备"
+                              :disabled="query.hasFilm === '2'"
+                              :teleported="false"
+                              multiple
+                              collapse-tags
+                              clearable
+                              style="width: 130px"
+                            >
+                              <el-option
+                                v-for="o in optionList"
+                                :key="o.text"
+                                :label="o.text"
+                                :value="o.value"
+                              />
+                            </el-select>
+                          </ElFormItem>
+                        </el-col>
+                      </el-row>
+                      <el-row>
+                        <el-col :span="8">
+                          <ElFormItem label="报告" label-width="80px">
+                            <el-select
+                              v-model="query.reportExists"
+                              placeholder="报告有无"
+                              :teleported="false"
+                              clearable
+                              style="width: 130px"
+                            >
+                              <el-option
+                                v-for="o in reportExistsOptions"
+                                :key="o.label"
+                                :label="o.label"
+                                :value="o.value"
+                              />
+                            </el-select>
+                          </ElFormItem>
+                        </el-col>
+                        <el-col :span="8">
+                          <ElFormItem label="报告打印" label-width="80px">
+                            <el-select
+                              v-model="query.reportPrinted"
+                              placeholder="报告是否打印"
+                              :disabled="query.reportExists == '2'"
+                              :teleported="false"
+                              clearable
+                              style="width: 130px"
+                            >
+                              <el-option
+                                v-for="o in reportPrintedOptions"
+                                :key="o.label"
+                                :label="o.label"
+                                :value="o.value"
+                              />
+                            </el-select>
+                          </ElFormItem>
+                        </el-col>
+                        <el-col :span="8" />
+                      </el-row>
+                      <el-row>
+                        <el-col :span="8">
+                          <ElFormItem label="付费" label-width="80px">
+                            <el-select
+                              v-model="query.cloudFilmPaid"
+                              placeholder="是否付费"
+                              :teleported="false"
+                              clearable
+                              style="width: 130px"
+                            >
+                              <el-option
+                                v-for="o in cloudFilmPaidOptions"
+                                :key="o.label"
+                                :label="o.label"
+                                :value="o.value"
+                              />
+                            </el-select>
+                          </ElFormItem>
+                        </el-col>
+                        <el-col :span="8" />
+                        <el-col :span="8" />
+                        <el-col :span="24">
+                          <el-button
+                            type="primary"
+                            style="width: calc(100% - 37px); margin-left: 39px"
+                            @click="onSearch"
+                            >查询</el-button
+                          >
+                        </el-col>
+                      </el-row>
+                    </div>
                   </template>
                 </el-popover>
-                <ElButton type="primary" plain @click="onSearch">查询</ElButton>
-                <ElButton @click="onReset">重置</ElButton>
+                <ElButton type="primary" plain @click="onSearch" class="class-btn-padding-special"
+                  >查询</ElButton
+                >
+                <ElButton @click="onReset" class="class-btn-padding-special">重置</ElButton>
               </div>
             </ElFormItem>
           </ElCol>
@@ -1306,26 +1486,37 @@ const submitSetPrinter = async (andPrint: boolean) => {
       </ElForm>
     </ElCard>
 
-    <ElCard shadow="never" class="ws-card card-table">
+    <ElCard shadow="never" class="ws-card card-table card-padding-special ws-catd-table-top">
       <div class="ws-sectionHead">
         <div class="ws-sectionHead__title">检查列表</div>
         <div class="ws-sectionHead__actions">
-          <ElButton size="small" @click="onManualMatch" type="primary" plain>
+          <ElButton @click="onManualMatch" type="primary" plain>
             手工匹配({{ manualMatchCount }})
           </ElButton>
         </div>
       </div>
+      <el-divider class="el-divider-line-special" />
       <ElTable
         :data="examTableData"
+        stripe
         highlight-current-row
         :loading="examTableLoading"
         @current-change="getFilmResult"
-        size="small"
-        height="300"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
+        :style="examTableDynamicStyle"
+        @row-dblclick="
+          (rows) => {
+            if (rows.reportExists) {
+              watchReport(rows, 'report')
+            } else {
+              ElMessage.info('该检查暂无报告可查看')
+            }
+          }
+        "
         class="ws-table"
       >
-        <ElTableColumn type="selection" width="42" />
-        <ElTableColumn type="index" label="#" width="48" />
+        <ElTableColumn align="center" type="selection" width="42" fixed="left" />
+        <ElTableColumn type="index" align="center" label="#" width="48" fixed="left" />
         <ElTableColumn
           v-for="item in workStationStore.tableList"
           :key="item.prop"
@@ -1343,62 +1534,60 @@ const submitSetPrinter = async (andPrint: boolean) => {
               <span>{{ row.filmResult?.length || 0 }}</span>
             </div>
             <div v-if="item.label === '报告'">
-              <el-tag :type="row.reportExists ? 'success' : 'danger'">{{
+              <el-tag :type="row.reportExists ? 'success' : 'warning'">{{
                 row.reportExists ? '有' : '无'
               }}</el-tag>
             </div>
             <div v-if="item.label === '报告状态'">
-              <el-tag :type="row.reportPrinted ? 'success' : 'danger'">{{
+              <el-tag :type="row.reportPrinted ? 'success' : 'warning'">{{
                 row.reportPrinted ? '已打印' : '未打印'
               }}</el-tag>
             </div>
             <div v-if="item.label === '胶片费用'">
-              <el-tag :type="row.cloudFilmPaid ? 'success' : 'danger'">{{
+              <el-tag :type="row.cloudFilmPaid ? 'success' : 'warning'">{{
                 row.cloudFilmPaid ? '已付费' : '未付费'
               }}</el-tag>
             </div>
             <div v-if="item.label === '打印限制'">
-              <el-tag :type="row.autoPrint ? 'success' : 'danger'">{{
+              <el-tag :type="row.autoPrint ? 'success' : 'warning'">{{
                 row.autoPrint ? '已解除限制' : '已限制打印'
               }}</el-tag>
             </div>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="操作" width="180" fixed="right" align="center">
+        <ElTableColumn label="操作" width="200" fixed="right" align="center">
           <template #default="scope">
-            <ElButton
-              text
+            <el-tag
               size="small"
+              class="el-tag-customer el-tag-left"
               :type="scope.row.autoPrint ? 'primary' : 'warning'"
               v-if="isShowPrintBtn"
-              style="padding: 5px"
               @click="examPrintRestrict(scope.row)"
-              >{{ scope.row.autoPrint ? '解除限制' : '限制打印' }}</ElButton
+              >{{ scope.row.autoPrint ? '解除限制' : '限制打印' }}</el-tag
             >
-            <ElButton
-              text
+            <el-tag
               size="small"
-              type="success"
-              style="width: 36px; padding: 5px; margin: 0"
+              class="el-tag-customer el-tag-left"
+              :type="scope.row.cloudFilmPaid ? 'warning' : 'success'"
               v-if="isShowPayBtn"
+              style="width: 46px"
               @click="payStatus(scope.row)"
-              >{{ scope.row.cloudFilmPaid ? '未付费' : '付费' }}</ElButton
+              >{{ scope.row.cloudFilmPaid ? '未付费' : '付费' }}</el-tag
             >
 
             <el-dropdown>
-              <el-button
+              <el-tag
                 size="small"
                 type="primary"
-                text
                 class="el-dropdown-link"
-                style="padding: 5px; margin: 0"
+                style="margin-top: 4px"
                 :disabled="!scope.row.filmResult?.length && !scope.row.reportExists"
               >
                 更多
                 <el-icon class="el-icon--right">
                   <arrow-down />
                 </el-icon>
-              </el-button>
+              </el-tag>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item
@@ -1447,7 +1636,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
           v-model:current-page="page.pageNum"
           v-model:page-size="page.pageSize"
           :total="page.total"
-          size="small"
+          small
           :page-sizes="[10, 20, 50, 100]"
           layout="sizes, prev, pager, next, jumper"
           @current-change="onExamPageChange"
@@ -1456,7 +1645,16 @@ const submitSetPrinter = async (andPrint: boolean) => {
       </div>
     </ElCard>
 
-    <ElCard shadow="never" class="ws-card card-table">
+    <div
+      class="ws-splitter"
+      role="separator"
+      aria-orientation="horizontal"
+      @mousedown="onSplitDragMouseDown"
+    >
+      <div class="ws-splitter__grip"></div>
+    </div>
+
+    <ElCard shadow="never" class="ws-card card-table card-padding-special">
       <div class="ws-filmHead">
         <div class="ws-filmHead__left">
           <span class="ws-filmHead__title">胶片</span>
@@ -1466,25 +1664,32 @@ const submitSetPrinter = async (andPrint: boolean) => {
           </ElTabs>
         </div>
         <div class="ws-filmHead__actions">
-          <ElButton size="small" @click="toggleSelectUnprinted">{{ btnChoseText }}</ElButton>
-          <ElButton size="small" @click="printFilm" type="primary" plain>打印胶片</ElButton>
-          <ElButton size="small" @click="openPrinterDialog">修改目的打印机</ElButton>
+          <ElButton @click="toggleSelectUnprinted">{{ btnChoseText }}</ElButton>
+          <ElButton @click="printFilm" type="primary" plain>打印胶片</ElButton>
+          <ElButton @click="openPrinterDialog">修改目的打印机</ElButton>
         </div>
       </div>
-
+      <el-divider class="el-divider-line-special" />
+      <div v-if="filmTab === 'list'" class="list-border"> </div>
       <ElTable
         v-if="filmTab === 'list'"
         ref="filmTableRef"
+        stripe
         row-key="filmBoxID"
         :data="filmTableData"
         :loading="filmTableLoading"
         @selection-change="onFilmTableSelectionChange"
-        size="small"
-        :style="{ height: 'calc(50vh - 270px)' }"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
+        :style="filmTableDynamicStyle"
+        @row-dblclick="
+          (rows) => {
+            watchReportOnce(filmTableData, rows)
+          }
+        "
         class="ws-table card-table"
       >
-        <ElTableColumn type="selection" width="42" />
-        <ElTableColumn type="index" label="#" width="48" />
+        <ElTableColumn type="selection" width="42" align="center" fixed="left" />
+        <ElTableColumn type="index" label="#" width="48" align="center" fixed="left" />
         <ElTableColumn prop="taskNo" label="任务号" min-width="110" align="center" />
         <ElTableColumn prop="autoPrint" label="打印状态" min-width="110" align="center">
           <template #default="{ row }">
@@ -1506,7 +1711,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
           show-overflow-tooltip
         />
       </ElTable>
-      <div v-else class="ws-thumbWrap">
+      <div v-else class="ws-thumbWrap" :style="filmThumbDynamicStyle">
         <div v-if="filmTableData.length === 0" class="ws-thumbEmpty">
           <div class="ws-thumbEmpty__tip">暂无缩略图</div>
         </div>
@@ -1514,6 +1719,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
           <div
             v-for="item in filmTableData"
             :key="item.filmBoxID"
+            @dblclick="watchReportOnce(filmTableData, item)"
             class="ws-thumbItem"
             :class="{ 'is-selected': isFilmSelected(item.filmBoxID) }"
           >
@@ -1532,6 +1738,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
       :width="dialogWidth"
       style="height: 100vh"
       class="el-dialog-computer"
+      :show-close="false"
       :close-on-click-modal="false"
       @closed="cleanupViewObjectUrls"
     >
@@ -1539,11 +1746,22 @@ const submitSetPrinter = async (andPrint: boolean) => {
         <div class="viewer-header">
           <div class="viewer-title">{{ viewTitle }}</div>
           <div class="viewer-actions">
-            <el-button size="small" @click="openManualMatchDialog()">手工匹配</el-button>
-            <el-button size="small" @click="setHandMatchMode('fitHeight')">适应屏幕</el-button>
-            <el-button size="small" @click="setHandMatchMode('natural')">原始大小</el-button>
             <el-button
-              size="small"
+              @click="openManualMatchDialog()"
+              type="primary"
+              v-if="dialogType !== 'report'"
+              plain
+              >手工匹配</el-button
+            >
+            <el-button @click="setHandMatchMode('fitHeight')" type="primary" plain
+              >适应屏幕</el-button
+            >
+            <el-button @click="setHandMatchMode('natural')" type="primary" plain
+              >原始大小</el-button
+            >
+            <el-button
+              type="primary"
+              plain
               @click="
                 () => {
                   dialogWidth = dialogWidth === '100vw' ? '70vw' : '100vw'
@@ -1552,15 +1770,27 @@ const submitSetPrinter = async (andPrint: boolean) => {
               >{{ dialogWidth === '100vw' ? '还原' : '最大化' }}</el-button
             >
             <el-button
-              size="small"
               v-if="dialogType === 'report'"
               plain
               type="danger"
+              class="class-btn-padding-special"
               @click="printOf"
               >打印</el-button
             >
-            <el-button size="small" v-else type="danger" plain @click="deleteFilmBtn"
+            <el-button
+              v-else
+              type="danger"
+              plain
+              @click="deleteFilmBtn"
+              class="class-btn-padding-special"
               >删除</el-button
+            >
+            <el-button
+              type="warning"
+              plain
+              @click="cleanupViewObjectUrls"
+              class="class-btn-padding-special"
+              >关闭</el-button
             >
           </div>
         </div>
@@ -1639,9 +1869,32 @@ const submitSetPrinter = async (andPrint: boolean) => {
 .ws-page {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-width: 1230px;
-  overflow-x: scroll;
+  min-width: 1376px;
+}
+
+.ws-page.is-splitting {
+  cursor: row-resize;
+  user-select: none;
+}
+
+.ws-splitter {
+  display: flex;
+  height: 10px;
+  cursor: row-resize;
+  border-radius: 2px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ws-splitter:hover {
+  background: var(--el-fill-color-light);
+}
+
+.ws-splitter__grip {
+  width: 64px;
+  height: 3px;
+  background: var(--el-border-color);
+  border-radius: 2px;
 }
 
 .ws-card {
@@ -1649,7 +1902,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
 }
 
 .ws-form :deep(.el-form-item) {
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .ws-form__row {
@@ -1665,7 +1918,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
   justify-content: flex-end;
   align-items: center;
   gap: 0;
-  width: 172px;
+  width: 235px;
 }
 
 .ws-form__more {
@@ -1702,7 +1955,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   padding-top: 10px;
 }
 
@@ -1738,7 +1991,6 @@ const submitSetPrinter = async (andPrint: boolean) => {
 .ws-filmHead__actions {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
@@ -1747,7 +1999,8 @@ const submitSetPrinter = async (andPrint: boolean) => {
   display: flex;
   height: 230px;
   background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
+
+  /* border: 1px solid var(--el-border-color-lighter); */
   border-radius: 2px;
   align-items: center;
   justify-content: center;
@@ -1757,7 +2010,8 @@ const submitSetPrinter = async (andPrint: boolean) => {
   height: calc(50vh - 270px);
   overflow: auto;
   background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
+
+  /* border: 1px solid var(--el-border-color-lighter); */
   border-radius: 2px;
 }
 
@@ -1840,7 +2094,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
 
 .viewer-body {
   position: relative;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 70px);
   min-height: 520px;
 }
 
@@ -1926,7 +2180,50 @@ const submitSetPrinter = async (andPrint: boolean) => {
 
 .viewer-plugin {
   height: 100%;
-  padding: 12px;
+  padding: 0;
   box-sizing: border-box;
+}
+
+.status-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.status-row {
+  margin-bottom: 20px;
+}
+
+.title-one {
+  margin-left: 38px;
+}
+
+.title-two {
+  margin-left: 14px;
+}
+
+.title-three {
+  margin-left: 13px;
+}
+
+.more-text {
+  display: flex;
+  width: 7ch;
+  font-size: 12px;
+  color: #409eff;
+  cursor: pointer;
+}
+
+.ws-catd-table-top {
+  margin-top: 10px;
+}
+
+.list-border {
+  /* border: 1px solid #fff; */
+  position: absolute;
+  bottom: 13px;
+  z-index: 9;
+  width: 100%;
+  height: 10px;
+  background: #fff;
 }
 </style>

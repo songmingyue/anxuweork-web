@@ -19,7 +19,7 @@ import { configGetDropDownConfig, getFilmOperate, OperateLog } from '@/api/opera
 import { useCommonStoreWithOut } from '@/store/modules/common'
 
 defineOptions({
-  name: 'OperationalAudit'
+  name: 'operationalAuditChild'
 })
 
 const query = reactive({
@@ -79,22 +79,22 @@ function onPageChange() {
 }
 
 const tableTitle = [
-  { label: '操作类型', prop: 'operatorType' },
-  { label: '操作用户', prop: 'operator' },
-  { label: '客户端地址', prop: 'clientIP' },
-  { label: '操作时间', prop: 'operateDate' },
-  { label: '任务号', prop: 'taskNo' },
-  { label: '请求设备', prop: 'callingAE' },
-  { label: '请求时间', prop: 'requestTime' },
-  { label: '胶片尺寸', prop: 'filmSize' },
-  { label: '患者编号', prop: 'patientID' },
-  { label: '检查编号', prop: 'accessionNumber' },
-  { label: '匹配状态', prop: 'matchStatus' },
-  { label: '打印状态', prop: 'printStatus' },
-  { label: '最后打印机名称', prop: 'lastPrinter' },
-  { label: '最后打印时间', prop: 'lastPrintTime' },
-  { label: '打印份数', prop: 'printCount' },
-  { label: '删除状态', prop: 'deleteState' }
+  { label: '操作类型', prop: 'operatorType', width: 100 },
+  { label: '操作用户', prop: 'operator', width: 100 },
+  { label: '客户端地址', prop: 'clientIP', width: 100 },
+  { label: '操作时间', prop: 'operateDate', width: 100 },
+  { label: '任务号', prop: 'taskNo', width: 100 },
+  { label: '请求设备', prop: 'callingAE', width: 100 },
+  { label: '请求时间', prop: 'requestTime', width: 100 },
+  { label: '胶片尺寸', prop: 'filmSize', width: 100 },
+  { label: '患者编号', prop: 'patientID', width: 100 },
+  { label: '检查编号', prop: 'accessionNumber', width: 100 },
+  { label: '匹配状态', prop: 'matchStatus', width: 100 },
+  { label: '打印状态', prop: 'printStatus', width: 100 },
+  { label: '最后打印机名称', prop: 'lastPrinter', width: 130 },
+  { label: '最后打印时间', prop: 'lastPrintTime', width: 120 },
+  { label: '打印份数', prop: 'printCount', width: 100 },
+  { label: '删除状态', prop: 'deleteState', width: 100 }
 ]
 
 function onSizeChange() {
@@ -116,75 +116,74 @@ onMounted(() => {
 
 <template>
   <div class="oa-page">
-    <ElCard shadow="never" class="oa-card">
-      <ElForm :model="query" class="oa-form" line>
-        <ElRow :gutter="10" class="oa-form__row">
-          <ElCol :span="4">
-            <ElFormItem>
-              <ElInput v-model="query.accessionNumber" placeholder="患者编号" clearable />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="4">
-            <ElFormItem>
-              <ElInput v-model="query.patientID" placeholder="检查号" clearable />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="4">
-            <ElFormItem>
-              <ElSelect
-                v-model="query.operateType"
-                placeholder="操作类型"
-                clearable
-                @change="
-                  (val) => {
-                    if (!val) {
-                      query.operateType = ''
+    <ElCard shadow="never" class="oa-filter-card">
+      <div class="oa-head">
+        <div class="oa-head__title">操作审计</div>
+        <ElForm :model="query" line class="oa-form">
+          <ElRow :gutter="10">
+            <ElCol :span="4">
+              <ElFormItem>
+                <ElInput v-model="query.accessionNumber" placeholder="患者编号" clearable />
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="4">
+              <ElFormItem>
+                <ElInput v-model="query.patientID" placeholder="检查号" clearable />
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="4">
+              <ElFormItem>
+                <ElSelect
+                  v-model="query.operateType"
+                  placeholder="操作类型"
+                  clearable
+                  @change="
+                    (val) => {
+                      if (!val) {
+                        query.operateType = ''
+                      }
                     }
-                  }
-                "
-              >
-                <ElOption
-                  v-for="o in commonStore.dropdownConfig.enumOperateType"
-                  :key="o.value"
-                  :label="o.text"
-                  :value="o.value"
-                />
-              </ElSelect>
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="4">
-            <ElFormItem>
-              <ElInput v-model="query.operator" placeholder="操作用户" clearable />
-            </ElFormItem>
-          </ElCol>
-          <ElCol :span="4">
-            <ElFormItem>
-              <ElInput v-model="query.clientIP" placeholder="客户端地址" clearable />
-            </ElFormItem>
-          </ElCol>
+                  "
+                >
+                  <ElOption
+                    v-for="o in commonStore.dropdownConfig.enumOperateType"
+                    :key="o.value"
+                    :label="o.text"
+                    :value="o.value"
+                  />
+                </ElSelect>
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="4">
+              <ElFormItem>
+                <ElInput v-model="query.operator" placeholder="操作用户" clearable />
+              </ElFormItem>
+            </ElCol>
+            <ElCol :span="4">
+              <ElFormItem>
+                <ElInput v-model="query.clientIP" placeholder="客户端地址" clearable />
+              </ElFormItem>
+            </ElCol>
 
-          <ElCol :span="4">
-            <ElFormItem>
+            <ElFormItem :span="4">
               <div class="oa-form__actions">
-                <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
-                <ElButton @click="onReset" plain>重置</ElButton>
+                <ElButton type="primary" class="class-btn-padding-special" @click="onSearch" plain
+                  >查询</ElButton
+                >
+                <ElButton @click="onReset" class="class-btn-padding-special" plain>重置</ElButton>
               </div>
             </ElFormItem>
-          </ElCol>
-        </ElRow>
-      </ElForm>
+          </ElRow>
+        </ElForm>
+      </div>
     </ElCard>
 
-    <ElCard shadow="never" class="oa-card card-table">
-      <div class="oa-sectionHead">
-        <div class="oa-sectionHead__title">操作列表</div>
-      </div>
-
+    <ElCard shadow="never" class="mt8 card-table nopadding-card-top">
       <ElTable
         :data="tableData"
         :loading="tableLoading"
-        size="small"
-        height="calc(100vh - 270px)"
+        height="calc(100vh - 200px)"
+        :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         class="oa-table"
         empty-text="暂无数据"
       >
@@ -194,7 +193,7 @@ onMounted(() => {
           :prop="col.prop"
           :label="col.label"
           align="center"
-          :min-width="100"
+          :min-width="col.width"
           show-overflow-tooltip
         >
           <template
@@ -232,9 +231,9 @@ onMounted(() => {
           v-model:current-page="page.pageNum"
           v-model:page-size="page.pageSize"
           :total="page.total"
+          size="small"
           :page-sizes="[10, 20, 50, 100]"
           layout="sizes, prev, pager, next, jumper"
-          small
           @current-change="onPageChange"
           @size-change="onSizeChange"
         />
@@ -248,6 +247,25 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 1247px;
+}
+
+.oa-filter-card :deep(.el-card__body) {
+  padding: 20px;
+}
+
+.oa-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.oa-head__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
 }
 
 .oa-card {
@@ -255,7 +273,15 @@ onMounted(() => {
 }
 
 .oa-form :deep(.el-form-item) {
-  margin-bottom: 8px;
+  margin-bottom: 0;
+}
+
+.oa-form {
+  flex: 1;
+}
+
+.oa-form :deep(.el-row) {
+  justify-content: flex-end;
 }
 
 .oa-form__row {
@@ -264,10 +290,10 @@ onMounted(() => {
 
 .oa-form__actions {
   display: flex;
+  width: 100%;
+  margin-left: 10px;
   justify-content: flex-end;
   align-items: center;
-  gap: 10px;
-  width: 100%;
 }
 
 .oa-sectionHead {
@@ -289,6 +315,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   margin-top: 10px;
+  margin-bottom: -10px;
 }
 
 .oa-pagination__left {

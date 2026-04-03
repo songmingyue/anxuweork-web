@@ -67,7 +67,7 @@ export const useAppStore = defineStore('app', {
       currentSize: 'default', // 组件尺寸
       theme: {
         // 主题色
-        elColorPrimary: '#409eff',
+        elColorPrimary: '#67b0e5',
         // 左侧菜单边框颜色
         leftMenuBorderColor: 'inherit',
         // 左侧菜单背景颜色
@@ -261,6 +261,14 @@ export const useAppStore = defineStore('app', {
       this.theme = Object.assign(this.theme, theme)
     },
     setCssVarTheme() {
+      // 兼容历史持久化的主题色：如果存的是红色，则迁移回当前默认主题色
+      if (typeof this.theme?.elColorPrimary === 'string') {
+        const raw = this.theme.elColorPrimary.trim()
+        const normalized = (raw.startsWith('#') ? raw : `#${raw}`).toLowerCase()
+        if (normalized === '#ff0000' || normalized === '#409eff') {
+          this.theme.elColorPrimary = '#67b0e5'
+        }
+      }
       for (const key in this.theme) {
         setCssVar(`--${humpToUnderline(key)}`, this.theme[key])
       }

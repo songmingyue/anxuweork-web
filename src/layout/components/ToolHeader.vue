@@ -83,7 +83,7 @@ export default defineComponent({
   height: var(--top-tool-height);
   padding-right: var(--top-tool-p-x);
   padding-left: var(--top-tool-p-x);
-  background-color: #fff;
+  background-color: var(--new-body-bg-color);
   align-items: center;
   justify-content: space-between;
 }

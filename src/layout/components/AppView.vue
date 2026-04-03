@@ -31,7 +31,9 @@ const getCaches = computed((): string[] => {
 .app-view {
   width: 100%;
   padding: var(--app-content-padding);
-  background: var(--app-content-bg-color);
+
+  /* background: var(--app-content-bg-color); */
+  background-color: #f3f3f3;
   box-sizing: border-box;
 }
 

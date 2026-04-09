@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { MedicalImageViewerLeft11 } from 'vue-computer'
-
+import { MedicalImageViewerLeftNew } from 'vue-computer'
+const emit = defineEmits<{
+  (e: 'delete-report'): void
+}>()
 interface Props {
   imageUrl?: string
   imageFile?: File | null
@@ -18,10 +20,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <div class="co-miv-left">
-    <MedicalImageViewerLeft11
+    <MedicalImageViewerLeftNew
       :image-url="props.imageUrl"
       :show-select="false"
       :show-rotate="true"
+      :isShowDelete="true"
+      @delete-report="() => emit('delete-report')"
     />
   </div>
 </template>
@@ -29,5 +33,9 @@ const props = withDefaults(defineProps<Props>(), {
 <style scoped>
 .co-miv-left {
   background: #111;
+}
+
+.co-miv-left ::v-deep(.miv-toolbar .el-button.el-button--danger) {
+  border-radius: 6px !important;
 }
 </style>

@@ -189,10 +189,10 @@ const handleSort = (data: { prop: string; order: SortOrder }) => {
 
 <template>
   <div class="statistics-detail-page">
-    <ElCard shadow="never" class="detail-card">
-      <div class="detail-head">
+    <ElCard shadow="never" class="">
+      <div class="section-head">
         <div class="detail-title">统计详情</div>
-        <ElForm inline class="detail-form" size="small">
+        <ElForm inline class="section-form">
           <ElFormItem style="margin-right: 10px">
             <ElSelect
               v-model="query.patientType"
@@ -240,16 +240,17 @@ const handleSort = (data: { prop: string; order: SortOrder }) => {
           </ElFormItem>
 
           <ElFormItem style="margin-right: 8px">
-            <ElButton type="primary" plain @click="onSelectQuery">查询</ElButton>
+            <ElButton type="primary" @click="onSelectQuery">查询</ElButton>
             <ElButton @click="onExport">导出Excel</ElButton>
           </ElFormItem>
         </ElForm>
       </div>
-
+    </ElCard>
+    <ElCard shadow="never" class="mt8 card-table nopadding-card-top">
       <ElTable
         :data="tableData"
         class="detail-table"
-        height="calc(100vh - 140px)"
+        height="calc(100vh - 185px)"
         empty-text="暂无数据"
         @sort-change="handleSort"
       >
@@ -283,7 +284,8 @@ const handleSort = (data: { prop: string; order: SortOrder }) => {
 .detail-head {
   display: flex;
   min-height: 42px;
-  margin-bottom: 8px;
+
+  /* margin-bottom: 8px; */
   align-items: center;
   justify-content: space-between;
 }
@@ -291,7 +293,6 @@ const handleSort = (data: { prop: string; order: SortOrder }) => {
 .detail-title {
   margin-right: 12px;
   font-size: 16px;
-  font-weight: 500;
   color: var(--el-text-color-primary);
   white-space: nowrap;
 }
@@ -309,5 +310,12 @@ const handleSort = (data: { prop: string; order: SortOrder }) => {
 
 .detail-table {
   width: 100%;
+}
+
+.section-form {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 </style>

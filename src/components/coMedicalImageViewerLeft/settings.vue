@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MedicalImageViewerLeft11 } from 'vue-computer'
+import { MedicalImageViewerLeftNew } from 'vue-computer'
 
 const emit = defineEmits<{
   (e: 'image-point', point: { x: number; y: number; w: number; h: number }): void
@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <div class="co-miv-left">
-    <MedicalImageViewerLeft11
+    <MedicalImageViewerLeftNew
       :image-url="props.imageUrl"
       :image-file="props.imageFile"
       :template-config-height="props.templateConfigHeight"

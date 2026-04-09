@@ -241,6 +241,7 @@ export const deleteFilm = (data: {
   filmBoxID: string
 }): Promise<{
   status: number
+  desc: string | null
 }> => {
   return request.post({
     url: 'Film/DeleteFilm',

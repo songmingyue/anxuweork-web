@@ -410,7 +410,7 @@ onBeforeUnmount(() => {
   <ElCard shadow="never" class="stats-panel card-table" :ref="(el) => setPanelRef(el)">
     <div class="panel-head">
       <div class="panel-title">设备用量</div>
-      <ElForm inline size="small">
+      <ElForm inline size="small" class="panel-form">
         <ElFormItem style="margin-right: 10px">
           <ElSelect
             v-model="query.acceptDevice"
@@ -457,7 +457,7 @@ onBeforeUnmount(() => {
           />
         </ElFormItem>
         <ElFormItem>
-          <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
+          <ElButton type="primary" @click="onSearch">查询</ElButton>
         </ElFormItem>
       </ElForm>
     </div>
@@ -485,8 +485,8 @@ onBeforeUnmount(() => {
             <ElTableColumn prop="requestTotal" align="center" label="请求总量" min-width="120" />
           </ElTable>
           <div class="table-actions">
-            <ElButton plain type="primary" @click="exportExcel">导出</ElButton>
-            <ElButton type="danger" plain @click="closeTableView">关闭</ElButton>
+            <ElButton type="primary" @click="exportExcel">导出</ElButton>
+            <ElButton type="danger" @click="closeTableView">关闭</ElButton>
           </div>
         </div>
       </div>
@@ -539,7 +539,6 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   min-height: 48px;
-  padding: 0 12px;
 }
 
 .panel-title {
@@ -554,7 +553,7 @@ onBeforeUnmount(() => {
 
 .panel-body {
   display: flex;
-  height: calc(50vh - 130px);
+  height: calc(50vh - 115px);
   border-top: 1px solid var(--el-border-color-lighter);
 }
 

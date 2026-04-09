@@ -582,7 +582,7 @@ const deleteFilmBtn = () => {
     .then(async () => {
       if (activedRow.value) {
         const { status } = await deleteFilm({
-          filmBoxID: activedRow.value?.filmResult[viewActiveIndex.value].filmBoxID
+          filmBoxID: (activedRow.value as any).filmBoxID
         })
         if (status === 0) {
           ElMessage.success('删除成功')
@@ -649,6 +649,7 @@ const watchReportOnce = async (item: FilmResultItem[], whitch: FilmResultItem) =
   cleanupViewObjectUrls()
   viewActiveIndex.value = item.indexOf(whitch)
   viewDialogVisible.value = true
+  activedRow.value = whitch as any
   const filmList = item || []
   if (!filmList.length) {
     ElMessage.warning('暂无胶片')
@@ -1475,7 +1476,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
                     </div>
                   </template>
                 </el-popover>
-                <ElButton type="primary" plain @click="onSearch" class="class-btn-padding-special"
+                <ElButton type="primary" @click="onSearch" class="class-btn-padding-special"
                   >查询</ElButton
                 >
                 <ElButton @click="onReset" class="class-btn-padding-special">重置</ElButton>
@@ -1490,7 +1491,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
       <div class="ws-sectionHead">
         <div class="ws-sectionHead__title">检查列表</div>
         <div class="ws-sectionHead__actions">
-          <ElButton @click="onManualMatch" type="primary" plain>
+          <ElButton @click="onManualMatch" type="primary">
             手工匹配({{ manualMatchCount }})
           </ElButton>
         </div>
@@ -1596,7 +1597,6 @@ const submitSetPrinter = async (andPrint: boolean) => {
                       :disabled="!scope.row.filmResult?.length"
                       size="small"
                       type="primary"
-                      plain
                       @click="watchReport(scope.row, 'film')"
                       >查看胶片</ElButton
                     ></el-dropdown-item
@@ -1607,7 +1607,6 @@ const submitSetPrinter = async (andPrint: boolean) => {
                       size="small"
                       :disabled="!scope.row.reportExists"
                       type="primary"
-                      plain
                       @click="watchReport(scope.row, 'report')"
                       >查看报告</ElButton
                     ></el-dropdown-item
@@ -1617,7 +1616,6 @@ const submitSetPrinter = async (andPrint: boolean) => {
                       text
                       size="small"
                       type="primary"
-                      plain
                       :disabled="!scope.row.reportExists"
                       @click="printReport(scope.row)"
                       >打印报告</ElButton
@@ -1665,7 +1663,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
         </div>
         <div class="ws-filmHead__actions">
           <ElButton @click="toggleSelectUnprinted">{{ btnChoseText }}</ElButton>
-          <ElButton @click="printFilm" type="primary" plain>打印胶片</ElButton>
+          <ElButton @click="printFilm" type="primary">打印胶片</ElButton>
           <ElButton @click="openPrinterDialog">修改目的打印机</ElButton>
         </div>
       </div>
@@ -1750,18 +1748,12 @@ const submitSetPrinter = async (andPrint: boolean) => {
               @click="openManualMatchDialog()"
               type="primary"
               v-if="dialogType !== 'report'"
-              plain
               >手工匹配</el-button
             >
-            <el-button @click="setHandMatchMode('fitHeight')" type="primary" plain
-              >适应屏幕</el-button
-            >
-            <el-button @click="setHandMatchMode('natural')" type="primary" plain
-              >原始大小</el-button
-            >
+            <el-button @click="setHandMatchMode('fitHeight')" type="primary">适应屏幕</el-button>
+            <el-button @click="setHandMatchMode('natural')" type="primary">原始大小</el-button>
             <el-button
               type="primary"
-              plain
               @click="
                 () => {
                   dialogWidth = dialogWidth === '100vw' ? '70vw' : '100vw'
@@ -1771,23 +1763,20 @@ const submitSetPrinter = async (andPrint: boolean) => {
             >
             <el-button
               v-if="dialogType === 'report'"
-              plain
               type="danger"
               class="class-btn-padding-special"
               @click="printOf"
               >打印</el-button
             >
             <el-button
-              v-else
               type="danger"
-              plain
+              v-if="dialogType !== 'report'"
               @click="deleteFilmBtn"
               class="class-btn-padding-special"
               >删除</el-button
             >
             <el-button
               type="warning"
-              plain
               @click="cleanupViewObjectUrls"
               class="class-btn-padding-special"
               >关闭</el-button
@@ -2194,15 +2183,15 @@ const submitSetPrinter = async (andPrint: boolean) => {
 }
 
 .title-one {
-  margin-left: 38px;
+  margin-left: 43px;
 }
 
 .title-two {
-  margin-left: 14px;
+  margin-left: 20px;
 }
 
 .title-three {
-  margin-left: 13px;
+  margin-left: 21px;
 }
 
 .more-text {
@@ -2224,6 +2213,7 @@ const submitSetPrinter = async (andPrint: boolean) => {
   z-index: 9;
   width: 100%;
   height: 10px;
-  background: #fff;
+
+  /* background: #fff; */
 }
 </style>

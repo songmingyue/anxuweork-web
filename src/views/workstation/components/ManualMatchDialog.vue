@@ -12,12 +12,14 @@ import {
   ElDialog,
   ElTableColumn,
   ElMessage,
-  ElPagination
+  ElPagination,
+  ElMessageBox
 } from 'element-plus'
 import CoMedicalImageViewerLeft from '@/components/coMedicalImageViewerLeft/index.vue'
 
 import { useCommonStoreWithOut } from '@/store/modules/common'
 import {
+  deleteFilm,
   doManualMatch,
   ExamStudyItem,
   FilmList,
@@ -65,6 +67,49 @@ const filter = reactive({
   taskNo: '' as string,
   accessionNumber: '' as string
 })
+
+const startOfDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0)
+const endOfDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
+
+const lastNDaysRange = (days: number): [Date, Date] => {
+  const today = new Date()
+  const end = endOfDay(today)
+  const start = startOfDay(
+    new Date(today.getFullYear(), today.getMonth(), today.getDate() - (days - 1))
+  )
+  return [start, end]
+}
+
+const lastNMonthsRange = (months: number): [Date, Date] => {
+  const today = new Date()
+  const end = endOfDay(today)
+  const startCandidate = new Date(today)
+  startCandidate.setMonth(startCandidate.getMonth() - months)
+  const start = startOfDay(startCandidate)
+  return [start, end]
+}
+
+const lastNYearsRange = (years: number): [Date, Date] => {
+  const today = new Date()
+  const end = endOfDay(today)
+  const startCandidate = new Date(today)
+  startCandidate.setFullYear(startCandidate.getFullYear() - years)
+  const start = startOfDay(startCandidate)
+  return [start, end]
+}
+
+const dateShortcuts = [
+  { text: '今天', value: () => lastNDaysRange(1) },
+  { text: '近两天', value: () => lastNDaysRange(2) },
+  { text: '近三天', value: () => lastNDaysRange(3) },
+  { text: '近一周', value: () => lastNDaysRange(7) },
+  { text: '近一个月', value: () => lastNMonthsRange(1) },
+  { text: '近三个月', value: () => lastNMonthsRange(3) },
+  { text: '近半年', value: () => lastNMonthsRange(6) },
+  { text: '近一年', value: () => lastNYearsRange(1) }
+]
 
 const tableLoading = ref(false)
 const filmList = ref<FilmList[]>([])
@@ -282,7 +327,6 @@ const handleExamRowClick = async (row: ExamStudyItem) => {
 const handleMatch = async () => {
   const filmBoxID = currentFilmBoxID.value
   const exam = examList.value.find((s) => s.studyID === currentStudyID.value)
-
   if (!filmBoxID) {
     ElMessage.warning('请先选择一条胶片')
     return
@@ -299,7 +343,10 @@ const handleMatch = async () => {
     })
     if (res.status === 0) {
       ElMessage.success('匹配成功')
-      // await handleQuery()
+      examList.value = []
+      examFilter.accessionNumber = ''
+      examFilter.patientID = ''
+      handleSearch()
       emit('success')
     } else {
       ElMessage.error(res.desc || '匹配失败')
@@ -322,6 +369,27 @@ const getTableConfigList = async () => {
 onMounted(() => {
   getTableConfigList()
 })
+const handleDeleteReport = () => {
+  ElMessageBox.confirm('是否确定删除该报告？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      const { status, desc } = await deleteFilm({
+        filmBoxID: currentFilmBoxID.value
+      })
+      if (status === 0) {
+        ElMessage.success('删除成功')
+        handleSearch()
+      } else {
+        ElMessage.error(desc || '删除失败')
+      }
+    })
+    .catch(() => {
+      // 取消操作
+    })
+}
 </script>
 
 <template>
@@ -337,7 +405,10 @@ onMounted(() => {
   >
     <div class="mm-body">
       <div class="mm-left">
-        <CoMedicalImageViewerLeft :image-url="currentImageUrl" />
+        <CoMedicalImageViewerLeft
+          :image-url="currentImageUrl"
+          @delete-report="handleDeleteReport"
+        />
       </div>
 
       <div class="mm-right">
@@ -347,6 +418,7 @@ onMounted(() => {
               v-model="filter.dateRange"
               style="width: 320px"
               type="daterange"
+              :shortcuts="dateShortcuts"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -460,6 +532,7 @@ onMounted(() => {
               <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 0">
                 <el-input
                   placeholder="检查号"
+                  @keydown.enter="handleExamSearch"
                   style="width: 150px"
                   v-model="examFilter.accessionNumber"
                   clearable
@@ -468,6 +541,7 @@ onMounted(() => {
               <el-form-item class="mm-item" style="margin-right: 8px; margin-bottom: 0">
                 <el-input
                   placeholder="患者编号"
+                  @keydown.enter="handleExamSearch"
                   style="width: 150px"
                   v-model="examFilter.patientID"
                   clearable
@@ -476,7 +550,6 @@ onMounted(() => {
               <el-form-item style="margin-right: 8px; margin-bottom: 0">
                 <el-button
                   type="primary"
-                  :loading="examLoading"
                   class="class-btn-padding-special"
                   @click="handleExamSearch"
                   >查询</el-button
@@ -495,6 +568,7 @@ onMounted(() => {
             height="140"
             v-loading="examLoading"
             row-key="studyID"
+            :loading="examLoading"
             highlight-current-row
             :current-row-key="currentStudyID"
             @row-click="handleExamRowClick"
@@ -504,6 +578,8 @@ onMounted(() => {
               :prop="item.prop"
               :label="item.label"
               :min-width="item.width"
+              align="center"
+              show-overflow-tooltip
               :key="item.prop"
             />
           </el-table>
@@ -596,6 +672,14 @@ onMounted(() => {
 
 .manual-match-dialog :deep(.mm-film-table .el-table__body tr.current-row > td) {
   background-color: var(--el-color-primary-light-9);
+}
+
+.mm-film-table {
+  border-top: 1px solid #ccc;
+}
+
+.mm-exam-table {
+  border-top: 1px solid #ccc;
 }
 
 .manual-match-dialog :deep(.mm-film-table .el-table__body tr.current-row:hover > td) {

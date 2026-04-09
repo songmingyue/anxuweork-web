@@ -1,8 +1,6 @@
 <script lang="tsx">
 import { defineComponent, computed } from 'vue'
 
-import { ThemeSwitch } from '@/components/ThemeSwitch'
-
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { SizeDropdown } from '@/components/SizeDropdown'
 import { UserInfo } from '@/components/UserInfo'
@@ -59,7 +57,7 @@ export default defineComponent({
             </ElIcon>
           </span> */}
 
-          <ThemeSwitch></ThemeSwitch>
+          {/* <ThemeSwitch></ThemeSwitch> */}
           <span style="margin-right: 10px"></span>
           <UserInfo></UserInfo>
         </div>

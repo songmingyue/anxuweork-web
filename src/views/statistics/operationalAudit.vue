@@ -167,10 +167,10 @@ onMounted(() => {
 
             <ElFormItem :span="4">
               <div class="oa-form__actions">
-                <ElButton type="primary" class="class-btn-padding-special" @click="onSearch" plain
+                <ElButton type="primary" class="class-btn-padding-special" @click="onSearch"
                   >查询</ElButton
                 >
-                <ElButton @click="onReset" class="class-btn-padding-special" plain>重置</ElButton>
+                <ElButton @click="onReset" class="class-btn-padding-special">重置</ElButton>
               </div>
             </ElFormItem>
           </ElRow>
@@ -178,11 +178,11 @@ onMounted(() => {
       </div>
     </ElCard>
 
-    <ElCard shadow="never" class="mt8 card-table nopadding-card-top">
+    <ElCard shadow="never" class="card-table nopadding-card-top">
       <ElTable
         :data="tableData"
         :loading="tableLoading"
-        height="calc(100vh - 200px)"
+        height="calc(100vh - 198px)"
         :header-cell-style="{ textAlign: 'center', padding: '10px' }"
         class="oa-table"
         empty-text="暂无数据"
@@ -246,7 +246,7 @@ onMounted(() => {
 .oa-page {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   min-width: 1247px;
 }
 
@@ -262,8 +262,7 @@ onMounted(() => {
 }
 
 .oa-head__title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
   color: var(--el-text-color-primary);
   white-space: nowrap;
 }

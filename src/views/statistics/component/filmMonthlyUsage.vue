@@ -317,10 +317,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <ElCard shadow="never" class="stats-panel" :ref="(el) => setPanelRef(el)">
+  <ElCard shadow="never" class="stats-panel card-table" :ref="(el) => setPanelRef(el)">
     <div class="panel-head">
       <div class="panel-title">胶片月用量 /<span class="panel-sub"> 胶片尺寸</span></div>
-      <ElForm inline size="small">
+      <ElForm inline size="small" class="panel-form">
         <ElFormItem>
           <ElDatePicker
             v-model="query.deviceRange"
@@ -334,7 +334,7 @@ onBeforeUnmount(() => {
           />
         </ElFormItem>
         <ElFormItem>
-          <ElButton type="primary" @click="onSearch" plain>查询</ElButton>
+          <ElButton type="primary" @click="onSearch">查询</ElButton>
         </ElFormItem>
       </ElForm>
     </div>
@@ -362,8 +362,8 @@ onBeforeUnmount(() => {
             <ElTableColumn prop="usageTotal" label="使用总量" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
-            <ElButton plain type="primary" @click="exportExcel">导出</ElButton>
-            <ElButton type="danger" plain @click="closeTableView">关闭</ElButton>
+            <ElButton type="primary" @click="exportExcel">导出</ElButton>
+            <ElButton type="danger" @click="closeTableView">关闭</ElButton>
           </div>
         </div>
       </div>
@@ -435,7 +435,7 @@ onBeforeUnmount(() => {
 
 .panel-body {
   display: flex;
-  height: calc(50vh - 130px);
+  height: calc(50vh - 115px);
   border-top: 1px solid var(--el-border-color-lighter);
 }
 

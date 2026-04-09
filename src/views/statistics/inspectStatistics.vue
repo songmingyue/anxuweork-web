@@ -507,7 +507,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="inspect-page">
-    <ElCard shadow="never" class="section section--top card-table">
+    <ElCard shadow="never">
       <div class="section-head">
         <div class="section-title">检查统计</div>
         <ElForm inline class="section-form">
@@ -558,16 +558,17 @@ onBeforeUnmount(() => {
             />
           </ElFormItem>
           <ElFormItem style="margin-right: 10px">
-            <ElButton type="primary" @click="onSearch" plain class="class-btn-padding-special"
+            <ElButton type="primary" @click="onSearch" class="class-btn-padding-special"
               >查询</ElButton
             >
           </ElFormItem>
           <ElFormItem style="margin-right: 10px">
-            <ElButton type="danger" @click="onExport" plain>导出Excel</ElButton>
+            <ElButton type="danger" @click="onExport">导出Excel</ElButton>
           </ElFormItem>
         </ElForm>
       </div>
-
+    </ElCard>
+    <ElCard shadow="never" class="section section--bottom card-table">
       <ElTable :data="tableData" empty-text="暂无数据" :span-method="tableSpanMethod" border>
         <ElTableColumn prop="month" label="月份" min-width="120" align="center" />
         <ElTableColumn prop="totalExamCount" label="总检查数" min-width="120" align="center" />
@@ -617,8 +618,8 @@ onBeforeUnmount(() => {
             <ElTableColumn prop="compensateCount" label="补费量" min-width="120" align="center" />
           </ElTable>
           <div class="table-actions">
-            <ElButton type="danger" plain @click="closeDataView">关闭</ElButton>
-            <ElButton type="primary" plain @click="onExport">导出</ElButton>
+            <ElButton type="danger" @click="closeDataView">关闭</ElButton>
+            <ElButton type="primary" @click="onExport">导出</ElButton>
           </div>
         </div>
       </div>
@@ -691,18 +692,8 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 
-.section-head {
-  display: flex;
-  min-height: 44px;
-  margin-bottom: 15px;
-  align-items: center;
-  justify-content: space-between;
-  margin-left: 15px;
-}
-
 .section-title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
   color: var(--el-text-color-primary);
 }
 
@@ -711,10 +702,6 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
-}
-
-.section-head :deep(.el-form-item) {
-  margin-bottom: 0;
 }
 
 .section--bottom {

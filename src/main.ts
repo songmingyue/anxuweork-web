@@ -16,7 +16,7 @@ import { setupElementPlus } from '@/plugins/elementPlus'
 
 // 引入全局样式
 import '@/styles/index.less'
-
+import '@/styles/imageSpecial.less'
 // vue-computer 的样式文件在 dist/assets 下带 hash，这里用 glob 自动引入
 import.meta.glob('/node_modules/vue-computer/dist/assets/*.css', { eager: true })
 
